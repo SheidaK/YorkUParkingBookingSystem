@@ -1,4 +1,6 @@
-import java.util.*;
+package businessLogic;
+
+import java.util.Map;
 
 public class BookingSystem {
 	static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();

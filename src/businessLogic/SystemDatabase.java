@@ -1,15 +1,17 @@
-import java.util.*;
+import java.util.ArrayList;
+
+import objects.Client;
 
 public class SystemDatabase {
 	
-	ArrayList<Clients> clients = new ArrayList<Clients>();
+	ArrayList<Client> clients = new ArrayList<Client>();
 	ArrayList<Managers> managers = new ArrayList<Managers>();
 	ArrayList<ParkingLot> parkingLots = new ArrayList<ParkingLot>();
 	static int revenue;
 	
 	private static SystemDatabase systemDatabase = null;
 
-	private SystemDatabase(ArrayList<Clients> clients, ArrayList<Managers> managers, ArrayList<ParkingLot> parkingLots, int revenue) {
+	private SystemDatabase(ArrayList<Client> clients, ArrayList<Managers> managers, ArrayList<ParkingLot> parkingLots, int revenue) {
 		super();
 		this.clients = clients;
 		this.managers = managers;
@@ -26,13 +28,13 @@ public class SystemDatabase {
 	/**
 	 * @return the clients
 	 */
-	public ArrayList<Clients> getClients() {
+	public ArrayList<Client> getClients() {
 		return clients;
 	}
 	/**
 	 * @param clients
 	 */
-	public void setClients(ArrayList<Clients> clients) {
+	public void setClients(ArrayList<Client> clients) {
 		this.clients = clients;
 	}
 	/**

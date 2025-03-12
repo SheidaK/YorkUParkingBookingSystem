@@ -1,4 +1,8 @@
-import java.util.*;
+package businessLogic;
+
+import java.util.Date;
+
+import objects.Client;
 
 public class Visit {
 	Date date = new Date(); //change date from String to Date(?), might help with calculating time
