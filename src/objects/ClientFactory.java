@@ -2,7 +2,7 @@ package objects;
 
 public class ClientFactory {
 		Client newClient;
-		public void getClient(String buttonClientType, String email, String password){
+		public void getNewClient(String buttonClientType, String email, String password){
 			if (buttonClientType== "Visitor"){
 				newClient = new Visitor(email, password);
 			}else if(buttonClientType=="FacultyMember"){

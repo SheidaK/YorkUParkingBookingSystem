@@ -4,6 +4,6 @@
 /**
  * 
  */
-module YorkUParkingSystem_group8 {
+module YorkUParkingBookingSystem {
  requires java.desktop;
 }
