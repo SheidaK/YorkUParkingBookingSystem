@@ -17,7 +17,12 @@ public class Visitor extends Client {
 				return false;
 			}
 		}
-		systemDB.addClient(this);
+		try {
+			systemDB.addClient(this);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return true;
 	}
 

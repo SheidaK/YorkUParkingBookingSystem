@@ -102,25 +102,24 @@ public class Registration extends JFrame {
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if(email.getText().isEmpty()) {
+				if(((String) clientType.getSelectedItem()).equals("Register as:")) {
+					warningLabel.setVisible(true);
+					warningLabel.setText("Please select a client type from the list.");
+				}else if(email.getText().isEmpty()) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter email again!");
+				}else if(!Pattern.compile(emailFormat)
+				          .matcher(email.getText())
+				          .matches()) {
+					warningLabel.setVisible(true);
+					warningLabel.setText("Wrong email format.Please enter correct email!");
 				}else if(passwordField.getText().isEmpty()) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter password again!");
 				}else if(!passwordField.getText().equals(passwordField_1.getText())) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Entered passwords do not match!");
-				}else if(((String) clientType.getSelectedItem()).equals("Register as:")) {
-					warningLabel.setVisible(true);
-					warningLabel.setText("Please select a client type from the list.");
-				}else if(!Pattern.compile(emailFormat)
-				          .matcher(email.getText())
-				          .matches()) {
-					warningLabel.setVisible(true);
-					warningLabel.setText("Wrong email format.Please enter correct email!");
-				}
-				else {
+				}else{
 					ClientFactory clientFactory = new ClientFactory();
 					clientFactory.getNewClient((String) clientType.getSelectedItem(), email.getText(), passwordField.getText());
 					frame.setVisible(false);
