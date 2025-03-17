@@ -142,13 +142,18 @@ public class Registration extends JFrame {
 						if(canRegister) {
 							try {
 								systemDB.addClient(c);
+								ClientView clientView = new ClientView(c);
+								clientView.setVisible(true);
+								frame.setVisible(false);
+								frame.dispose();
+								frame.setVisible(false);
 							} catch (Exception e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
 							}
 						}
 					}
-					frame.setVisible(false);
+					
 				}
 			}
 			});	

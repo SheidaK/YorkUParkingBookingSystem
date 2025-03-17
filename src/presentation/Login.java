@@ -113,8 +113,10 @@ public class Login extends JFrame {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Entered password is in correct!");
 				}else {
-					ClientView clientPage = new ClientView(c);
+					ClientView clientView = new ClientView(c);
+					clientView.setVisible(true);
 					frame.setVisible(false);
+					frame.dispose();
 				}
 			}
 		});
