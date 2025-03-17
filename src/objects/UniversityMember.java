@@ -6,23 +6,13 @@ public abstract class UniversityMember extends Client {
 		super(email, password);
 		// TODO Auto-generated constructor stub
 	}
-	SystemDatabase systemDB = SystemDatabase.getInstance();
-	ManagerFacade manager = new ManagerFacde();
+	//ManagerFacade manager = new ManagerFacde();
 
-	@Override
-	public boolean register(String email, String password) {
-		this.email = email;
-		this.password = password;
-		if (validateRegistration(this.getEmail())){
-			systemDB.addClient(this);
-			return true;
-		}
-		return false;
-	}
+
 		
-	
-	public boolean validateRegistration(String email){
-		return manager.validateUniversityMember(this);
-	}
-	
+//	
+//	public boolean validateRegistration(String email){
+//		return manager.validateUniversityMember(this);
+//	}
+//	
 }

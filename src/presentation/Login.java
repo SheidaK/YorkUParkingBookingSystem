@@ -92,9 +92,9 @@ public class Login extends JFrame {
 		txtSignInTo.setColumns(10);
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
 	    SystemDatabase systemDB = SystemDatabase.getInstance();
-	    Client c = systemDB.getClientInfo(email.getText());
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+			    Client c = systemDB.getClientInfo(email.getText());
 				if(email.getText().isEmpty()) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter email again!");

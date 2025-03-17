@@ -25,7 +25,6 @@ public abstract class Client {
 	public ArrayList<Integer> getBookingsList(){
 		return bookings;
 	}
-	public abstract boolean register(String email, String password);
 //	public void bookParkingSpace(int parkingSpaceID, int deposit, int time) {
 //		bookingSystem.bookParkingSpace(this.car.vehicleLicense,parkingSpaceID,deposit,time);
 //	}

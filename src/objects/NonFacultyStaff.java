@@ -7,10 +7,4 @@ public class NonFacultyStaff extends UniversityMember {
 
 	public static int parkingRate = 5;
 
-	@Override
-	public boolean register(String email, String password) {
-		return super.register(getEmail(), getEmail());
-		
-	}
-
 }

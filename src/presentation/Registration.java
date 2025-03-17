@@ -56,8 +56,8 @@ public class Registration extends JFrame {
 		clientType.addItem("Register as:");
 		clientType.addItem("Visitor");
 		clientType.addItem("Student");
-		clientType.addItem("Faculty Member");
-		clientType.addItem("NonFaculty Staff");
+		clientType.addItem("FacultyMember");
+		clientType.addItem("NonFacultyStaff");
 
 		frame.getContentPane().add(clientType);
 		
@@ -102,8 +102,8 @@ public class Registration extends JFrame {
 		warningLabel.setVisible(false);
 		frame.getContentPane().add(warningLabel);
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
-	    SystemDatabase systemDB = SystemDatabase.getInstance();
-	    Client c = systemDB.getClientInfo(email.getText());
+		SystemDatabase systemDB = SystemDatabase.getInstance();
+
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(((String) clientType.getSelectedItem()).equals("Register as:")) {
@@ -123,26 +123,41 @@ public class Registration extends JFrame {
 				}else if(!passwordField.getText().equals(passwordField_1.getText())) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Entered passwords do not match!");
-				}else if (c !=null) {
-					warningLabel.setVisible(true);
-					warningLabel.setText("Account already exists!");
 				}else{
 					ClientFactory clientFactory = new ClientFactory();
 					Client c = clientFactory.getNewClient((String) clientType.getSelectedItem(), email.getText(), passwordField.getText());
-//					try {
-//						c.register();
-//					} catch (Exception e1) {
-//						// TODO Auto-generated catch block
-//						e1.printStackTrace();
-//					}
+					boolean exists = false;
+					for(Client existingClients:systemDB.getClients()) {
+						if(existingClients.getEmail().equalsIgnoreCase(email.getText())) {
+							warningLabel.setVisible(true);
+							warningLabel.setText("Account already exists!");
+							exists = true;
+						}
+					}
+					boolean canRegister = true;
+					if(!exists) {
+						if(!((String) clientType.getSelectedItem()).equals("Visitor")) {
+							if(!systemDB.registerValidation(c)) {canRegister = false;}
+						}
+						if(canRegister) {
+							try {
+								systemDB.addClient(c);
+							} catch (Exception e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						}
+					}
 					frame.setVisible(false);
 				}
 			}
-		});
+			});	
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
 		frame.setVisible(true);
-	}
+		}
 }
+
+	

@@ -8,11 +8,6 @@ public class FacultyMember extends UniversityMember {
 
 	public static int parkingRate = 8;
 
-	@Override
-	public boolean register(String email, String password) {
-		return super.register(getEmail(), getEmail());
-		
-	}
 	
 
 }

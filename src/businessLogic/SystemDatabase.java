@@ -35,9 +35,8 @@ public class SystemDatabase {
 		ClientFactory clientFactory = new ClientFactory();
 		//while(reader.readRecord()){
 		while (reader.readRecord()) {
-			System.out.println(reader.get("Client Type")+" "+reader.get("Email")+" "+reader.get("Password"));
 			Client newClient = clientFactory.getNewClient(reader.get("Client Type"),reader.get("Email"),reader.get("Password"));
-			//clients.add(newClient);
+			clients.add(newClient);
 		}
 		//this.managers = managers;
 		//this.parkingLots = parkingLots;
@@ -112,8 +111,6 @@ public class SystemDatabase {
 	public void addClient(Client client) throws Exception {
 		if (!clients.contains(client)) 
 			clients.add(client);
-		System.out.println(client.getEmail()+" sfs "+client.getPassword());
-
 		try {
 			CsvReader reader = new CsvReader(path);
 			CsvWriter csvOutput = new CsvWriter(new FileWriter(path, true), ',');
@@ -195,11 +192,16 @@ public class SystemDatabase {
 	}
 	public Client getClientInfo(String email) {
 		for (Client c: clients ) {
-			if(c.getEmail().equals(email)) {
+			if(c.getEmail().trim().equals(email.trim())) {
 				return c;
 			}
 		}
 		return null;
+	}
+	public boolean registerValidation(Client c) {
+		//ManagerFacade manager = new ManagerFacde();
+		//return manager.validateUniversityMember(this);
+		return true;
 	}
 	
 }
