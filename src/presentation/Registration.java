@@ -17,6 +17,8 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 import javax.swing.border.LineBorder;
 
+import businessLogic.SystemDatabase;
+import objects.Client;
 import objects.ClientFactory;
 
 import java.awt.Font;
@@ -100,6 +102,8 @@ public class Registration extends JFrame {
 		warningLabel.setVisible(false);
 		frame.getContentPane().add(warningLabel);
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
+	    SystemDatabase systemDB = SystemDatabase.getInstance();
+	    Client c = systemDB.getClientInfo(email.getText());
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(((String) clientType.getSelectedItem()).equals("Register as:")) {
@@ -119,9 +123,18 @@ public class Registration extends JFrame {
 				}else if(!passwordField.getText().equals(passwordField_1.getText())) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Entered passwords do not match!");
+				}else if (c !=null) {
+					warningLabel.setVisible(true);
+					warningLabel.setText("Account already exists!");
 				}else{
 					ClientFactory clientFactory = new ClientFactory();
-					clientFactory.getNewClient((String) clientType.getSelectedItem(), email.getText(), passwordField.getText());
+					Client c = clientFactory.getNewClient((String) clientType.getSelectedItem(), email.getText(), passwordField.getText());
+//					try {
+//						c.register();
+//					} catch (Exception e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
 					frame.setVisible(false);
 				}
 			}

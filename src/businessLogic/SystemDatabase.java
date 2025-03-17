@@ -3,6 +3,8 @@ package businessLogic;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.List;
+
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import objects.Client;
@@ -15,7 +17,7 @@ public class SystemDatabase {
 	private static ArrayList<Client> clients = new ArrayList<Client>();
 	private static  ArrayList<Managers> managers = new ArrayList<Managers>();
 	private static ArrayList<ParkingLot> parkingLots = new ArrayList<ParkingLot>();
-	String path = "/YorkUParkingBookingSystem/src/database/SystemDatabase.csv";
+	String path = "src/database/SystemDatabase.csv";
 	static int revenue;
 	
 	private static SystemDatabase systemDatabase = null;
@@ -29,11 +31,13 @@ public class SystemDatabase {
             return;
         }
 		CsvReader reader = new CsvReader(path); 
-		
 		reader.readHeaders();
 		ClientFactory clientFactory = new ClientFactory();
-		while(reader.readRecord()){ 
-			clientFactory.getNewClient(reader.get("ClientType"),reader.get("email"),reader.get("password"));
+		//while(reader.readRecord()){
+		while (reader.readRecord()) {
+			System.out.println(reader.get("Client Type")+" "+reader.get("Email")+" "+reader.get("Password"));
+			Client newClient = clientFactory.getNewClient(reader.get("Client Type"),reader.get("Email"),reader.get("Password"));
+			//clients.add(newClient);
 		}
 		//this.managers = managers;
 		//this.parkingLots = parkingLots;
@@ -108,11 +112,26 @@ public class SystemDatabase {
 	public void addClient(Client client) throws Exception {
 		if (!clients.contains(client)) 
 			clients.add(client);
+		System.out.println(client.getEmail()+" sfs "+client.getPassword());
+
 		try {
-			CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
-			csvOutput.write(client.getEmail());
-			csvOutput.write(client.getPassword());
-			csvOutput.write(client.getClass().getName());
+			CsvReader reader = new CsvReader(path);
+			CsvWriter csvOutput = new CsvWriter(new FileWriter(path, true), ',');
+            reader.readHeaders(); // Skip headers if present
+            String clientType = client.getClass().getName().replace("objects.","");
+			String[] lst = {client.getEmail(),client.getPassword(), clientType};
+			 List<String[]> existingData = new ArrayList<>();
+			 while (reader.readRecord()) {
+				 existingData.add(reader.getValues()); // Write the existing records to the new file
+	         }
+			 for (String[] row : existingData) {
+				 csvOutput.writeRecord(row);
+	            }
+			csvOutput.writeRecord(lst);
+//			csvOutput.write(client.getEmail());
+//			csvOutput.write(client.getPassword());
+//			csvOutput.write(client.getClass().getName());
+			reader.close();
 			csvOutput.close();
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -175,7 +194,7 @@ public class SystemDatabase {
 		revenue = revenue - loss;
 	}
 	public Client getClientInfo(String email) {
-		for (Client c: clients) {
+		for (Client c: clients ) {
 			if(c.getEmail().equals(email)) {
 				return c;
 			}
