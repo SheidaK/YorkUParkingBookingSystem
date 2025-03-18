@@ -17,7 +17,7 @@ public class SystemDatabase {
 	private static ArrayList<Client> clients = new ArrayList<Client>();
 	private static  ArrayList<Managers> managers = new ArrayList<Managers>();
 	private static ArrayList<ParkingLot> parkingLots = new ArrayList<ParkingLot>();
-	String path = "src/database/SystemDatabase.csv";
+	String path = "src/database/SystemDatabaseClients.csv";
 	static int revenue;
 	
 	private static SystemDatabase systemDatabase = null;
@@ -33,7 +33,6 @@ public class SystemDatabase {
 		CsvReader reader = new CsvReader(path); 
 		reader.readHeaders();
 		ClientFactory clientFactory = new ClientFactory();
-		//while(reader.readRecord()){
 		while (reader.readRecord()) {
 			Client newClient = clientFactory.getNewClient(reader.get("Client Type"),reader.get("Email"),reader.get("Password"));
 			clients.add(newClient);
@@ -125,9 +124,6 @@ public class SystemDatabase {
 				 csvOutput.writeRecord(row);
 	            }
 			csvOutput.writeRecord(lst);
-//			csvOutput.write(client.getEmail());
-//			csvOutput.write(client.getPassword());
-//			csvOutput.write(client.getClass().getName());
 			reader.close();
 			csvOutput.close();
 		}catch (Exception e) {

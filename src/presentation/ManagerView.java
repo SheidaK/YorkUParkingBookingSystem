@@ -6,7 +6,6 @@ public class ManagerView {
 	public void setVisible(boolean b) {
 		// TODO Auto-generated method stub
 		visibility = b;
-
 	}
 
 }
