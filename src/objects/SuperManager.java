@@ -6,11 +6,11 @@ import businessLogic.SystemDatabase;
 
 public class SuperManager extends Manager {
 	private static SuperManager supermanager = null;
-	private static String email = "superManager@gmail.com";
-	private static String password = "123";
+	private static String userName = "superManager";
+	private static String password = "ParkingS25!";
 
 	public SuperManager() {
-		super(email,password );
+		super(userName,password );
 		// TODO Auto-generated constructor stub
 	}
 	public String getRole() {

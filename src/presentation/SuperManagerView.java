@@ -89,7 +89,7 @@ public class SuperManagerView extends JFrame {
         tableModel.setRowCount(0);
         List<Manager> managers = superManager.getAllManagers();
         if(managers != null) {for (Manager manager : managers) {
-            tableModel.addRow(new Object[]{manager.getEmail(), manager.getRole()});
+            tableModel.addRow(new Object[]{manager.getUserName(), manager.getRole()});
         }
         }
     }

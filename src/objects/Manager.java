@@ -3,14 +3,14 @@ package objects;
 import java.util.ArrayList;
 
 public class Manager {
-	protected String email;
+	protected String userName;
 	protected String password;
-	public Manager(String email, String password) {
-		this.email = email;
+	public Manager(String userName, String password) {
+		this.userName = userName;
 		this.password = password;
 	}
-	public String getEmail() {
-		return email;
+	public String getUserName() {
+		return userName;
 	}
 	public String getPassword() {
 		return password;

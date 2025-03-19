@@ -243,7 +243,7 @@ public class SystemDatabase {
 		// TODO Auto-generated method stub
 		for (Manager m: getManagers() ) {
 			if(m!=null) {
-			if(m.getEmail().trim().equals(email.trim())) {
+			if(m.getUserName().trim().equals(email.trim())) {
 				return m;
 			}
 			}
@@ -251,7 +251,7 @@ public class SystemDatabase {
 		return null;
 	}
 	public boolean isSuperManager(String email) {
-		if(email.equals(SuperManager.getInstance().getEmail())) {
+		if(email.equals(SuperManager.getInstance().getUserName())) {
 			return true;
 		}
 		return false;

@@ -59,10 +59,15 @@ public class Login extends JFrame {
 		submitButton.setBounds(533, 305, 209, 21);
 		frame.getContentPane().add(submitButton);
 		
-		JLabel emailLbl = new JLabel("Enter Email");
+		JLabel emailLbl = new JLabel("");
 		emailLbl.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		emailLbl.setBounds(428, 223, 181, 13);
+		emailLbl.setBounds(428, 223, 181, 21);
 		frame.getContentPane().add(emailLbl);
+		if(pageClient) {
+			emailLbl.setText("Enter Email: ");
+		}else {
+			emailLbl.setText("Enter User Name: ");
+		}
 		
 		JLabel passwordLbl = new JLabel("Enter Password");
 		passwordLbl.setFont(new Font("Tahoma", Font.PLAIN, 17));
@@ -115,8 +120,12 @@ public class Login extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				if(email.getText().isEmpty()) {
 					warningLabel.setVisible(true);
+					if(pageClient) {
 					warningLabel.setText("Please enter email again!");
-				}else if(!Pattern.compile(emailFormat)
+					}else {
+						warningLabel.setText("Please enter user name again!");
+					}
+				}else if(pageClient && !Pattern.compile(emailFormat)
 				          .matcher(email.getText())
 				          .matches()) {
 					warningLabel.setVisible(true);
@@ -129,7 +138,7 @@ public class Login extends JFrame {
 						Client c = systemDB.getClientInfo(email.getText());
 						if(c==null){
 							warningLabel.setVisible(true);
-							warningLabel.setText("Entered email does not match with any existing clients!");
+							warningLabel.setText("Entered username does not match with any existing clients!");
 						}else if(!passwordField_1.getText().equals(c.getPassword())) {
 							warningLabel.setVisible(true);
 							warningLabel.setText("Entered password is incorrect!");
