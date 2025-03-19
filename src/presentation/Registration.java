@@ -41,8 +41,12 @@ public class Registration extends JFrame {
 		
 		JLabel warningLabel = new JLabel("");
 		warningLabel.setForeground(new Color(255, 0, 0));
-		warningLabel.setBounds(428, 340, 443, 13);
+		warningLabel.setBounds(428, 344, 443, 13);
 		warningLabel.setVisible(false);
+		JLabel passwordWarning = new JLabel("");
+		passwordWarning.setForeground(new Color(255, 0, 0));
+		passwordWarning.setBounds(428, 367, 443, 21);
+		frame.getContentPane().add(passwordWarning);
 		frame.getContentPane().add(warningLabel);
 		JTextArea txtrWelcomeToThe = new JTextArea();
 		txtrWelcomeToThe.setBackground(new Color(255, 155, 155));
@@ -54,7 +58,7 @@ public class Registration extends JFrame {
 		JButton submitButton = new JButton("Submit");
 		submitButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		submitButton.setBackground(new Color(255, 255, 255));
-		submitButton.setBounds(537, 313, 209, 21);
+		submitButton.setBounds(539, 313, 209, 21);
 		frame.getContentPane().add(submitButton);
 		
 		JComboBox clientType = new JComboBox<String>();
@@ -70,61 +74,61 @@ public class Registration extends JFrame {
 		
 		JLabel emailLbl = new JLabel("Enter Email");
 		emailLbl.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		emailLbl.setBounds(428, 193, 181, 13);
+		emailLbl.setBounds(428, 174, 181, 13);
 		frame.getContentPane().add(emailLbl);
 		
 		JLabel passwordLbl = new JLabel("Enter Password");
 		passwordLbl.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		passwordLbl.setBounds(428, 234, 166, 13);
+		passwordLbl.setBounds(428, 210, 166, 13);
 		frame.getContentPane().add(passwordLbl);
 		
 		JLabel lblNewLabel = new JLabel("Enter Passowrd Again");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		lblNewLabel.setBounds(428, 274, 166, 21);
+		lblNewLabel.setBounds(428, 239, 166, 21);
 		frame.getContentPane().add(lblNewLabel);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(620, 278, 251, 19);
+		passwordField.setBounds(620, 243, 251, 19);
 		frame.getContentPane().add(passwordField);
 		
 		passwordField_1 = new JPasswordField();
-		passwordField_1.setBounds(620, 234, 251, 19);
+		passwordField_1.setBounds(620, 210, 251, 19);
 		frame.getContentPane().add(passwordField_1);
 		ImageIcon icon;
 		icon = new ImageIcon(this.getClass().getResource("/res/Campus_header_gr_3.jpg"));;
 		JLabel iconLbl = new JLabel(icon);
-		iconLbl.setLocation(-150, 278);
-		iconLbl.setSize(1550, 516);
+		iconLbl.setLocation(-150, 334);
+		iconLbl.setSize(1550, 460);
 
 		frame.getContentPane().add(iconLbl);
 		
 		email = new JTextField();
-		email.setBounds(619, 193, 252, 19);
+		email.setBounds(619, 174, 252, 19);
 		frame.getContentPane().add(email);
 		email.setColumns(10);
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
 		SystemDatabase systemDB = SystemDatabase.getInstance();
-
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				warningLabel.setVisible(true);
+				passwordWarning.setText("");
 				if(((String) clientType.getSelectedItem()).equals("Register as:")) {
-					warningLabel.setVisible(true);
 					warningLabel.setText("Please select a client type from the list.");
 				}else if(email.getText().isEmpty()) {
-					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter email again!");
 				}else if(!Pattern.compile(emailFormat)
 				          .matcher(email.getText())
 				          .matches()) {
-					warningLabel.setVisible(true);
 					warningLabel.setText("Wrong email format.Please enter correct email!");
 				}else if(passwordField.getText().isEmpty()) {
-					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter password again!");
+				}else if(!strongPassword(passwordField_1.getText(),passwordWarning)){
+					warningLabel.setText("Entered passwords is not in the correct format.");
 				}else if(!passwordField.getText().equals(passwordField_1.getText())) {
-					warningLabel.setVisible(true);
 					warningLabel.setText("Entered passwords do not match!");
 				}else{
+					warningLabel.setVisible(false);
+
 					ClientFactory clientFactory = new ClientFactory();
 					Client c = clientFactory.getNewClient((String) clientType.getSelectedItem(), email.getText(), passwordField.getText());
 					boolean exists = false;
@@ -166,6 +170,12 @@ public class Registration extends JFrame {
 		panel.setBackground(new Color(255, 155, 155));
 		panel.setBounds(0, 1, 1266, 99);
 		frame.getContentPane().add(panel);
+		
+		
+		
+		JLabel lblNewLabel_1 = new JLabel("Password must be a combination of uppercase letters, lowercase letters, numbers and symbols");
+		lblNewLabel_1.setBounds(399, 283, 683, 13);
+		frame.getContentPane().add(lblNewLabel_1);
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MainPage main = new MainPage();
@@ -180,6 +190,32 @@ public class Registration extends JFrame {
 		frame.setResizable(false);
 		frame.setVisible(true);
 		}
+	protected boolean strongPassword(String password, JLabel warning) {
+		boolean strongPassword = true;
+		warning.setText("");
+		String warningLabel = "Entered password doesn't contain:";
+		if(!password.matches(".*[a-z].*")){
+			warningLabel +="lower case letter,";
+			strongPassword = false;
+		}
+		if(!password.matches(".*[A-Z].*")) {
+			warningLabel +="\t"+"upper case letter,";
+			strongPassword = false;
+		}
+		if(!password.matches(".*[0-9].*")) {
+			warningLabel +="\t"+"numbers,";
+			strongPassword = false;
+		}
+		if(!password.matches(".*[^a-zA-Z0-9\\s].*")) {
+			warningLabel +="\t"+"symbols";
+			strongPassword = false;
+		}
+		if(!strongPassword) {
+			warning.setText(warningLabel);
+			return false;
+		}
+		return true;
+	}
 }
 
 	
