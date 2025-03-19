@@ -44,8 +44,13 @@ public class SystemDatabase {
 		CsvReader reader2 = new CsvReader(path2); 
 		reader2.readHeaders();
 		while (reader2.readRecord()) {
-				Manager manager = new Manager(reader2.get("Email"),reader2.get("Password"));
-				managers.add(manager);
+			Manager manager;
+			if(isSuperManager(reader2.get("Email"))) {
+				manager = new SuperManager();
+			}else {
+				manager = new Manager(reader2.get("Email"),reader2.get("Password"));
+			}
+			managers.add(manager);
 		}
 		reader.close();
 		//this.parkingLots = parkingLots;
