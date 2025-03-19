@@ -39,6 +39,12 @@ public class Login extends JFrame {
 		frame.getContentPane().setBackground(new Color(255, 255, 255));
 		frame.setSize(1280, 720);
 		frame.getContentPane().setLayout(null);
+		
+		JLabel warningLabel = new JLabel("");
+		warningLabel.setForeground(new Color(255, 0, 0));
+		warningLabel.setBounds(428, 337, 443, 13);
+		warningLabel.setVisible(false);
+		frame.getContentPane().add(warningLabel);
 		JTextArea txtrWelcomeToThe = new JTextArea();
 		txtrWelcomeToThe.setBackground(new Color(255, 155, 155));
 		txtrWelcomeToThe.setFont(new Font("Tahoma", Font.BOLD, 27));
@@ -77,12 +83,6 @@ public class Login extends JFrame {
 		email.setBounds(619, 223, 252, 19);
 		frame.getContentPane().add(email);
 		email.setColumns(10);
-		
-		JLabel warningLabel = new JLabel("");
-		warningLabel.setForeground(new Color(255, 0, 0));
-		warningLabel.setBounds(428, 313, 443, 13);
-		warningLabel.setVisible(false);
-		frame.getContentPane().add(warningLabel);
 		
 		txtSignInTo = new JTextField();
 		txtSignInTo.setHorizontalAlignment(SwingConstants.CENTER);
@@ -129,7 +129,7 @@ public class Login extends JFrame {
 					warningLabel.setText("Entered email does not match with any existing clients!");
 				}else if(!passwordField_1.getText().equals(c.getPassword())) {
 					warningLabel.setVisible(true);
-					warningLabel.setText("Entered password is in correct!");
+					warningLabel.setText("Entered password is incorrect!");
 				}else {
 					ClientView clientView = new ClientView(c);
 					frame.setVisible(false);

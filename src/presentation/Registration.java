@@ -38,6 +38,12 @@ public class Registration extends JFrame {
 		frame.getContentPane().setBackground(new Color(255, 255, 255));
 		frame.setSize(1280, 720);
 		frame.getContentPane().setLayout(null);
+		
+		JLabel warningLabel = new JLabel("");
+		warningLabel.setForeground(new Color(255, 0, 0));
+		warningLabel.setBounds(428, 340, 443, 13);
+		warningLabel.setVisible(false);
+		frame.getContentPane().add(warningLabel);
 		JTextArea txtrWelcomeToThe = new JTextArea();
 		txtrWelcomeToThe.setBackground(new Color(255, 155, 155));
 		txtrWelcomeToThe.setFont(new Font("Tahoma", Font.BOLD, 27));
@@ -96,12 +102,6 @@ public class Registration extends JFrame {
 		email.setBounds(619, 193, 252, 19);
 		frame.getContentPane().add(email);
 		email.setColumns(10);
-		
-		JLabel warningLabel = new JLabel("");
-		warningLabel.setForeground(new Color(255, 0, 0));
-		warningLabel.setBounds(428, 313, 443, 13);
-		warningLabel.setVisible(false);
-		frame.getContentPane().add(warningLabel);
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
 		SystemDatabase systemDB = SystemDatabase.getInstance();
 
@@ -169,6 +169,7 @@ public class Registration extends JFrame {
 		btnBack.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				MainPage main = new MainPage();
+				main.frame.setVisible(true);
 				frame.setVisible(false);
 				frame.dispose();
 			}

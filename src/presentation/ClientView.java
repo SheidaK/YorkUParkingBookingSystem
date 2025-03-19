@@ -11,13 +11,19 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import businessLogic.SystemDatabase;
 import objects.Client;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 public class ClientView {
 	protected static JFrame frame;
     private ImageIcon icon;
@@ -78,6 +84,21 @@ public class ClientView {
 		frame.getContentPane().add(btnSignOut);
 		btnSignOut.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				MainPage main = new MainPage();
+				frame.setVisible(false);
+				frame.dispose();
+			}
+			});
+		
+	    SystemDatabase systemDB = SystemDatabase.getInstance();
+
+		JButton btnDeleteAccount = new JButton("Delete Account");
+		btnDeleteAccount.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnDeleteAccount.setBounds(934, 43, 156, 37);
+		frame.getContentPane().add(btnDeleteAccount);
+		btnDeleteAccount.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				systemDB.removeClient(c);
 				MainPage main = new MainPage();
 				frame.setVisible(false);
 				frame.dispose();

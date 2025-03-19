@@ -37,6 +37,7 @@ public class SystemDatabase {
 			Client newClient = clientFactory.getNewClient(reader.get("Client Type"),reader.get("Email"),reader.get("Password"));
 			clients.add(newClient);
 		}
+		reader.close();
 		//this.managers = managers;
 		//this.parkingLots = parkingLots;
 		SystemDatabase.revenue = revenue;
@@ -44,11 +45,9 @@ public class SystemDatabase {
 	
 	public static synchronized SystemDatabase getInstance(){
 		if (systemDatabase == null) {
-			
 			try {
 				systemDatabase = new SystemDatabase(clients, managers, parkingLots, revenue);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -108,11 +107,11 @@ public class SystemDatabase {
 	 * @param client
 	 */
 	public void addClient(Client client) throws Exception {
-		if (!clients.contains(client)) 
+		if (!clients.contains(client)) {
 			clients.add(client);
 		try {
 			CsvReader reader = new CsvReader(path);
-			CsvWriter csvOutput = new CsvWriter(new FileWriter(path, true), ',');
+            CsvWriter csvOutput = new CsvWriter(new FileWriter(path, true), ',');
             reader.readHeaders(); // Skip headers if present
             String clientType = client.getClass().getName().replace("objects.","");
 			String[] lst = {client.getEmail(),client.getPassword(), clientType};
@@ -120,9 +119,6 @@ public class SystemDatabase {
 			 while (reader.readRecord()) {
 				 existingData.add(reader.getValues()); // Write the existing records to the new file
 	         }
-			 for (String[] row : existingData) {
-				 csvOutput.writeRecord(row);
-	            }
 			csvOutput.writeRecord(lst);
 			reader.close();
 			csvOutput.close();
@@ -130,14 +126,41 @@ public class SystemDatabase {
 			e.printStackTrace();
 		}
 	}
+	}
 	/**
 	 * 
 	 * @param client
 	 */
 	public void removeClient(Client client) {
-		if (clients.contains(client))
+		if (clients.contains(client)) {
 			clients.remove(client);
+		}
+		try {
+			CsvReader reader = new CsvReader(path);
+            reader.readHeaders(); // Skip headers if present
+			 List<String[]> existingData = new ArrayList<>();
+			 String[] header = new String[3];
+			 header = reader.getHeaders();
+			 existingData.add(header);
+			 while (reader.readRecord()) {
+				 String[] row = reader.getValues();
+				 if(!row[0].equals(client.getEmail())) {
+					 existingData.add(row);
+				 }
+	         }
+			 reader.close();
+			 CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
+			 //csvOutput.writeRecord(header);
+			 for (String[] row : existingData) {
+				 csvOutput.writeRecord(row);
+	            }
+			csvOutput.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
+	
+
 	
 //	/**
 //	 * 
@@ -187,9 +210,11 @@ public class SystemDatabase {
 		revenue = revenue - loss;
 	}
 	public Client getClientInfo(String email) {
-		for (Client c: clients ) {
+		for (Client c: getClients() ) {
+			if(c!=null) {
 			if(c.getEmail().trim().equals(email.trim())) {
 				return c;
+			}
 			}
 		}
 		return null;
