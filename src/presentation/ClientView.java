@@ -28,22 +28,6 @@ public class ClientView {
 		frame.setSize(1280, 720);
 		frame.getContentPane().setLayout(null);
 		
-		JButton btnSelectToEdit = new JButton("Edit Selected Booking");
-		frame.getContentPane().add(btnSelectToEdit);
-		btnSelectToEdit.setBackground(new Color(255, 255, 255));
-		btnSelectToEdit.setForeground(Color.BLACK);
-		btnSelectToEdit.setFocusPainted(false);
-		btnSelectToEdit.setFont(new Font("Tahoma", Font.BOLD, 12));
-		btnSelectToEdit.setBounds(560, 621, 196, 40);
-			
-		JButton btnNewBooking = new JButton("New Boking");
-		frame.getContentPane().add(btnNewBooking);
-		btnNewBooking.setBackground(new Color(255, 255, 255));
-		btnNewBooking.setForeground(Color.BLACK);
-		btnNewBooking.setFocusPainted(false);
-		btnNewBooking.setFont(new Font("Tahoma", Font.BOLD, 12));
-		btnNewBooking.setBounds(1056, 43, 156, 40);
-								
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBounds(51, 103, 1161, 487);
 		frame.getContentPane().add(scrollPane);
@@ -57,21 +41,49 @@ public class ClientView {
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
 		lblNewLabel.setBounds(51, 43, 633, 40);
 		frame.getContentPane().add(lblNewLabel);
+		JButton btnSelectToEdit = new JButton("Edit Selected Booking");
+		frame.getContentPane().add(btnSelectToEdit);
+		btnSelectToEdit.setBackground(new Color(255, 255, 255));
+		btnSelectToEdit.setForeground(Color.BLACK);
+		btnSelectToEdit.setFocusPainted(false);
+		btnSelectToEdit.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnSelectToEdit.setBounds(560, 621, 196, 40);
+		btnSelectToEdit.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//Page where client can edit existing bookings
+				frame.setVisible(false);
+				frame.dispose();
+			}
+			});
 		
+		JButton btnNewBooking = new JButton("New Boking");
+		frame.getContentPane().add(btnNewBooking);
+		btnNewBooking.setBackground(new Color(255, 255, 255));
+		btnNewBooking.setForeground(Color.BLACK);
+		btnNewBooking.setFocusPainted(false);
+		btnNewBooking.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnNewBooking.setBounds(1056, 621, 156, 40);
 		btnNewBooking.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			//Page where client can make a new booking
 			frame.setVisible(false);
 			frame.dispose();
 		}
-		});
-		btnSelectToEdit.addActionListener(new ActionListener() {
-		public void actionPerformed(ActionEvent e) {
-			//Page where client can edit existing bookings
-			frame.setVisible(false);
-			frame.dispose();
-		}
-		});
+		});						
+		
+		
+		JButton btnSignOut = new JButton("Sign Out");
+		btnSignOut.setFont(new Font("Tahoma", Font.BOLD, 12));
+		btnSignOut.setBounds(1111, 43, 101, 37);
+		frame.getContentPane().add(btnSignOut);
+		btnSignOut.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MainPage main = new MainPage();
+				frame.setVisible(false);
+				frame.dispose();
+			}
+			});
+		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
@@ -79,7 +91,6 @@ public class ClientView {
 
 	}
 	public void setVisible(boolean b) {
-		// TODO Auto-generated method stub
 		frame.setVisible(b);
 	}
 }

@@ -38,17 +38,18 @@ public class Registration extends JFrame {
 		frame.getContentPane().setBackground(new Color(255, 255, 255));
 		frame.setSize(1280, 720);
 		frame.getContentPane().setLayout(null);
-		
-		JButton submitButton = new JButton("Submit");
-		submitButton.setBackground(new Color(255, 255, 255));
-		submitButton.setBounds(533, 336, 209, 21);
-		frame.getContentPane().add(submitButton);
 		JTextArea txtrWelcomeToThe = new JTextArea();
-		txtrWelcomeToThe.setBackground(new Color(255, 0, 0));
+		txtrWelcomeToThe.setBackground(new Color(255, 155, 155));
 		txtrWelcomeToThe.setFont(new Font("Tahoma", Font.BOLD, 27));
 		txtrWelcomeToThe.setText("Welcome to The YorkU Parkining System!");
-		txtrWelcomeToThe.setBounds(10, 10, 1271, 89);
+		txtrWelcomeToThe.setBounds(345, 44, 936, 55);
 		frame.getContentPane().add(txtrWelcomeToThe);
+		
+		JButton submitButton = new JButton("Submit");
+		submitButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		submitButton.setBackground(new Color(255, 255, 255));
+		submitButton.setBounds(537, 313, 209, 21);
+		frame.getContentPane().add(submitButton);
 		
 		JComboBox clientType = new JComboBox<String>();
 		clientType.setFont(new Font("Tahoma", Font.PLAIN, 24));
@@ -143,7 +144,6 @@ public class Registration extends JFrame {
 							try {
 								systemDB.addClient(c);
 								ClientView clientView = new ClientView(c);
-								clientView.setVisible(true);
 								frame.setVisible(false);
 								frame.dispose();
 								frame.setVisible(false);
@@ -157,6 +157,22 @@ public class Registration extends JFrame {
 				}
 			}
 			});	
+		JButton btnBack = new JButton("Back");
+		btnBack.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btnBack.setBounds(1031, 122, 166, 33);
+		frame.getContentPane().add(btnBack);
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(new Color(255, 155, 155));
+		panel.setBounds(0, 1, 1266, 99);
+		frame.getContentPane().add(panel);
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MainPage main = new MainPage();
+				frame.setVisible(false);
+				frame.dispose();
+			}
+		});
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);

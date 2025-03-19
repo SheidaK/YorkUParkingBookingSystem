@@ -35,34 +35,35 @@ public class Login extends JFrame {
 	private JTextField email;
 	private JTextField txtSignInTo;
 	public Login() {
-		frame = new JFrame("Registration");
+		frame = new JFrame("Login");
 		frame.getContentPane().setBackground(new Color(255, 255, 255));
 		frame.setSize(1280, 720);
 		frame.getContentPane().setLayout(null);
+		JTextArea txtrWelcomeToThe = new JTextArea();
+		txtrWelcomeToThe.setBackground(new Color(255, 155, 155));
+		txtrWelcomeToThe.setFont(new Font("Tahoma", Font.BOLD, 27));
+		txtrWelcomeToThe.setText("   Welcome back to The YorkU Parking System!");
+		txtrWelcomeToThe.setBounds(343, 42, 898, 57);
+		frame.getContentPane().add(txtrWelcomeToThe);
 		
 		JButton submitButton = new JButton("Submit");
+		submitButton.setFont(new Font("Tahoma", Font.PLAIN, 20));
 		submitButton.setBackground(new Color(255, 255, 255));
-		submitButton.setBounds(531, 278, 209, 21);
+		submitButton.setBounds(533, 305, 209, 21);
 		frame.getContentPane().add(submitButton);
-		JTextArea txtrWelcomeToThe = new JTextArea();
-		txtrWelcomeToThe.setBackground(new Color(255, 0, 0));
-		txtrWelcomeToThe.setFont(new Font("Tahoma", Font.BOLD, 27));
-		txtrWelcomeToThe.setText("Welcome back to The YorkU Parkining System!");
-		txtrWelcomeToThe.setBounds(10, 10, 1271, 89);
-		frame.getContentPane().add(txtrWelcomeToThe);
 		
 		JLabel emailLbl = new JLabel("Enter Email");
 		emailLbl.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		emailLbl.setBounds(428, 193, 181, 13);
+		emailLbl.setBounds(428, 223, 181, 13);
 		frame.getContentPane().add(emailLbl);
 		
 		JLabel passwordLbl = new JLabel("Enter Password");
 		passwordLbl.setFont(new Font("Tahoma", Font.PLAIN, 17));
-		passwordLbl.setBounds(428, 234, 166, 13);
+		passwordLbl.setBounds(428, 264, 166, 13);
 		frame.getContentPane().add(passwordLbl);
 		
 		passwordField_1 = new JPasswordField();
-		passwordField_1.setBounds(620, 234, 251, 19);
+		passwordField_1.setBounds(620, 264, 251, 19);
 		frame.getContentPane().add(passwordField_1);
 		ImageIcon icon;
 		icon = new ImageIcon(this.getClass().getResource("/res/Campus_header_gr_3.jpg"));;
@@ -73,7 +74,7 @@ public class Login extends JFrame {
 		frame.getContentPane().add(iconLbl);
 		
 		email = new JTextField();
-		email.setBounds(619, 193, 252, 19);
+		email.setBounds(619, 223, 252, 19);
 		frame.getContentPane().add(email);
 		email.setColumns(10);
 		
@@ -87,9 +88,26 @@ public class Login extends JFrame {
 		txtSignInTo.setHorizontalAlignment(SwingConstants.CENTER);
 		txtSignInTo.setFont(new Font("Tahoma", Font.PLAIN, 22));
 		txtSignInTo.setText("Sign in to the Parking System!");
-		txtSignInTo.setBounds(428, 126, 443, 57);
+		txtSignInTo.setBounds(428, 156, 443, 57);
 		frame.getContentPane().add(txtSignInTo);
 		txtSignInTo.setColumns(10);
+		
+		JButton btnBack = new JButton("Back");
+		btnBack.setFont(new Font("Tahoma", Font.PLAIN, 20));
+		btnBack.setBounds(1035, 134, 166, 33);
+		frame.getContentPane().add(btnBack);
+		
+		JPanel panel = new JPanel();
+		panel.setBackground(new Color(255, 155, 155));
+		panel.setBounds(0, 1, 1266, 125);
+		frame.getContentPane().add(panel);
+		btnBack.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				MainPage main = new MainPage();
+				frame.setVisible(false);
+				frame.dispose();
+			}
+		});
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
 	    SystemDatabase systemDB = SystemDatabase.getInstance();
 		submitButton.addActionListener(new ActionListener() {
@@ -114,7 +132,6 @@ public class Login extends JFrame {
 					warningLabel.setText("Entered password is in correct!");
 				}else {
 					ClientView clientView = new ClientView(c);
-					clientView.setVisible(true);
 					frame.setVisible(false);
 					frame.dispose();
 				}
