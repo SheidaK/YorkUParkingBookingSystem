@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
+
+import database.Database;
 import objects.Client;
 import objects.ClientFactory;
 import objects.Manager;
@@ -21,39 +23,32 @@ public class SystemDatabase {
 	String path = "src/database/SystemDatabaseClients.csv";
 	String path2 = "src/database/SystemDatabaseManagers.csv";
 	static int revenue;
-	
+	Database dbClient = new Database(path);
+	Database dbManagers = new Database(path2);
+
 	private static SystemDatabase systemDatabase = null;
 
 	private SystemDatabase(ArrayList<Client> clients, ArrayList<Manager> managers, ArrayList<ParkingLot> parkingLots, int revenue) throws Exception{
 		super();
 		this.clients = clients;
-		File file = new File(path);
-		if (!file.exists()) {
-            System.out.println("File not found: " + file.getAbsolutePath());
-            return;
-        }
-		CsvReader reader = new CsvReader(path); 
-		reader.readHeaders();
+		List<String[]> dataClients = dbClient.read();
 		ClientFactory clientFactory = new ClientFactory();
-		while (reader.readRecord()) {
-			Client newClient = clientFactory.getNewClient(reader.get("Client Type"),reader.get("Email"),reader.get("Password"));
+		for(String[] row:dataClients) {
+			Client newClient = clientFactory.getNewClient(row[2],row[0],row[1]);
 			clients.add(newClient);
 		}
-		reader.close();
 		this.managers = managers;
-		CsvReader reader2 = new CsvReader(path2); 
-		reader2.readHeaders();
-		while (reader2.readRecord()) {
+		List<String[]> dataManagers= dbManagers.read();
+		for(String[] row:dataManagers) {
 			Manager manager;
-			if(isSuperManager(reader2.get("UserName"))) {
+			if(isSuperManager(row[2])) {
 				manager = new SuperManager();
 			}else {
-				manager = new Manager(reader2.get("UserName"),reader2.get("Password"));
+				manager = new Manager(row[0],row[1]);
 			}
 			managers.add(manager);
 		}
-		reader.close();
-		//this.parkingLots = parkingLots;
+		this.parkingLots = parkingLots;
 		SystemDatabase.revenue = revenue;
 	}
 	
@@ -86,30 +81,30 @@ public class SystemDatabase {
 	public ArrayList<Manager> getManagers() {
 		return managers;
 	}
-//	/**
-//	 * @param managers the managers to set
-//	 */
-//	public void setManagers(ArrayList<Managers> managers) {
-//		this.managers = managers;
-//	}
-//	/**
-//	 * @return the parkingLots
-//	 */
-//	public ArrayList<ParkingLot> getParkingLots() {
-//		return parkingLots;
-//	}
-//	/**
-//	 * @param parkingLots
-//	 */
-//	public void setParkingLots(ArrayList<ParkingLot> parkingLots) {
-//		this.parkingLots = parkingLots;
-//	}
-//	/**
-//	 * @return the revenue
-//	 */
-//	public int getRevenue() {
-//		return revenue;
-//	}
+	/**
+	 * @param managers the managers to set
+	 */
+	public void setManagers(ArrayList<Manager> managers) {
+		this.managers = managers;
+	}
+	/**
+	 * @return the parkingLots
+	 */
+	public ArrayList<ParkingLot> getParkingLots() {
+		return parkingLots;
+	}
+	/**
+	 * @param parkingLots
+	 */
+	public void setParkingLots(ArrayList<ParkingLot> parkingLots) {
+		this.parkingLots = parkingLots;
+	}
+	/**
+	 * @return the revenue
+	 */
+	public int getRevenue() {
+		return revenue;
+	}
 	/**
 	 * @param revenue
 	 */
@@ -123,23 +118,10 @@ public class SystemDatabase {
 	public void addClient(Client client) throws Exception {
 		if (!clients.contains(client)) {
 			clients.add(client);
-		try {
-			CsvReader reader = new CsvReader(path);
-            CsvWriter csvOutput = new CsvWriter(new FileWriter(path, true), ',');
-            reader.readHeaders(); // Skip headers if present
-            String clientType = client.getClass().getName().replace("objects.","");
+			String clientType = client.getClass().getName().replace("objects.","");
 			String[] lst = {client.getEmail(),client.getPassword(), clientType};
-			 List<String[]> existingData = new ArrayList<>();
-			 while (reader.readRecord()) {
-				 existingData.add(reader.getValues()); // Write the existing records to the new file
-	         }
-			csvOutput.writeRecord(lst);
-			reader.close();
-			csvOutput.close();
-		}catch (Exception e) {
-			e.printStackTrace();
+			dbClient.update(lst);
 		}
-	}
 	}
 	/**
 	 * 
@@ -149,67 +131,46 @@ public class SystemDatabase {
 		if (clients.contains(client)) {
 			clients.remove(client);
 		}
-		try {
-			CsvReader reader = new CsvReader(path);
-            reader.readHeaders(); // Skip headers if present
-			 List<String[]> existingData = new ArrayList<>();
-			 String[] header = new String[3];
-			 header = reader.getHeaders();
-			 existingData.add(header);
-			 while (reader.readRecord()) {
-				 String[] row = reader.getValues();
-				 if(!row[0].equals(client.getEmail())) {
-					 existingData.add(row);
-				 }
-	         }
-			 reader.close();
-			 CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
-			 for (String[] row : existingData) {
-				 csvOutput.writeRecord(row);
-	            }
-			csvOutput.close();
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
+		dbClient.remove(client.getEmail(),3);
 	}
 	
 
 	
-//	/**
-//	 * 
-//	 * @param manager
-//	 */
-//	public void addManager(Manager manager) {
-//		if (!managers.contians(manager))
-//			managers.add(manager);
-//	}
-//	
-//	/**
-//	 * 
-//	 * @param manager
-//	 */
-//	public void removeManager(Manager manager) {
-//		if (managers.contians(manager))
-//			managers.remove(manager);
-//	}
-//	
-//	/*8
-//	 * 
-//	 */
-//	public void addParkingLot(ParkingLot parkingLot) {
-//		if (!parkingLots.contians(parkingLot))
-//			parkingLots.add(parkingLot);
-//	}
-//	
-//	/**
-//	 * 
-//	 * @param parkingLot
-//	 */
-//	public void removeParkingLot(ParkingLot parkingLot) {
-//		if (parkingLots.contains(parkingLot)) {
-//			parkingLots.remove(parkingLot);
-//		}
-//	}
+	/**
+	 * 
+	 * @param manager
+	 */
+	public void addManager(Manager manager) {
+		if (!managers.contains(manager))
+			managers.add(manager);
+	}
+	
+	/**
+	 * 
+	 * @param manager
+	 */
+	public void removeManager(Manager manager) {
+		if (managers.contains(manager))
+			managers.remove(manager);
+	}
+	
+	/*8
+	 * 
+	 */
+	public void addParkingLot(ParkingLot parkingLot) {
+		if (!parkingLots.contains(parkingLot))
+			parkingLots.add(parkingLot);
+	}
+	
+	/**
+	 * 
+	 * @param parkingLot
+	 */
+	public void removeParkingLot(ParkingLot parkingLot) {
+		if (parkingLots.contains(parkingLot)) {
+			parkingLots.remove(parkingLot);
+		}
+	}
 	
 	/**
 	 * 

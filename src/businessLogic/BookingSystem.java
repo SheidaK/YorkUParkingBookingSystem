@@ -1,7 +1,11 @@
 package businessLogic;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import objects.Client;
+import objects.ParkingSpace;
 
 public class BookingSystem {
 	static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
