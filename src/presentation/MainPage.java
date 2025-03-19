@@ -71,7 +71,8 @@ public class MainPage {
 		});						
 		btnManager.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ManagerView managerView = new ManagerView();
+				Login login = new Login(false);
+				//ManagerView managerView = new ManagerView();
 				frame.setVisible(false);
 				frame.dispose();
 
@@ -79,7 +80,7 @@ public class MainPage {
 		});				
 		btnLogInClient.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Login login = new Login();
+				Login login = new Login(true);
 				frame.setVisible(false);
 				frame.dispose();
 			}

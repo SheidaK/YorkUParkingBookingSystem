@@ -9,20 +9,22 @@ import com.csvreader.CsvReader;
 import com.csvreader.CsvWriter;
 import objects.Client;
 import objects.ClientFactory;
-import objects.Managers;
+import objects.Manager;
 import objects.ParkingLot;
+import objects.SuperManager;
 
 public class SystemDatabase {
 	
 	private static ArrayList<Client> clients = new ArrayList<Client>();
-	private static  ArrayList<Managers> managers = new ArrayList<Managers>();
+	private static  ArrayList<Manager> managers = new ArrayList<Manager>();
 	private static ArrayList<ParkingLot> parkingLots = new ArrayList<ParkingLot>();
 	String path = "src/database/SystemDatabaseClients.csv";
+	String path2 = "src/database/SystemDatabaseManagers.csv";
 	static int revenue;
 	
 	private static SystemDatabase systemDatabase = null;
 
-	private SystemDatabase(ArrayList<Client> clients, ArrayList<Managers> managers, ArrayList<ParkingLot> parkingLots, int revenue) throws Exception{
+	private SystemDatabase(ArrayList<Client> clients, ArrayList<Manager> managers, ArrayList<ParkingLot> parkingLots, int revenue) throws Exception{
 		super();
 		this.clients = clients;
 		File file = new File(path);
@@ -38,7 +40,14 @@ public class SystemDatabase {
 			clients.add(newClient);
 		}
 		reader.close();
-		//this.managers = managers;
+		this.managers = managers;
+		CsvReader reader2 = new CsvReader(path2); 
+		reader2.readHeaders();
+		while (reader2.readRecord()) {
+				Manager manager = new Manager(reader2.get("Email"),reader2.get("Password"));
+				managers.add(manager);
+		}
+		reader.close();
 		//this.parkingLots = parkingLots;
 		SystemDatabase.revenue = revenue;
 	}
@@ -69,9 +78,9 @@ public class SystemDatabase {
 	/**
 	 * @return the managers
 	 */
-//	public ArrayList<Managers> getManagers() {
-//		return managers;
-//	}
+	public ArrayList<Manager> getManagers() {
+		return managers;
+	}
 //	/**
 //	 * @param managers the managers to set
 //	 */
@@ -223,6 +232,25 @@ public class SystemDatabase {
 		//ManagerFacade manager = new ManagerFacde();
 		//return manager.validateUniversityMember(this);
 		return true;
+	}
+
+	public Manager getManagerInfo(String email) {
+		// TODO Auto-generated method stub
+		for (Manager m: getManagers() ) {
+			if(m!=null) {
+			if(m.getEmail().trim().equals(email.trim())) {
+				return m;
+			}
+			}
+		}
+		return null;
+	}
+	public boolean isSuperManager(String email) {
+		if(email.equals(SuperManager.getInstance().getEmail())) {
+			return true;
+		}
+		return false;
+		
 	}
 	
 }

@@ -20,6 +20,7 @@ import javax.swing.border.LineBorder;
 import businessLogic.SystemDatabase;
 import objects.Client;
 import objects.ClientFactory;
+import objects.Manager;
 
 import java.awt.Font;
 import javax.swing.JLabel;
@@ -34,7 +35,7 @@ public class Login extends JFrame {
 	private JPasswordField passwordField_1;
 	private JTextField email;
 	private JTextField txtSignInTo;
-	public Login() {
+	public Login(boolean pageClient) {
 		frame = new JFrame("Login");
 		frame.getContentPane().setBackground(new Color(255, 255, 255));
 		frame.setSize(1280, 720);
@@ -112,7 +113,6 @@ public class Login extends JFrame {
 	    SystemDatabase systemDB = SystemDatabase.getInstance();
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-			    Client c = systemDB.getClientInfo(email.getText());
 				if(email.getText().isEmpty()) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter email again!");
@@ -124,16 +124,40 @@ public class Login extends JFrame {
 				}else if(passwordField_1.getText().isEmpty()) {
 					warningLabel.setVisible(true);
 					warningLabel.setText("Please enter password again!");
-				}else if(c==null){
-					warningLabel.setVisible(true);
-					warningLabel.setText("Entered email does not match with any existing clients!");
-				}else if(!passwordField_1.getText().equals(c.getPassword())) {
-					warningLabel.setVisible(true);
-					warningLabel.setText("Entered password is incorrect!");
 				}else {
-					ClientView clientView = new ClientView(c);
-					frame.setVisible(false);
-					frame.dispose();
+					if (pageClient) {
+						Client c = systemDB.getClientInfo(email.getText());
+						if(c==null){
+							warningLabel.setVisible(true);
+							warningLabel.setText("Entered email does not match with any existing clients!");
+						}else if(!passwordField_1.getText().equals(c.getPassword())) {
+							warningLabel.setVisible(true);
+							warningLabel.setText("Entered password is incorrect!");
+						}else {
+							ClientView clientView = new ClientView(c);
+							frame.setVisible(false);
+							frame.dispose();
+						}
+					}else {
+						Manager m = systemDB.getManagerInfo(email.getText());
+						if(m==null){
+							warningLabel.setVisible(true);
+							warningLabel.setText("Entered email does not match with any existing manger accounts!");
+						}else if(!passwordField_1.getText().equals(m.getPassword())) {
+							warningLabel.setVisible(true);
+							warningLabel.setText("Entered password is incorrect!");
+						}else {
+							if(systemDB.isSuperManager(email.getText())) {
+								SuperManagerView superManagerView = new SuperManagerView();
+								superManagerView.showSuperManagerView();
+							}else {
+								ManagerView managerView = new ManagerView(m);
+							}
+							
+							frame.setVisible(false);
+							frame.dispose();
+						}
+					}
 				}
 			}
 		});

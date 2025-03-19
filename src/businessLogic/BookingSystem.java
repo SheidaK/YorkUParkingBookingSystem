@@ -1,5 +1,6 @@
 package businessLogic;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class BookingSystem {

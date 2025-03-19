@@ -1,7 +1,7 @@
 package presentation;
 
-import objects.Managers.SuperManager;
-import objects.Managers.Manager;
+import objects.Manager;
+import objects.SuperManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -88,8 +88,9 @@ public class SuperManagerView extends JFrame {
     private void loadManagers() {
         tableModel.setRowCount(0);
         List<Manager> managers = superManager.getAllManagers();
-        for (Manager manager : managers) {
-            tableModel.addRow(new Object[]{manager.getUsername(), manager.getRole()});
+        if(managers != null) {for (Manager manager : managers) {
+            tableModel.addRow(new Object[]{manager.getEmail(), manager.getRole()});
+        }
         }
     }
 
