@@ -45,10 +45,10 @@ public class SystemDatabase {
 		reader2.readHeaders();
 		while (reader2.readRecord()) {
 			Manager manager;
-			if(isSuperManager(reader2.get("Email"))) {
+			if(isSuperManager(reader2.get("UserName"))) {
 				manager = new SuperManager();
 			}else {
-				manager = new Manager(reader2.get("Email"),reader2.get("Password"));
+				manager = new Manager(reader2.get("UserName"),reader2.get("Password"));
 			}
 			managers.add(manager);
 		}
@@ -164,7 +164,6 @@ public class SystemDatabase {
 	         }
 			 reader.close();
 			 CsvWriter csvOutput = new CsvWriter(new FileWriter(path, false), ',');
-			 //csvOutput.writeRecord(header);
 			 for (String[] row : existingData) {
 				 csvOutput.writeRecord(row);
 	            }
