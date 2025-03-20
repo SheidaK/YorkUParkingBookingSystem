@@ -160,7 +160,7 @@ public class Login extends JFrame {
 								SuperManagerView superManagerView = new SuperManagerView();
 								superManagerView.showSuperManagerView();
 							}else {
-								ManagerView managerView = new ManagerView(m);
+								ApprovalRequestsView managerView = new ApprovalRequestsView();
 							}
 							
 							frame.setVisible(false);

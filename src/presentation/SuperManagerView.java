@@ -8,6 +8,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
+import java.awt.event.ActionListener;
 
 /**
  * GUI for the SuperManager to create new manager accounts
@@ -19,6 +20,8 @@ public class SuperManagerView extends JFrame {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton createButton, removeButton;
+    private JButton btnApprovalRequest;
+    private JButton btnParkingView;
 
     public SuperManagerView() {
         superManager = SuperManager.getInstance();
@@ -28,7 +31,7 @@ public class SuperManagerView extends JFrame {
 
     private void initComponents() {
         setTitle("Super Manager Console");
-        setSize(600, 400);
+		setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -53,7 +56,28 @@ public class SuperManagerView extends JFrame {
         inputPanel.add(createButton);
         inputPanel.add(removeButton);
 
-        add(inputPanel, BorderLayout.SOUTH);
+        getContentPane().add(inputPanel, BorderLayout.SOUTH);
+        
+        btnApprovalRequest = new JButton("Approval Requests");
+        btnApprovalRequest.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		ApprovalRequestsView parkingView = new ApprovalRequestsView();
+    			setVisible(false);
+    			dispose();
+        	}
+        });
+        inputPanel.add(btnApprovalRequest);
+        
+        btnParkingView = new JButton("Manage Parking Lots");
+        btnParkingView.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		//Page where manager can view list of parking lots and the parking spaces within it and can enable/disable parking lots/parking spaces.
+    			ParkingManagerView parkingView = new ParkingManagerView();
+    			setVisible(false);
+    			dispose();
+        	}
+        });
+        inputPanel.add(btnParkingView);
 
         // Action Listeners
         createButton.addActionListener(this::createManager);

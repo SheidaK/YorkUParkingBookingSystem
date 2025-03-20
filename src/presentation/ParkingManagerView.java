@@ -28,7 +28,7 @@ public class ParkingManagerView extends JFrame {
     
     private void initComponents() {
         setTitle("Parking Manager Console");
-        setSize(800, 600);
+		setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -65,7 +65,7 @@ public class ParkingManagerView extends JFrame {
         controlPanel.add(addRemovePanel);
         controlPanel.add(actionPanel);
         
-        add(controlPanel, BorderLayout.SOUTH);
+        getContentPane().add(controlPanel, BorderLayout.SOUTH);
 
         // Action listeners
         addSpaceButton.addActionListener(e -> {
