@@ -6,12 +6,14 @@ public abstract class Client {
 	protected String password;
 	private Car car;
 	private ArrayList<Integer> bookings;
+	private boolean isValidated;
 //	BookingSystem bookingSystem = BookingSystem.getInstance();
 //	PaymentSystem paymentSystem = PaymentSystem.getInstance();
 	public int money=0;
 	public Client(String email, String password) {
 		this.email = email;
 		this.password = password;
+		this.isValidated = false;
 	}
 	public String getEmail() {
 		return email;
@@ -25,6 +27,15 @@ public abstract class Client {
 	public ArrayList<Integer> getBookingsList(){
 		return bookings;
 	}
+
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    // Method to set validation status
+    public void setValidated(boolean validated) {
+        this.isValidated = validated;
+    }
 //	public void bookParkingSpace(int parkingSpaceID, int deposit, int time) {
 //		bookingSystem.bookParkingSpace(this.car.vehicleLicense,parkingSpaceID,deposit,time);
 //	}

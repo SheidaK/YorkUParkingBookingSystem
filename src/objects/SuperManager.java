@@ -39,8 +39,7 @@ public class SuperManager extends Manager {
 		
 	}
 
-	public boolean createManager(String username, String password, String string) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	public boolean generateManagerAccount() {
+        return SystemDatabase.getInstance().createNewManagerAccount();
+    }
 }

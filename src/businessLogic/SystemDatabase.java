@@ -14,6 +14,7 @@ import objects.ClientFactory;
 import objects.Manager;
 import objects.ParkingLot;
 import objects.SuperManager;
+import objects.ParkingSpace;
 
 public class SystemDatabase {
 	
@@ -154,14 +155,6 @@ public class SystemDatabase {
 			managers.remove(manager);
 	}
 	
-	/*8
-	 * 
-	 */
-	public void addParkingLot(ParkingLot parkingLot) {
-		if (!parkingLots.contains(parkingLot))
-			parkingLots.add(parkingLot);
-	}
-	
 	/**
 	 * 
 	 * @param parkingLot
@@ -171,6 +164,51 @@ public class SystemDatabase {
 			parkingLots.remove(parkingLot);
 		}
 	}
+	
+	public boolean addParkingLot() {
+	    ParkingLot newLot = ParkingLot.getInstance("Lot_" + parkingLots.size(), 100); // Assign a unique name and default capacity
+	    parkingLots.add(newLot);
+	    return true;
+	}
+
+	  public boolean setParkingLotStatus(String lotName, boolean enabled) {
+	        for (ParkingLot lot : parkingLots) {
+	            if (lot.getName().equals(lotName)) { // Match by name instead of ID
+	                lot.setEnabled(enabled);
+	                return true;
+	            }
+	        }
+	        return false;
+	    }
+
+	  public boolean setParkingSpaceStatus(String lotName, String parkingSpaceID, boolean enabled) {
+	        for (ParkingLot lot : parkingLots) {
+	            if (lot.getName().equals(lotName)) {
+	                ParkingSpace space = lot.findSpaceById(parkingSpaceID); // Correct method
+	                if (space != null) {
+	                    space.setEnabled(enabled);
+	                    return true;
+	                }
+	            }
+	        }
+	        return false;
+	    }
+
+	    public boolean approveUser(Client user) {
+	        if (!clients.contains(user)) {
+	            return false;
+	        }
+	        user.setValidated(true);
+	        return true;
+	    }
+
+	    public boolean createNewManagerAccount() {
+	        String newManagerUsername = "manager" + (managers.size() + 1);
+	        String newManagerPassword = "Pass" + (managers.size() + 100);
+	        managers.add(new Manager(newManagerUsername, newManagerPassword));
+	        return true;
+	    }
+
 	
 	/**
 	 * 

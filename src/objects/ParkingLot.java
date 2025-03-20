@@ -18,6 +18,7 @@ public class ParkingLot implements ParkingStatusObserver {
     private List<ParkingSpace> spaces;
     private Map<String, ParkingSensor> sensors;
     private List<ParkingLotObserver> observers;
+    private boolean enabled;
     
     // Private constructor for Singleton pattern
     private ParkingLot(String name, int capacity) {
@@ -26,6 +27,8 @@ public class ParkingLot implements ParkingStatusObserver {
         this.spaces = new ArrayList<>();
         this.sensors = new HashMap<>();
         this.observers = new ArrayList<>();
+        this.enabled = true; 
+
     }
     
     // Singleton getInstance method
@@ -72,6 +75,13 @@ public class ParkingLot implements ParkingStatusObserver {
         notifyAvailabilityChanged(getAvailableSpaces());
     }
     
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return this.enabled;
+    }
     // Parking lot management
     public void addParkingSpace(ParkingSpace space) {
         spaces.add(space);
