@@ -3,18 +3,23 @@ package businessLogic;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
+
 
 import objects.Client;
 import objects.ParkingSpace;
 
+
 public class BookingSystem {
-	static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
+	static Map<String, Visit> bookings = new HashMap<String, Visit>();
+	private ParkingSystem parkingSystem;
 	
 	private static BookingSystem bookingSystem = null;
 	
-	private BookingSystem(Map<Integer, Visit> bookings) {
+	private BookingSystem(Map<String, Visit> bookings) {
 		super();
-		this.bookings = bookings;
+		BookingSystem.bookings = bookings;
+		this.parkingSystem = ParkingSystem.getInstance();
 	}
 
 	public static synchronized BookingSystem getInstance() {
@@ -26,8 +31,8 @@ public class BookingSystem {
 	/**
 	 * @return the bookings
 	 */
-	public Map<Integer, Visit> getBookings() {
-		return bookings;
+	public Map<String, Visit> getBookings() {
+        return new HashMap<>(bookings);
 	}
 
 	/**
@@ -39,22 +44,21 @@ public class BookingSystem {
 	
 	public boolean bookParkingSpace(String clientLicense, int parkingSpaceID, int deposit, int time) {
 		boolean bookingComplete = false;
-		ParkingSpace parkingSpot = parkingSpaceID.getParkingSpace(); //Need to get parking spot info from parking spot class (parameter: ID)
-		//will also need one for parking lot
-		if (!parkingSpot.occupied(time) //Need to know if parking spot is occupied at time, need info from parking spot class
-			&& parkingSpot.enabled() //Need to know if parking spot is enabled, info from parking spot class
-			&& deposit >= clientLicense.getParkingRate()) //Need to get parking rate from client classes
+		ParkingSpace parkingSpot = parkingSpaceID.getParkingSpace(); 
+		Client client = clientLicense.getClient();
+
+		if (!parkingSpot.isOccupied()
+			&& parkingSpot.isEnabled()
+			&& deposit >= clientLicense.getParkingRate())
 			{
-			int bookingID = 0; //create bookingID (need to think about how to generate, discuss later)
-			parkingSpot.occupyTime(bookingID, time); 
-			//Need to be able to state what time client wants to book parking spot, 
-			//needed in parking spot class, use time and bookingID as parameter
+			String bookingID = UUID.randomUUID().toString();
+			if (parkingSystem.parkCar(String.valueOf(parkingSpaceID), client.getCar()))
+				bookingComplete = true;
+
 			SystemDatabase.addRevenue(deposit);
-			Client client = clientLicense.getClient(); //need to be able to access client and client needs to store license plate
 			Date date = new Date();
 			Visit visit = new Visit(date, client, parkingSpot.getParkingLot(), parkingSpot, deposit); //need to figure out date
 			bookings.put(bookingID, visit);
-			bookingComplete = true;
 		}
 		return bookingComplete;
 	}
@@ -62,8 +66,7 @@ public class BookingSystem {
 	public boolean bookParkingSpace(int bookingID, int ParkingID, int time) {
 		boolean bookingComplete = false;
 		ParkingSpace parkingSpot = ParkingID.getParkingSpace();
-		if (!parkingSpot.occupied(time) && parkingSpot.enabled()) {
-			parkingSpot.occupyTime(bookingID, time); 
+		if (!parkingSpot.isOccupied() && parkingSpot.isEnabled() && parkingSystem.parkCar(String.valueOf(ParkingID), client.getCar())) {
 			bookingComplete = true;
 		}
 		return bookingComplete;
@@ -73,9 +76,9 @@ public class BookingSystem {
 		boolean bookingEdited = false;
 		ParkingSpace parkingSpot = ParkingID.getParkingSpace();
 		
-		if (!parkingSpot.occupied(time) && parkingSpot.enabled()) {
+		if (!parkingSpot.isOccupied() && parkingSpot.isEnabled()) {
 			cancelBooking(bookingID);
-			parkingSpot.unoccupyTime(bookingID); //need a class in parking spot class that will remove time given bookingID, needs to make parking spot available
+			parkingSpot.removeCar(String.valueOf(ParkingID));
 			bookParkingSpace(bookingID, ParkingID, time);
 		}
 		
@@ -86,9 +89,9 @@ public class BookingSystem {
 		boolean bookingCancelled = false;
 			if (bookings.containsKey(bookingID)) {
 				ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-				parkingSpot.unoccupy(bookingID);
+				parkingSpot.removeCar(parkingSpot);
 				bookings.remove(bookingID);
-				if (confirmRefund(bookingID))
+				if (PaymentSystem.confirmRefund(bookingID))
 					bookingCancelled = true;
 			}
 		return bookingCancelled;
@@ -96,9 +99,10 @@ public class BookingSystem {
 	
 	public boolean extendBooking(int bookingID, int time) {
 		boolean bookingExtended = false;
+		Client client = bookings.get(bookingID).getClientDetail();
 		ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-		if (bookings.containsKey(bookingID) && !parkingSpot.occupied(time)) {
-			parkingSpot.occupyTime(bookingID, time);
+		if (bookings.containsKey(bookingID) && !parkingSpot.isOccupied()) {
+			parkingSpot.parkCar(bookingID, client.getCar());
 			bookingExtended = true;
 		}
 		return bookingExtended;
@@ -106,7 +110,7 @@ public class BookingSystem {
 	
 	public boolean checkout(int bookingID, int payment) {
 		boolean checkedOut = false;
-		if (confirmPayment(bookingID)) 
+		if (PaymentSystem.confirmPayment(bookingID)) 
 			checkedOut = true;
 		
 		return checkedOut;
