@@ -1,36 +1,64 @@
 package businessLogic;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.text.SimpleDateFormat;
+
 
 import objects.*;
 
 public class Visit {
-	Date date = new Date(); //change date from String to Date(?), might help with calculating time
+
 	Client clientDetail;
 	ParkingLot parkingLot;
 	ParkingSpace parkingSpace;
+	Date startTime;  
+	Date endTime;
 	int moneyPaid = 0;
-	//consider adding a time
-	public Visit(Date date, Client clientDetail, ParkingLot parkingLot, ParkingSpace parkingSpace, int moneyPaid) {
+	String bookingID = "";
+	
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    
+    private static Map<String, Visit> visitDatabase = new HashMap<>();
+
+	
+	public Visit(Date startTime, Date endTime, Client clientDetail, ParkingLot parkingLot, ParkingSpace parkingSpace, int moneyPaid, String bookingID) {
 		super();
-		this.date = date;
+		this.startTime = startTime;
+		this.endTime = endTime;
 		this.clientDetail = clientDetail;
 		this.parkingLot = parkingLot;
 		this.parkingSpace = parkingSpace;
 		this.moneyPaid = moneyPaid;
+		this.bookingID = bookingID;
+		
+		visitDatabase.put(bookingID, getVisit(bookingID));
 	}
 	/**
-	 * @return the date
+	 * @return the start time
 	 */
-	public Date getDate() {
-		return date;
+	public Date getStartTime() {
+		return startTime;
 	}
 	/**
 	 * @param date the date to set
 	 */
-	public void setDate(Date date) {
-		this.date = date;
+	public void setStartTime(Date newStartTime) {
+       if (newStartTime != null && newStartTime.after(new Date()))
+    	   this.startTime = newStartTime;
 	}
+	
+    public Date getEndTime() {
+        return endTime;
+    }
+    
+    public void setEndTime(Date newEndTime) {
+        if (newEndTime != null && newEndTime.after(startTime))
+            this.endTime = newEndTime;
+      
+    }
+    
 	/**
 	 * @return the clientDetail
 	 */
@@ -80,5 +108,30 @@ public class Visit {
 		this.moneyPaid = moneyPaid;
 	}
 	
+	public String getBookingID() {
+		return this.bookingID;
+	}
+	
+	public void setBookingID(String bookingID) {
+		this.bookingID = bookingID;
+	}
+	
+	public static Visit getVisit(String bookingID) {
+		return visitDatabase.get(bookingID);
+	}
+	
+    public String getFormattedStartTime() {
+        return DATE_FORMAT.format(startTime);
+    }
+    
+    public String getFormattedEndTime() {
+        return DATE_FORMAT.format(endTime);
+    }
+    
+	public int getDuration() {
+		    long durationInMillis = endTime.getTime() - startTime.getTime(); 
+		    int durationInHours = (int) (durationInMillis / (1000 * 60 * 60));
+		    return durationInHours; 
+	}
 	
 }
