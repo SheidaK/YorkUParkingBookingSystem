@@ -7,7 +7,7 @@ import java.util.Map;
  * Implements the Prototype pattern to allow cloning of parking spaces.
  */
 public class ParkingSpace implements Cloneable {
-    private String spaceId;
+    private int spaceId;
     private boolean occupied;
     private boolean enabled;
     private Car parkedCar;
@@ -16,7 +16,7 @@ public class ParkingSpace implements Cloneable {
     private Map<Integer, Boolean> timeOccupancyMap;
 
     
-    public ParkingSpace(String spaceId, String type) {
+    public ParkingSpace(int spaceId, String type) {
         this.spaceId = spaceId;
         this.type = type;
         this.occupied = false;
@@ -64,9 +64,13 @@ public class ParkingSpace implements Cloneable {
     }
 
     // Getters and setters
-    public String getSpaceId() {
+    public int getSpaceId() {
         return spaceId;
     }
+    public void setSpaceId(int id) {
+       spaceId=id;
+    }
+
 
     public boolean isOccupied() {
         return occupied;

@@ -1,1 +1,1 @@
-ParkingSpaceID,Enabled,Occupied,Sensor,Type,Car
+ParkingLotName,ParkingSpaceID,Enabled,Occupied,SensorID,Car,Type

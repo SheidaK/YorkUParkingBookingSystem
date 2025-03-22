@@ -14,8 +14,10 @@ public class ParkingSystem implements ParkingLotObserver {
     // Singleton pattern
     private static ParkingSystem instance;
 	String path = "src/database/ParkingLotDatabase.csv";
-	Database dbParkingLots = new Database(path);
+	String path2 = "src/database/ParkingSpaceDatabase.csv";
 
+	Database dbParkingLots = new Database(path);
+	Database dbParkingSpace = new Database(path2);
     private ArrayList<ParkingLot> parkingLot=new ArrayList<ParkingLot>();
     private BookingSystem bookingSystem;
     
@@ -38,6 +40,25 @@ public class ParkingSystem implements ParkingLotObserver {
 			}else {l.setStatus(false);}
 			parkingLot.add(l);
 		}
+		List<String[]> dataParkingSpace = dbParkingSpace.read();
+			for(String[] row:dataParkingSpace) {
+				ParkingSpace s = getParkingLotInfo(row[0]).findSpaceById(Integer.valueOf(row[1].trim()));
+				if(row[2].trim().equals("Enabled")) {
+					s.setEnabled(true);
+				}else {
+					s.setEnabled(false);
+				}
+				if(row[3].trim().equals("Occupied")) {
+					s.setOccupied(true);
+				}else {
+					s.setOccupied(false);
+				}
+				ParkingLot l = new ParkingLot(row[0],row[1],Integer.valueOf(row[3].trim()));
+				if(row[2].trim().equals("Enabled")) {
+					l.setStatus(true);
+				}else {l.setStatus(false);}
+				parkingLot.add(l);
+			}
     }
     
     // Singleton getInstance method
@@ -58,7 +79,7 @@ public class ParkingSystem implements ParkingLotObserver {
         return parkingLot.getAvailableSpaces();
     }
     
-    public boolean parkCar(ParkingLot parkingLot, String spaceId, Car car) {
+    public boolean parkCar(ParkingLot parkingLot,int spaceId, Car car) {
         ParkingSpace space = parkingLot.findSpaceById(spaceId);
         if (space != null) {
             return space.parkCar(car);
@@ -66,7 +87,7 @@ public class ParkingSystem implements ParkingLotObserver {
         return false;
     }
     
-    public Car removeCar(ParkingLot parkingLot, String spaceId) {
+    public Car removeCar(ParkingLot parkingLot, int spaceId) {
         ParkingSpace space = parkingLot.findSpaceById(spaceId);
         if (space != null) {
             return space.removeCar();
@@ -75,32 +96,36 @@ public class ParkingSystem implements ParkingLotObserver {
     }
     
     // Manager operations
-    public void enableParkingSpace(ParkingLot parkingLot, String spaceId) {
+    public void enableParkingSpace(ParkingLot parkingLot, int spaceId) {
         ParkingSpace space = parkingLot.findSpaceById(spaceId);
         if (space != null) {
             space.setEnabled(true);
         }
     }
     
-    public void disableParkingSpace(ParkingLot parkingLot, String spaceId) {
+    public void disableParkingSpace(ParkingLot parkingLot, int spaceId) {
         ParkingSpace space = parkingLot.findSpaceById(spaceId);
         if (space != null) {
             space.setEnabled(false);
         }
     }
+//    public void addParkingSpace(ParkingLot lot, ParkingSpace space) {
+//		String[] lst = {lot.getName(), String.valueOf(space.getSpaceId()), space.getSpaceId()),String.valueOf(newParkingLot.getCapcity())};
+//		dbParkingLots.update(lst);
+//    }
     
     public void addNewParkingSpace(ParkingLot parkingLot,String type) {
         int nextId = parkingLot.getAllSpaces().size() + 1;
-        ParkingSpace newSpace = new ParkingSpace("P" + nextId, type);
+        ParkingSpace newSpace = new ParkingSpace(nextId, type);
         parkingLot.addParkingSpace(newSpace);
     }
     
-    public boolean removeParkingSpace(ParkingLot parkingLot, String spaceId) {
+    public boolean removeParkingSpace(ParkingLot parkingLot, int spaceId) {
         return parkingLot.removeParkingSpace(spaceId);
     }
     
     // Simulate sensor detection
-    public void simulateVehicleDetection(ParkingLot parkingLot, String spaceId, boolean detected) {
+    public void simulateVehicleDetection(ParkingLot parkingLot, int spaceId, boolean detected) {
         ParkingSpace space = parkingLot.findSpaceById(spaceId);
         if (space != null && space.getSensor() != null) {
             space.getSensor().detectVehicle(detected);

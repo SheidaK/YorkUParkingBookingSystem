@@ -25,20 +25,21 @@ public class ParkingLotManagerView extends JFrame {
     private JLabel lblNewLabel_1;
     SystemDatabase systemDB = SystemDatabase.getInstance();
     private JButton parkingSpaceButton;
+    private JButton backButton;
 
     
-    public ParkingLotManagerView() {
+    public ParkingLotManagerView(int page) {
         try {
 			parkingSystem = ParkingSystem.getInstance();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-        initComponents();
+        initComponents(page);
         loadParkingSpaces();
     }
     
-    private void initComponents() {
+    private void initComponents(int page) {
         setTitle("Parking Manager Console");
 		setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -98,6 +99,22 @@ public class ParkingLotManagerView extends JFrame {
         	}
         });
         actionPanel.add(parkingSpaceButton);
+        
+        backButton = new JButton("Back");
+        backButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		if(page==0) {
+        			SuperManagerView v = new SuperManagerView();
+        			v.showSuperManagerView();
+        		}else {
+        			ApprovalRequestsView v = new ApprovalRequestsView();
+        			
+        		}
+        		setVisible(false);
+        		dispose();
+        	}
+        });
+        actionPanel.add(backButton);
         
         getContentPane().add(controlPanel, BorderLayout.SOUTH);
 
@@ -169,9 +186,9 @@ public class ParkingLotManagerView extends JFrame {
         }
         
 
-    public static void showManagerView() {
+    public static void showManagerView(int page) {
         SwingUtilities.invokeLater(() -> {
-            ParkingLotManagerView view = new ParkingLotManagerView();
+            ParkingLotManagerView view = new ParkingLotManagerView(page);
             view.setVisible(true);
         });
     }

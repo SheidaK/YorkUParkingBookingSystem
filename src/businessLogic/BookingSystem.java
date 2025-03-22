@@ -3,20 +3,16 @@ package businessLogic;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
-import objects.*;
+import objects.Client;
+import objects.ParkingSpace;
 
 public class BookingSystem {
-	static Map<String, Visit> bookings = new HashMap<String, Visit>();
+	static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
 	
 	private static BookingSystem bookingSystem = null;
 	
-<<<<<<< HEAD
 	private BookingSystem(Map<Integer, Visit> bookings) {
-=======
-	private BookingSystem(Map<String, Visit> bookings) {
->>>>>>> a29064c (changed to include duration of booking and visit)
 		//super();
 		this.bookings = bookings;
 	}
@@ -30,102 +26,87 @@ public class BookingSystem {
 	/**
 	 * @return the bookings
 	 */
-	public Map<String, Visit> getBookings() {
+	public Map<Integer, Visit> getBookings() {
 		return bookings;
 	}
 
 	/**
 	 * @param bookings the bookings to set
 	 */
-	public void setBookings(Map<String, Visit> bookings) {
+	public void setBookings(Map<Integer, Visit> bookings) {
 		this.bookings = bookings;
 	}
 	
-
-	public boolean bookParkingSpace(String clientLicense, int parkingLotID, int parkingSpaceID, int deposit, int startTime, int hours) {
+	public boolean bookParkingSpace(String clientLicense, int parkingLotID,int parkingSpaceID, int deposit, int time) {
 		boolean bookingComplete = false;
-	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000);
-	    Date endTime = new Date(endTimeInMillis);
-
-		ParkingSpace parkingSpot = parkingSpaceID.getInstance().getParkingSpace(); //Need to get parking spot info from parking spot class (parameter: ID)
+		ParkingSpace parkingSpot = parkingSpaceID.getParkingSpace(); //Need to get parking spot info from parking spot class (parameter: ID)
 		//will also need one for parking lot
-		if (!parkingSpot.isOccupied(startTime, endTime) //Need to know if parking spot is occupied at start time all the way to end time
-			&& parkingSpot.isEnabled() //Need to know if parking spot is enabled, info from parking spot class
+		if (!parkingSpot.occupied(time) //Need to know if parking spot is occupied at time, need info from parking spot class
+			&& parkingSpot.enabled() //Need to know if parking spot is enabled, info from parking spot class
 			&& deposit >= clientLicense.getParkingRate()) //Need to get parking rate from client classes
 			{
-			String bookingID = UUID.randomUUID().toString();
-			parkingSpot.setOccupied(bookingID, startTime, endTime);  //have it at end time for now but i can change to hour if needed
-			//Need to be able to state what time client wants to book parking spot, can remove booking id if needed but need to occupy from 
-			//start time to end time, can change end time to hours if needed
+			int bookingID = 0; //create bookingID (need to think about how to generate, discuss later)
+			parkingSpot.occupyTime(bookingID, time); 
+			//Need to be able to state what time client wants to book parking spot, 
+			//needed in parking spot class, use time and bookingID as parameter
 			SystemDatabase.addRevenue(deposit);
 			Client client = clientLicense.getClient(); //need to be able to access client and client needs to store license plate
 			Date date = new Date();
-			Visit visit = new Visit(startTime, endTime, client, parkingSpot.getInstance().getParkingLot(), parkingSpot, deposit); //need to figure out date
+			Visit visit = new Visit(date, client, parkingSpot.getParkingLot(), parkingSpot, deposit); //need to figure out date
 			bookings.put(bookingID, visit);
 			bookingComplete = true;
 		}
 		return bookingComplete;
 	}
 	
-	public boolean bookParkingSpace(String bookingID, int ParkingID, int startTime, int hours) {
+	public boolean bookParkingSpace(int bookingID, int ParkingID, int time) {
 		boolean bookingComplete = false;
-	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000); // Convert hours to milliseconds
-	    Date endTime = new Date(endTimeInMillis);
-	    
 		ParkingSpace parkingSpot = ParkingID.getParkingSpace();
-		if (!parkingSpot.isOccupied(startTime, endTime) && parkingSpot.isEnabled()) {
-			parkingSpot.setOccupied(bookingID, startTime, endTime); 
+		if (!parkingSpot.occupied(time) && parkingSpot.enabled()) {
+			parkingSpot.occupyTime(bookingID, time); 
 			bookingComplete = true;
 		}
 		return bookingComplete;
 	}
 	
-	public boolean editBooking(String bookingID, int ParkingID, int startTime, int hours) {
+	public boolean editBooking(int bookingID, int ParkingID, int time) {
 		boolean bookingEdited = false;
-		ParkingSpace parkingSpot = ParkingID.getinstance().getParkingSpace();
-	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000); // Convert hours to milliseconds
-	    Date endTime = new Date(endTimeInMillis);
-	    Visit visit = Visit.getVisit(bookingID);
+		ParkingSpace parkingSpot = ParkingID.getParkingSpace();
 		
-		if (!parkingSpot.isOccupied(startTime, endTime) && parkingSpot.isEnabled()) {
+		if (!parkingSpot.occupied(time) && parkingSpot.enabled()) {
 			cancelBooking(bookingID);
-			parkingSpot.unOccupy(startTime, endTime); //remove occupied status from start time to end time, can change to hours if needed
-			bookParkingSpace(bookingID, ParkingID, startTime, hours);
-			
+			parkingSpot.unoccupyTime(bookingID); //need a class in parking spot class that will remove time given bookingID, needs to make parking spot available
+			bookParkingSpace(bookingID, ParkingID, time);
 		}
 		
 		return bookingEdited;
 	}
 	
-	public boolean cancelBooking(String bookingID) {
+	public boolean cancelBooking(int bookingID) {
 		boolean bookingCancelled = false;
-		Visit visit = Visit.getVisit(bookingID);
 			if (bookings.containsKey(bookingID)) {
 				ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-				parkingSpot.unOccupy(visit.startTime, visit.endTime);
+				parkingSpot.unoccupy(bookingID);
 				bookings.remove(bookingID);
-				if (PaymentSystem.confirmRefund(bookingID))
+				if (confirmRefund(bookingID))
 					bookingCancelled = true;
 			}
 		return bookingCancelled;
 	}
 	
-	public boolean extendBooking(String bookingID, int endTime, int hours) {
+	public boolean extendBooking(int bookingID, int time) {
 		boolean bookingExtended = false;
-        Visit visit = bookings.get(bookingID);
-        long currentEndTime = endTime + visit.getDuration();  // Get the current end time in hours
-        Date newEndTime = new Date(currentEndTime + hours); 
 		ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-		if (bookings.containsKey(bookingID) && !parkingSpot.isOccupied(currentEndTime, newEndTime)) {
-			parkingSpot.setOccupied(bookingID, currentEndTime, newEndTime);
+		if (bookings.containsKey(bookingID) && !parkingSpot.occupied(time)) {
+			parkingSpot.occupyTime(bookingID, time);
 			bookingExtended = true;
 		}
 		return bookingExtended;
 	}
 	
-	public boolean checkout(String bookingID, int payment, String paymentMethod) {
+	public boolean checkout(int bookingID, int payment) {
 		boolean checkedOut = false;
-		if (PaymentSystem.confirmPayment(bookingID, paymentMethod,  )) 
+		if (confirmPayment(bookingID)) 
 			checkedOut = true;
 		
 		return checkedOut;
