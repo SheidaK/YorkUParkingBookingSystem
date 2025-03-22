@@ -13,6 +13,9 @@ public class SuperManager extends Manager {
 		super(userName,password );
 		// TODO Auto-generated constructor stub
 	}
+	public String getUserName() {
+		return userName;
+	}
 	public String getRole() {
 		// TODO Auto-generated method stub
 		return "Super Manager";
@@ -29,17 +32,19 @@ public class SuperManager extends Manager {
 		return supermanager;
 	}
 
-	public List<Manager> getAllManagers() {
+//	public List<Manager> getAllManagers() {
 		// TODO Auto-generated method stub
-		return null;
-	}
+       // List<Manager> managers = systemDB.getManagers();
+        //return managers;
+//	}
 
 	public void removeManager(String username) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	public boolean generateManagerAccount() {
-        return SystemDatabase.getInstance().createNewManagerAccount();
+	public void generateManagerAccount(String username, String password) {
+        
     }
+
 }

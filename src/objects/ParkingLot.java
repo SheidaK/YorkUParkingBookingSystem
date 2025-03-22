@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import businessLogic.ParkingLotObserver;
 
 /**
  * Implements the Singleton pattern for the ParkingLot
@@ -14,6 +15,7 @@ public class ParkingLot implements ParkingStatusObserver {
     private static ParkingLot instance;
     
     private String name;
+    private String location;
     private int totalCapacity;
     private List<ParkingSpace> spaces;
     private Map<String, ParkingSensor> sensors;
@@ -21,8 +23,9 @@ public class ParkingLot implements ParkingStatusObserver {
     private boolean enabled;
     
     // Private constructor for Singleton pattern
-    private ParkingLot(String name, int capacity) {
+    public ParkingLot(String name, String location, int capacity) {
         this.name = name;
+        this.location = location;
         this.totalCapacity = capacity;
         this.spaces = new ArrayList<>();
         this.sensors = new HashMap<>();
@@ -32,9 +35,9 @@ public class ParkingLot implements ParkingStatusObserver {
     }
     
     // Singleton getInstance method
-    public static synchronized ParkingLot getInstance(String name, int capacity) {
+    public static synchronized ParkingLot getInstance(String name,String location, int capacity) {
         if (instance == null) {
-            instance = new ParkingLot(name, capacity);
+            instance = new ParkingLot(name,location, capacity);
         }
         return instance;
     }
@@ -62,9 +65,9 @@ public class ParkingLot implements ParkingStatusObserver {
         }
     }
     
-    private void notifyAvailabilityChanged(int availableSpaces) {
+    private void notifyAvailabilityChanged(List<ParkingSpace> list) {
         for (ParkingLotObserver observer : observers) {
-            observer.onAvailabilityChanged(availableSpaces);
+            observer.onAvailabilityChanged(list);
         }
     }
     
@@ -151,12 +154,24 @@ public class ParkingLot implements ParkingStatusObserver {
     public Map<String, ParkingSensor> getAllSensors() {
         return new HashMap<>(sensors);
     }
+
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return this.location;
+	}
+
+	public int getCapcity() {
+		// TODO Auto-generated method stub
+		return getAvailableSpaces().size();
+	}
+	
+	public String getStatus() {
+		// TODO Auto-generated method stub
+		if(this.enabled) {return "Enabled";}else {return "Disabled";}
+	}
+
+	public void setStatus(boolean enabled) {
+		this.enabled = enabled;
+	}
 }
 
-/**
- * Observer interface for the ParkingLot
- */
-interface ParkingLotObserver {
-    void onParkingSpaceStatusChanged(ParkingSpace space);
-    void onAvailabilityChanged(int availableSpaces);
-}

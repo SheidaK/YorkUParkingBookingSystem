@@ -13,27 +13,27 @@ import java.util.List;
 /**
  * GUI for parking lot managers to maintain parking services
  */
-public class ParkingManagerView extends JFrame {
+public class ParkingSpaceManagerView extends JFrame {
     private ParkingSystem parkingSystem;
     private JTable parkingSpacesTable;
     private DefaultTableModel tableModel;
     private JButton addSpaceButton, removeSpaceButton, enableSpaceButton, disableSpaceButton, simulateButton;
     private JComboBox<String> spaceTypeComboBox;
     
-    public ParkingManagerView() {
+    public ParkingSpaceManagerView(ParkingLot parkingLot) {
         parkingSystem = ParkingSystem.getInstance();
-        initComponents();
-        loadParkingSpaces();
+        initComponents(parkingLot);
+        loadParkingSpaces(parkingLot);
     }
     
-    private void initComponents() {
+    private void initComponents(ParkingLot parkingLot) {
         setTitle("Parking Manager Console");
 		setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new BorderLayout());
 
         // Table setup
-        String[] columnNames = {"ID", "Type", "Status", "Occupied", "Car"};
+        String[] columnNames = { "ID", "Type", "Status", "Occupied", "Car"};
         tableModel = new DefaultTableModel(columnNames, 0);
         parkingSpacesTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(parkingSpacesTable);
@@ -44,7 +44,7 @@ public class ParkingManagerView extends JFrame {
         
         JPanel addRemovePanel = new JPanel(new FlowLayout());
         String[] spaceTypes = {"Regular", "Handicapped", "VIP", "Electric"};
-        spaceTypeComboBox = new JComboBox<>(spaceTypes);
+        spaceTypeComboBox = new JComboBox<String>();
         addSpaceButton = new JButton("Add Space");
         removeSpaceButton = new JButton("Remove Selected Space");
 
@@ -70,20 +70,21 @@ public class ParkingManagerView extends JFrame {
         // Action listeners
         addSpaceButton.addActionListener(e -> {
             String type = (String) spaceTypeComboBox.getSelectedItem();
-            parkingSystem.addNewParkingSpace(type);
-            loadParkingSpaces();
+            parkingSystem.addNewParkingSpace(parkingLot, type);
+            loadParkingSpaces(parkingLot);
         });
 
         removeSpaceButton.addActionListener(e -> {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
-                boolean success = parkingSystem.removeParkingSpace(spaceId);
+                boolean success = parkingSystem.removeParkingSpace(parkingLot,spaceId);
                 if (success) {
-                    loadParkingSpaces();
+                    loadParkingSpaces(parkingLot);
                 } else {
                     JOptionPane.showMessageDialog(this, "Cannot remove this space", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+                
             }
         });
 
@@ -91,8 +92,8 @@ public class ParkingManagerView extends JFrame {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
-                parkingSystem.enableParkingSpace(spaceId);
-                loadParkingSpaces();
+               // parkingSystem.enableParkingSpace(spaceId);
+                loadParkingSpaces(parkingLot);
             }
         });
 
@@ -100,8 +101,8 @@ public class ParkingManagerView extends JFrame {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
-                parkingSystem.disableParkingSpace(spaceId);
-                loadParkingSpaces();
+                //parkingSystem.disableParkingSpace(spaceId);
+                loadParkingSpaces(parkingLot);
             }
         });
 
@@ -110,15 +111,15 @@ public class ParkingManagerView extends JFrame {
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
                 boolean currentlyOccupied = "Yes".equals(tableModel.getValueAt(selectedRow, 3));
-                parkingSystem.simulateVehicleDetection(spaceId, !currentlyOccupied);
-                loadParkingSpaces();
+               // parkingSystem.simulateVehicleDetection(spaceId, !currentlyOccupied);
+                loadParkingSpaces(parkingLot);
             }
         });
     }
 
-    private void loadParkingSpaces() {
+    private void loadParkingSpaces(ParkingLot parkingLot) {
         tableModel.setRowCount(0);
-        List<ParkingSpace> spaces = ParkingSystem.getInstance().getAvailableSpaces();
+        List<ParkingSpace> spaces = ParkingSystem.getInstance().getAvailableSpaces(parkingLot);
 
         for (ParkingSpace space : spaces) {
             Object[] row = {
@@ -129,12 +130,14 @@ public class ParkingManagerView extends JFrame {
                 space.getParkedCar() != null ? space.getParkedCar().toString() : "None"
             };
             tableModel.addRow(row);
+            
         }
+        
     }
 
-    public static void showManagerView() {
+    public static void showManagerView(ParkingLot parkingLot) {
         SwingUtilities.invokeLater(() -> {
-            ParkingManagerView view = new ParkingManagerView();
+            ParkingSpaceManagerView view = new ParkingSpaceManagerView(parkingLot);
             view.setVisible(true);
         });
     }
