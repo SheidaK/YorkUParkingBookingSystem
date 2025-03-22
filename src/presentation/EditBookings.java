@@ -53,20 +53,21 @@ public class EditBookings {
     }
 
     private static void loadBookings(DefaultTableModel model) {
-        model.setRowCount(0); // Clear existing data
+        model.setRowCount(0); 
 
-        // Fetch bookings from BookingSystem
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        Map<Integer, Visit> bookings = bookingSystem.getBookings();
+        Map<String, Visit> bookings = bookingSystem.getBookings();
 
-        for (Entry<Integer, Visit> entry : bookings.entrySet()) {
-            Integer bookingId = entry.getKey();
+        for (Map.Entry<String, Visit> entry : bookings.entrySet()) {
+            String bookingId = entry.getKey();
             Visit visit = entry.getValue();
             model.addRow(new Object[]{
-                bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(), visit.getDate()
+                    bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(),
+                    visit.getStartTime(), visit.getEndTime()
             });
         }
     }
+
 
     private static void editBooking(JTable table, DefaultTableModel model) {
         int selectedRow = table.getSelectedRow();
@@ -74,15 +75,28 @@ public class EditBookings {
             JOptionPane.showMessageDialog(null, "Please select a booking to edit.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        String bookingId = (String) model.getValueAt(selectedRow, 0);
+        int currentParkingId = (int) model.getValueAt(selectedRow, 2); // Parking ID from the table
+        String currentStartTime = (String) model.getValueAt(selectedRow, 3);
         
-        int bookingId = Integer.parseInt((String) model.getValueAt(selectedRow, 0));
-        int parkingId = Integer.parseInt(JOptionPane.showInputDialog("Enter new parking ID:"));
-        int newTime = Integer.parseInt(JOptionPane.showInputDialog("Enter new time (in hours):"));
-    
-        
-        if (parkingId > 0 && newTime > 0) {
-            BookingSystem.getInstance().editBooking(bookingId, parkingId, newTime);
-            loadBookings(model);
+        String newStartTime = JOptionPane.showInputDialog("Enter new start time (in format HH:00):");
+        if (newStartTime != null && !newStartTime.isEmpty()) {
+            if (newStartTime.matches("^(0?[1-9]|1[0-2]):00$")) {
+                int newDuration = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
+                BookingSystem bookingSystem = BookingSystem.getInstance();
+                
+                int newStartHour = Integer.parseInt(newStartTime.split(":")[0]);
+                
+                if (bookingSystem.editBooking(bookingId, currentParkingId, newStartHour, newDuration)) {
+                    loadBookings(model);
+                    JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Invalid time format. Please enter time in HH:00 format.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
     }
 
@@ -92,10 +106,10 @@ public class EditBookings {
             JOptionPane.showMessageDialog(null, "Please select a booking to cancel.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        int bookingId = Integer.parseInt((String) model.getValueAt(selectedRow, 0));
+
+        String bookingId = (String) model.getValueAt(selectedRow, 0);
         int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to cancel this booking?", "Confirm Cancellation", JOptionPane.YES_NO_OPTION);
-        
+
         if (confirm == JOptionPane.YES_OPTION) {
             BookingSystem.getInstance().cancelBooking(bookingId);
             loadBookings(model);
@@ -108,13 +122,20 @@ public class EditBookings {
             JOptionPane.showMessageDialog(null, "Please select a booking to extend.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        
-        int bookingId = Integer.parseInt((String) model.getValueAt(selectedRow, 0));
-        String extraTime = JOptionPane.showInputDialog("Enter extra time to extend (in hours):");
-        
-        if (extraTime != null) {
-            BookingSystem.getInstance().extendBooking(bookingId, Integer.parseInt(extraTime));
+
+        String bookingId = (String) model.getValueAt(selectedRow, 0);
+        int currentParkingId = (int) model.getValueAt(selectedRow, 2); 
+        String currentEndTime = (String) model.getValueAt(selectedRow, 4);
+
+        int extraTime = Integer.parseInt(JOptionPane.showInputDialog("Enter extra time to extend (in hours):"));
+
+        BookingSystem bookingSystem = BookingSystem.getInstance();
+        if (bookingSystem.extendBooking(bookingId, currentParkingId)) {
             loadBookings(model);
+            JOptionPane.showMessageDialog(null, "Booking extended successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "Unable to extend the booking. The parking spot might not be available.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }
