@@ -1,5 +1,7 @@
 package objects;
 
+import java.util.Map;
+
 /**
  * Represents a single parking space in the parking lot.
  * Implements the Prototype pattern to allow cloning of parking spaces.
@@ -11,6 +13,8 @@ public class ParkingSpace implements Cloneable {
     private Car parkedCar;
     private ParkingSensor sensor;
     private String type; // Regular, Handicapped, VIP, etc.
+    private Map<Integer, Boolean> timeOccupancyMap;
+
     
     public ParkingSpace(String spaceId, String type) {
         this.spaceId = spaceId;
@@ -91,7 +95,23 @@ public class ParkingSpace implements Cloneable {
     public ParkingSensor getSensor() {
         return sensor;
     }
-
+    // New method to check if the space is occupied at a specific time
+    public boolean isOccupiedAt(int timeSlot) {
+        Boolean isOccupied = timeOccupancyMap.get(timeSlot);
+        return isOccupied != null && isOccupied;
+    }
+    
+    // Method to occupy a time slot
+    public void occupyTime(int bookingId, int timeSlot) {
+        timeOccupancyMap.put(timeSlot, true);
+    }
+    
+    // Method to free up a time slot
+    public void unoccupyTime(int bookingId) {
+        for (Integer timeSlot : timeOccupancyMap.keySet()) {
+            timeOccupancyMap.put(timeSlot, false);
+        }
+    }
     @Override
     public String toString() {
         return "Space " + spaceId + " (" + type + "): " + 
