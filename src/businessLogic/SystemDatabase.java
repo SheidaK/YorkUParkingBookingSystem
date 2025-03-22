@@ -142,17 +142,29 @@ public class SystemDatabase {
 	 * @param manager
 	 */
 	public void addManager(Manager manager) {
-		if (!managers.contains(manager))
+		if (!managers.contains(manager)) {
 			managers.add(manager);
+			String[] lst = {manager.getUserName(),manager.getPassword(), "Manager"};
+			dbManagers.update(lst);
+		}
+		
 	}
 	
 	/**
 	 * 
-	 * @param manager
+	 * @param username
 	 */
-	public void removeManager(Manager manager) {
-		if (managers.contains(manager))
-			managers.remove(manager);
+	public void removeManager(String username) {
+		for(Manager m: managers) {
+			if(m.getUserName().equals(username)) {
+				managers.remove(m);
+				dbManagers.remove(username,3);
+				break;
+			}
+		}
+	}
+	public ArrayList<Manager> getManager(){
+		return managers;
 	}
 	
 	/**
@@ -202,12 +214,12 @@ public class SystemDatabase {
 	        return true;
 	    }
 
-	    public boolean createNewManagerAccount() {
-	        String newManagerUsername = "manager" + (managers.size() + 1);
-	        String newManagerPassword = "Pass" + (managers.size() + 100);
-	        managers.add(new Manager(newManagerUsername, newManagerPassword));
-	        return true;
-	    }
+//	    public boolean createNewManagerAccount() {
+//	        String newManagerUsername = "manager" + (managers.size() + 1);
+//	        String newManagerPassword = "Pass" + (managers.size() + 100);
+//	        managers.add(new Manager(newManagerUsername, newManagerPassword));
+//	        return true;
+//	    }
 
 	
 	/**
@@ -237,11 +249,11 @@ public class SystemDatabase {
 		return true;
 	}
 
-	public Manager getManagerInfo(String email) {
+	public Manager getManagerInfo(String userName) {
 		// TODO Auto-generated method stub
 		for (Manager m: getManagers() ) {
 			if(m!=null) {
-			if(m.getUserName().trim().equals(email.trim())) {
+			if(m.getUserName().trim().equals(userName.trim())) {
 				return m;
 			}
 			}

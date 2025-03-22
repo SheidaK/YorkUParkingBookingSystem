@@ -5,6 +5,9 @@ import objects.SuperManager;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+
+import businessLogic.SystemDatabase;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.util.List;
@@ -22,6 +25,8 @@ public class SuperManagerView extends JFrame {
     private JButton createButton, removeButton;
     private JButton btnApprovalRequest;
     private JButton btnParkingView;
+    SystemDatabase systemDB = SystemDatabase.getInstance();
+    private JButton signOutButton;
 
     public SuperManagerView() {
         superManager = SuperManager.getInstance();
@@ -33,23 +38,27 @@ public class SuperManagerView extends JFrame {
         setTitle("Super Manager Console");
 		setSize(1280, 720);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLayout(new BorderLayout());
+        getContentPane().setLayout(new BorderLayout());
 
         // Table setup
         String[] columnNames = {"Username", "Role"};
         tableModel = new DefaultTableModel(columnNames, 0);
         managersTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(managersTable);
-        add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
 
         // Input Panel
-        JPanel inputPanel = new JPanel(new FlowLayout());
+        FlowLayout fl_inputPanel = new FlowLayout();
+        fl_inputPanel.setAlignOnBaseline(true);
+        JPanel inputPanel = new JPanel(fl_inputPanel);
         usernameField = new JTextField(10);
         passwordField = new JPasswordField(10);
         createButton = new JButton("Create Manager");
         removeButton = new JButton("Remove Selected");
 
-        inputPanel.add(new JLabel("Username:"));
+        JLabel label = new JLabel("Username:");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        inputPanel.add(label);
         inputPanel.add(usernameField);
         inputPanel.add(new JLabel("Password:"));
         inputPanel.add(passwordField);
@@ -78,6 +87,16 @@ public class SuperManagerView extends JFrame {
         	}
         });
         inputPanel.add(btnParkingView);
+        
+        signOutButton = new JButton("Sign Out");
+        signOutButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		MainPage home = new MainPage();
+        		setVisible(false);
+				dispose();
+        	}
+        });
+        inputPanel.add(signOutButton);
 
         // Action Listeners
         createButton.addActionListener(this::createManager);
@@ -92,11 +111,10 @@ public class SuperManagerView extends JFrame {
             JOptionPane.showMessageDialog(this, "Username and Password required.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-
-        if (superManager.createManager(username, password, "Manager")) {
+        if (createManager(username, password, "Manager")) {
+        	Manager m = new Manager(username, password);
+            systemDB.addManager(m);
             loadManagers();
-        } else {
-            JOptionPane.showMessageDialog(this, "Manager already exists.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -104,14 +122,18 @@ public class SuperManagerView extends JFrame {
         int selectedRow = managersTable.getSelectedRow();
         if (selectedRow >= 0) {
             String username = (String) tableModel.getValueAt(selectedRow, 0);
-            superManager.removeManager(username);
-            loadManagers();
-        }
+            if(username.equals("superManager")) {
+                JOptionPane.showMessageDialog(this, "Not possible to remove the super manager account.", "Error", JOptionPane.ERROR_MESSAGE);
+            }else {
+            	systemDB.removeManager(username);
+            	loadManagers();
+            }
+        }            
     }
 
     private void loadManagers() {
         tableModel.setRowCount(0);
-        List<Manager> managers = superManager.getAllManagers();
+        List<Manager> managers = systemDB.getManagers();
         if(managers != null) {for (Manager manager : managers) {
             tableModel.addRow(new Object[]{manager.getUserName(), manager.getRole()});
         }
@@ -124,4 +146,24 @@ public class SuperManagerView extends JFrame {
             view.setVisible(true);
         });
     }
+	public boolean createManager(String username, String password, String string) {
+		if(systemDB.getManagerInfo(username) != null) {
+			//username already exists
+            JOptionPane.showMessageDialog(this, "Manager already exists.", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}else if (!password.matches(".*[0-9].*")) {
+            JOptionPane.showMessageDialog(this, "Password must contain numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}else if(!password.matches(".*[a-z].*")){
+            JOptionPane.showMessageDialog(this, "Password must lower case letters.", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		} else if(!password.matches(".*[A-Z].*")){
+            JOptionPane.showMessageDialog(this, "Password must contain uppercase letters.", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}else if(!password.matches(".*[^a-zA-Z0-9\\s].*")){
+            JOptionPane.showMessageDialog(this, "Password must contain symbols.", "Error", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
 }

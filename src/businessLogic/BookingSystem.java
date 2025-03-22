@@ -13,7 +13,7 @@ public class BookingSystem {
 	private static BookingSystem bookingSystem = null;
 	
 	private BookingSystem(Map<Integer, Visit> bookings) {
-		super();
+		//super();
 		this.bookings = bookings;
 	}
 
@@ -37,7 +37,7 @@ public class BookingSystem {
 		this.bookings = bookings;
 	}
 	
-	public boolean bookParkingSpace(String clientLicense, int parkingSpaceID, int deposit, int time) {
+	public boolean bookParkingSpace(String clientLicense, int parkingLotID,int parkingSpaceID, int deposit, int time) {
 		boolean bookingComplete = false;
 		ParkingSpace parkingSpot = parkingSpaceID.getParkingSpace(); //Need to get parking spot info from parking spot class (parameter: ID)
 		//will also need one for parking lot
