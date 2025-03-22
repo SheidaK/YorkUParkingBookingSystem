@@ -21,7 +21,7 @@ public class confirmedBookings {
             frame.setLayout(new BorderLayout());
 
             // Table model setup
-            String[] columnNames = {"Booking ID", "Client Email", "Parking Space", "Date"};
+            String[] columnNames = {"Booking ID", "Client Email", "Parking Space", "Date", "Start Time", "End Time"};
             DefaultTableModel model = new DefaultTableModel(columnNames, 0);
             JTable table = new JTable(model);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -46,13 +46,13 @@ public class confirmedBookings {
 
         // Fetch bookings from BookingSystem
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        Map<Integer, Visit> bookings = bookingSystem.getBookings();
+        Map<String, Visit> bookings = bookingSystem.getBookings();
 
-        for (Entry<Integer, Visit> entry : bookings.entrySet()) {
-            Integer bookingId = entry.getKey();
+        for (Entry<String, Visit> entry : bookings.entrySet()) {
+            String bookingId = entry.getKey();
             Visit visit = entry.getValue();
             model.addRow(new Object[]{
-                bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(), visit.getDate(),
+                bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(), visit.getStartTime(), visit.getEndTime()
             });
         }
     }
