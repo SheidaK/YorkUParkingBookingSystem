@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import businessLogic.*;
 import objects.*;
@@ -45,10 +46,10 @@ public class confirmedBookings {
 
         // Fetch bookings from BookingSystem
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        Map<String, Visit> bookings = bookingSystem.getBookings();
+        Map<Integer, Visit> bookings = bookingSystem.getBookings();
 
-        for (Map.Entry<String, Visit> entry : bookings.entrySet()) {
-            String bookingId = entry.getKey();
+        for (Entry<Integer, Visit> entry : bookings.entrySet()) {
+            Integer bookingId = entry.getKey();
             Visit visit = entry.getValue();
             model.addRow(new Object[]{
                 bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(), visit.getDate(),
