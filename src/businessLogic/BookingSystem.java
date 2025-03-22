@@ -111,5 +111,10 @@ public class BookingSystem {
 		
 		return checkedOut;
 	}
+
+	public void updateParkingAvailability(ParkingSpace space) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

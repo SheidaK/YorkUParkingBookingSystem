@@ -81,7 +81,8 @@ public class SuperManagerView extends JFrame {
         btnParkingView.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		//Page where manager can view list of parking lots and the parking spaces within it and can enable/disable parking lots/parking spaces.
-    			ParkingManagerView parkingView = new ParkingManagerView();
+    			ParkingLotManagerView parkingView = new ParkingLotManagerView();
+        		parkingView.showManagerView();
     			setVisible(false);
     			dispose();
         	}

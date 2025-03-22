@@ -1,5 +1,5 @@
 package presentation;
-import presentation.ParkingManagerView;
+import presentation.ParkingSpaceManagerView;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -67,7 +67,7 @@ public class ApprovalRequestsView {
 		btnParkingLots.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			//Page where manager can view list of parking lots and the parking spaces within it and can enable/disable parking lots/parking spaces.
-			ParkingManagerView parkingView = new ParkingManagerView();
+			ParkingSpaceManagerView parkingView = new ParkingSpaceManagerView();
 			frame.setVisible(false);
 			frame.dispose();
 		}
