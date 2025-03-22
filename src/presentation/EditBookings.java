@@ -130,7 +130,7 @@ public class EditBookings {
         int extraTime = Integer.parseInt(JOptionPane.showInputDialog("Enter extra time to extend (in hours):"));
 
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        if (bookingSystem.extendBooking(bookingId, currentParkingId)) {
+        if (bookingSystem.extendBooking(bookingId, currentParkingId, extraTime)) {
             loadBookings(model);
             JOptionPane.showMessageDialog(null, "Booking extended successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
