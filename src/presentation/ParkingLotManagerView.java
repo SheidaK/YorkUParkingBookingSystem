@@ -24,10 +24,16 @@ public class ParkingLotManagerView extends JFrame {
     private JTextField name;
     private JLabel lblNewLabel_1;
     SystemDatabase systemDB = SystemDatabase.getInstance();
+    private JButton parkingSpaceButton;
 
     
     public ParkingLotManagerView() {
-        parkingSystem = ParkingSystem.getInstance();
+        try {
+			parkingSystem = ParkingSystem.getInstance();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         initComponents();
         loadParkingSpaces();
     }
@@ -81,6 +87,18 @@ public class ParkingLotManagerView extends JFrame {
         controlPanel.add(addRemovePanel);
         controlPanel.add(actionPanel);
         
+        parkingSpaceButton = new JButton("Manage Parking Spaces for Selected Parking Lot");
+        parkingSpaceButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		ParkingLot p = parkingSystem.getParkingLotInfo(name.getText());
+        		ParkingSpaceManagerView view = new ParkingSpaceManagerView(p);
+        		view.showManagerView(p);
+        		setVisible(false);
+        		dispose();
+        	}
+        });
+        actionPanel.add(parkingSpaceButton);
+        
         getContentPane().add(controlPanel, BorderLayout.SOUTH);
 
         // Action listeners
@@ -130,21 +148,26 @@ public class ParkingLotManagerView extends JFrame {
 
     private void loadParkingSpaces() {
         tableModel.setRowCount(0);
-        List<ParkingLot> lots = ParkingSystem.getInstance().getAvailableLots();
-        if(lots !=null) {
-        for (ParkingLot lot : lots) {
-            Object[] row = {
-                lot.getName(),
-                lot.getLocation(),
-                lot.isEnabled() ? "Enabled" : "Disabled",
-                lot.getCapcity()
-            };
-            tableModel.addRow(row);
+        List<ParkingLot> lots;
+		try {
+			lots = ParkingSystem.getInstance().getAvailableLots();
+			if(lots !=null) {
+				for (ParkingLot lot : lots) {
+					Object[] row = {
+							lot.getName(),
+							lot.getLocation(),
+							lot.isEnabled() ? "Enabled" : "Disabled",
+									lot.getCapcity()
+					};
+					tableModel.addRow(row);
+				}
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
             
         }
         }
         
-    }
 
     public static void showManagerView() {
         SwingUtilities.invokeLater(() -> {

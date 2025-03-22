@@ -20,7 +20,7 @@ public class ParkingSystem implements ParkingLotObserver {
     private BookingSystem bookingSystem;
     
     // Private constructor for Singleton pattern
-    private ParkingSystem() {
+    private ParkingSystem() throws Exception {
         //this.parkingLot = ParkingLot.getInstance();
         //this.parkingLot.addObserver(this);
         
@@ -30,10 +30,18 @@ public class ParkingSystem implements ParkingLotObserver {
         } catch (Exception e) {
             System.err.println("Warning: BookingSystem not initialized yet. Will be set later.");
         }
+        List<String[]> dataParkingLots = dbParkingLots.read();
+		for(String[] row:dataParkingLots) {
+			ParkingLot l = new ParkingLot(row[0],row[1],Integer.valueOf(row[3].trim()));
+			if(row[2].trim().equals("Enabled")) {
+				l.setStatus(true);
+			}else {l.setStatus(false);}
+			parkingLot.add(l);
+		}
     }
     
     // Singleton getInstance method
-    public static synchronized ParkingSystem getInstance() {
+    public static synchronized ParkingSystem getInstance() throws Exception {
         if (instance == null) {
             instance = new ParkingSystem();
         }
