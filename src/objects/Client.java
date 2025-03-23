@@ -4,13 +4,13 @@ public class Client {
     private String email;
     private String password;
     private boolean validated;
-    private int parkingRate; // Default parking rate for this client
+    private int parkingRate;
 
     public Client(String email, String password) {
         this.email = email;
         this.password = password;
         this.validated = false;
-        this.parkingRate = 50; // Default rate, could be different based on client type
+        this.parkingRate = 50; 
     }
 
     // Getters and setters
