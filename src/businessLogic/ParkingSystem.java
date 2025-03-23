@@ -10,7 +10,7 @@ import database.Database;
 /**
  * Implements the Facade pattern to provide a simplified interface to the parking subsystem
  */
-public class ParkingSystem implements ParkingLotObserver {
+public class ParkingSystem  {
     // Singleton pattern
     private static ParkingSystem instance;
 	String path = "src/database/ParkingLotDatabase.csv";
@@ -19,7 +19,7 @@ public class ParkingSystem implements ParkingLotObserver {
 	Database dbParkingLots = new Database(path);
 	Database dbParkingSpace = new Database(path2);
     private ArrayList<ParkingLot> parkingLot=new ArrayList<ParkingLot>();
-    private BookingSystem bookingSystem;
+    //private BookingSystem bookingSystem;
     private int numOfSensors=0;
     
     // Private constructor for Singleton pattern
@@ -28,11 +28,11 @@ public class ParkingSystem implements ParkingLotObserver {
         //this.parkingLot.addObserver(this);
         
         // Get reference to the booking system (also a singleton)
-        try {
-            this.bookingSystem = BookingSystem.getInstance();
-        } catch (Exception e) {
-            System.err.println("Warning: BookingSystem not initialized yet. Will be set later.");
-        }
+//        try {
+//            this.bookingSystem = BookingSystem.getInstance();
+//        } catch (Exception e) {
+//            System.err.println("Warning: BookingSystem not initialized yet. Will be set later.");
+//        }
         List<String[]> dataParkingLots = dbParkingLots.read();
 		for(String[] row:dataParkingLots) {
 			ParkingLot l = new ParkingLot(row[0],row[1],Integer.valueOf(row[3].trim()));
@@ -72,11 +72,11 @@ public class ParkingSystem implements ParkingLotObserver {
         return instance;
     }
     
-    // Set the booking system reference if not available at construction time
-    public void setBookingSystem(BookingSystem bookingSystem) {
-        this.bookingSystem = bookingSystem;
-    }
-    
+//    // Set the booking system reference if not available at construction time
+//    public void setBookingSystem(BookingSystem bookingSystem) {
+//        this.bookingSystem = bookingSystem;
+//    }
+//    
     // Facade methods for client interaction
     public List<ParkingSpace> getAvailableSpaces(ParkingLot parkingLot) {
         return parkingLot.getAllSpaces();
@@ -137,14 +137,14 @@ public class ParkingSystem implements ParkingLotObserver {
         }
     }
     
-    // Observer implementation
-    @Override
-    public void onParkingSpaceStatusChanged(ParkingSpace space) {
-        // Notify booking system of changes if needed
-        if (bookingSystem != null) {
-            bookingSystem.updateParkingAvailability(space);
-        }
-    }
+//    // Observer implementation
+//    @Override
+//    public void onParkingSpaceStatusChanged(ParkingSpace space) {
+//        // Notify booking system of changes if needed
+//        if (bookingSystem != null) {
+//            bookingSystem.updateParkingAvailability(space);
+//        }
+//    }
     
    
     public void onAvailabilityChanged(int availableSpaces) {
@@ -152,7 +152,7 @@ public class ParkingSystem implements ParkingLotObserver {
         System.out.println("Parking availability changed: " + availableSpaces + " spaces available");
     }
 
-	@Override
+	//@Override
 	public void onAvailabilityChanged(List<ParkingSpace> list) {
 		// TODO Auto-generated method stub
 		
@@ -183,7 +183,7 @@ public class ParkingSystem implements ParkingLotObserver {
 		}
 	}
 
-	public List<ParkingLot> getAvailableLots() {
+	public ArrayList<ParkingLot> getAvailableLots() {
 		// TODO Auto-generated method stub
 		return parkingLot;
 	}

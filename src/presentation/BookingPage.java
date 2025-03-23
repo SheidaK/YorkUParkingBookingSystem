@@ -6,6 +6,7 @@ import java.awt.event.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
 import businessLogic.BookingSystem;
+import businessLogic.ParkingSystem;
 import businessLogic.SystemDatabase;
 import objects.Client;
 import objects.ParkingLot;
@@ -30,6 +31,7 @@ public class BookingPage extends JFrame {
     
     // System components
     private SystemDatabase systemDatabase;
+    private ParkingSystem parkingSystemDB= ParkingSystem.getInstance();
     private BookingSystem bookingSystem;
     private Date selectedDate;
     private int selectedTimeSlot; // 24-hour format time slot
@@ -345,7 +347,7 @@ public class BookingPage extends JFrame {
         parkingLotMap.clear();
         
         // Get available parking lots from database
-        ArrayList<ParkingLot> availableLots = systemDatabase.getParkingLots();
+        ArrayList<ParkingLot> availableLots = parkingSystemDB.getAvailableLots();
         
         // Filter enabled parking lots
         for (ParkingLot lot : availableLots) {

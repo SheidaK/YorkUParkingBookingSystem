@@ -12,7 +12,7 @@ public class BookingSystem {
     static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
     private static BookingSystem bookingSystem = null;
     private SystemDatabase systemDatabase;
-    private ParkingSystem parkingSystem;
+    private ParkingSystem parkingSystem = ParkingSystem.getInstance();
 
     private BookingSystem() throws Exception {
         // Get reference to SystemDatabase
@@ -53,7 +53,7 @@ public class BookingSystem {
         
         // Get parking lot by ID
         ParkingLot parkingLot = null;
-        for (ParkingLot lot : systemDatabase.getParkingLots()) {
+        for (ParkingLot lot : parkingSystem.getAvailableLots()) {
             if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
