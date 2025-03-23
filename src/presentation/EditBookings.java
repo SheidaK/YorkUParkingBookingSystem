@@ -14,19 +14,18 @@ import objects.*;
 
 public class EditBookings {
     
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
+	public EditBookings(Client c) {
             JFrame frame = new JFrame("Confirmed Bookings");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(700, 400);
-            frame.setLayout(new BorderLayout());
+            frame.setSize(1280, 720);
+            frame.getContentPane().setLayout(new BorderLayout());
 
             // Table model setup
             String[] columnNames = {"Booking ID", "Client Email", "Parking Space", "Parking Lot", "Duration"};
             DefaultTableModel model = new DefaultTableModel(columnNames, 0);
             JTable table = new JTable(model);
             JScrollPane scrollPane = new JScrollPane(table);
-            frame.add(scrollPane, BorderLayout.CENTER);
+            frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
             // Load data from BookingSystem
             try {
@@ -80,10 +79,20 @@ public class EditBookings {
             buttonPanel.add(editButton);
             buttonPanel.add(cancelButton);
             buttonPanel.add(extendButton);
-            frame.add(buttonPanel, BorderLayout.SOUTH);
+            frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+            
+            JButton backButton = new JButton("Back to View Bookings");
+            backButton.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		ClientView v = new ClientView(c);
+            		frame.setVisible(false);
+            		frame.dispose();
+            	}
+            });
+            buttonPanel.add(backButton);
 
             frame.setVisible(true);
-        });
+       
     }
 
     private static void loadBookings(DefaultTableModel model) throws Exception {
@@ -112,12 +121,12 @@ public class EditBookings {
 
         int bookingId = (int) model.getValueAt(selectedRow, 0);
         int parkingLotId = (int) model.getValueAt(selectedRow, 2); // Parking ID from the table
-        int parkingSpaceId = (int) model.getValueAt(selectedRow, 3);
+        String parkingSpaceId = (String) model.getValueAt(selectedRow, 3);
         int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
         BookingSystem bookingSystem = BookingSystem.getInstance();
                 
                 
-                if (bookingSystem.editBooking(bookingId, parkingLotId, parkingSpaceId, time)) {
+                if (bookingSystem.editBooking(bookingId, parkingSpaceId, parkingLotId, time)) {
                     loadBookings(model);
                     JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
@@ -160,6 +169,19 @@ public class EditBookings {
         } else {
             JOptionPane.showMessageDialog(null, "Unable to extend the booking. The parking spot might not be available.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }
+    public static void editBookingPageView(Client c) {
+        SwingUtilities.invokeLater(() -> {
+            EditBookings view;
+			try {
+				view = new EditBookings(c);
+				//view.setVisible(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            
+        });
     }
 
 }

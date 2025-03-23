@@ -7,6 +7,7 @@ import java.util.*;
 import java.text.SimpleDateFormat;
 import businessLogic.BookingSystem;
 import businessLogic.SystemDatabase;
+import objects.Client;
 import objects.ParkingLot;
 import objects.ParkingSpace;
 
@@ -37,7 +38,10 @@ public class BookingPage extends JFrame {
     // Maps to track the actual objects behind the dropdown strings
     private Map<String, ParkingLot> parkingLotMap;
     private Map<String, ParkingSpace> parkingSpaceMap;
-    public BookingPage() {
+    static Client c= null;
+    public BookingPage(Client c) throws Exception {
+    	this.c = c;
+
         setTitle("Book a Parking Space");
         setSize(550, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -271,20 +275,13 @@ public class BookingPage extends JFrame {
                 // We need to book the space for each hour in the duration
                 for (int i = 0; i < selectedDuration; i++) {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
-                    
-                    // Call the booking system with all required parameters
-                    boolean hourSuccess = bookingSystem.bookParkingSpace(
-                        clientEmail,
-                        parkingLotId,
-                        parkingSpaceId,
-                        5, // deposit
-                        timeSlot
-                    );
-                    
+                    int id = bookingSystem.generateBookingID();
+                    boolean hourSuccess = bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), timeSlot);
                     if (!hourSuccess) {
                         success = false;
                         break;
                     }
+
                 }
                 
                 
@@ -412,11 +409,18 @@ public class BookingPage extends JFrame {
         return true; // Available for the entire duration
     }
     
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new BookingPage().setVisible(true);
-            }
+    public static void showBookingPageView() {
+        SwingUtilities.invokeLater(() -> {
+            BookingPage view;
+			try {
+				view = new BookingPage(c);
+				view.setVisible(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            
         });
     }
+
 }

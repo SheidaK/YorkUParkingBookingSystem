@@ -48,13 +48,13 @@ public class BookingSystem {
         this.bookings = bookings;
     }
 
-    public boolean bookParkingSpace(String clientEmail, int parkingLotID, int parkingSpaceID, int deposit, int time) {
+    public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time) {
         boolean bookingComplete = false;
         
         // Get parking lot by ID
         ParkingLot parkingLot = null;
         for (ParkingLot lot : systemDatabase.getParkingLots()) {
-            if (lot.getId() == parkingLotID) {
+            if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
             }
@@ -88,18 +88,18 @@ public class BookingSystem {
         return bookingComplete;
     }
 
-    private int generateBookingID() {
+    public int generateBookingID() {
         // Simple booking ID generation
         return bookings.size() + 1;
     }
 
-    public boolean bookParkingSpace(int bookingID, int parkingLotID, int parkingSpaceID, int time) {
+    public boolean bookParkingSpace(int bookingID, String parkingLotName, int parkingSpaceID, int time) {
         boolean bookingComplete = false;
         
         // Get parking lot by ID
         ParkingLot parkingLot = null;
         for (ParkingLot lot : systemDatabase.getParkingLots()) {
-            if (lot.getId() == parkingLotID) {
+            if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
             }
@@ -119,13 +119,13 @@ public class BookingSystem {
         return bookingComplete;
     }
 
-    public boolean editBooking(int bookingID, int parkingLotID, int parkingSpaceID, int time) {
+    public boolean editBooking(int bookingID, String parkingLotName, int parkingSpaceID, int time) {
         boolean bookingEdited = false;
         
         // Get parking lot by ID
         ParkingLot parkingLot = null;
         for (ParkingLot lot : systemDatabase.getParkingLots()) {
-            if (lot.getId() == parkingLotID) {
+            if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
             }
@@ -141,7 +141,7 @@ public class BookingSystem {
         if (parkingSpot != null && !parkingSpot.isOccupied(time) && parkingSpot.isEnabled()) {
             cancelBooking(bookingID);
             parkingSpot.unoccupyTime(bookingID);
-            bookParkingSpace(bookingID, parkingLotID, parkingSpaceID, time);
+            bookParkingSpace(bookingID, parkingLotName, parkingSpaceID, time);
             bookingEdited = true;
         }
 

@@ -43,11 +43,11 @@ public class ClientView {
 		table = new JTable(model);
 		scrollPane.setViewportView(table);
 		
-		JLabel lblNewLabel = new JLabel("Bookings");
+		JLabel lblNewLabel = new JLabel("List of Bookings ");
 		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 25));
 		lblNewLabel.setBounds(51, 43, 633, 40);
 		frame.getContentPane().add(lblNewLabel);
-		JButton btnSelectToEdit = new JButton("Edit Selected Booking");
+		JButton btnSelectToEdit = new JButton("Edit/Cancel Booking");
 		frame.getContentPane().add(btnSelectToEdit);
 		btnSelectToEdit.setBackground(new Color(255, 255, 255));
 		btnSelectToEdit.setForeground(Color.BLACK);
@@ -57,6 +57,7 @@ public class ClientView {
 		btnSelectToEdit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//Page where client can edit existing bookings
+				EditBookings p = new EditBookings(c);
 				frame.setVisible(false);
 				frame.dispose();
 			}
@@ -72,8 +73,17 @@ public class ClientView {
 		btnNewBooking.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
 			//Page where client can make a new booking
-			frame.setVisible(false);
-			frame.dispose();
+			try {
+				BookingPage p = new BookingPage(c);
+				p.showBookingPageView();
+				frame.setVisible(false);
+				frame.dispose();
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			
+			
 		}
 		});						
 		
