@@ -37,7 +37,6 @@ public class BookingPage extends JFrame {
     // Maps to track the actual objects behind the dropdown strings
     private Map<String, ParkingLot> parkingLotMap;
     private Map<String, ParkingSpace> parkingSpaceMap;
-
     public BookingPage() {
         setTitle("Book a Parking Space");
         setSize(550, 450);
@@ -45,26 +44,29 @@ public class BookingPage extends JFrame {
         
         // Initialize system components
         systemDatabase = SystemDatabase.getInstance();
-        bookingSystem = BookingSystem.getInstance();
+        try {
+            bookingSystem = BookingSystem.getInstance();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error initializing booking system: " + e.getMessage(), 
+                                         "System Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+            dispose(); 
+            return;
+        }
         parkingLotMap = new HashMap<>();
         parkingSpaceMap = new HashMap<>();
         
-        // Create card layout to switch between panels
         setLayout(new CardLayout());
         
-        // Initialize panels
         initializeDateTimePanel();
         initializeParkingSelectionPanel();
         
-        // Add panels to frame
         add(dateTimePanel, "dateTimePanel");
         add(parkingSelectionPanel, "parkingSelectionPanel");
         
-        // Start with date/time panel
         CardLayout cl = (CardLayout)(getContentPane().getLayout());
         cl.show(getContentPane(), "dateTimePanel");
     }
-    
     private void initializeDateTimePanel() {
         dateTimePanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -256,19 +258,35 @@ public class BookingPage extends JFrame {
                 
                 int parkingSpaceId = Integer.parseInt(selectedSpaceId);
                 
+                String selectedLotName = (String) parkingLotDropdown.getSelectedItem();
+                ParkingLot selectedLot = parkingLotMap.get(selectedLotName);
+                int parkingLotId = selectedLot.getId();
+                
+                // For now, create a temporary client email using license plate
+                String clientEmail = licensePlate + "@example.com";
+                
                 // Call booking system to book the space
-                // Using a default deposit of 5 for now
                 boolean success = true;
                 
                 // We need to book the space for each hour in the duration
                 for (int i = 0; i < selectedDuration; i++) {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
-                    boolean hourSuccess = bookingSystem.bookParkingSpace(licensePlate, parkingSpaceId, 5, timeSlot);
+                    
+                    // Call the booking system with all required parameters
+                    boolean hourSuccess = bookingSystem.bookParkingSpace(
+                        clientEmail,
+                        parkingLotId,
+                        parkingSpaceId,
+                        5, // deposit
+                        timeSlot
+                    );
+                    
                     if (!hourSuccess) {
                         success = false;
                         break;
                     }
                 }
+                
                 
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Booking Successful!");
@@ -381,30 +399,17 @@ public class BookingPage extends JFrame {
         }
     }
     
-    // Check if a parking space is available for the entire duration
     private boolean isAvailableForDuration(ParkingSpace space) {
-        // For now, we'll use the basic isOccupied method as a fallback
-        // Ideally, this should check availability for each hour in the duration
-        
-        // Assuming the ParkingSpace class has been modified to include isOccupiedAt method
-        try {
-            // Try to use the isOccupiedAt method if it exists
-            for (int i = 0; i < selectedDuration; i++) {
-                int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
-                
-                // Check if the space is occupied at this time slot
-                java.lang.reflect.Method method = space.getClass().getMethod("isOccupiedAt", int.class);
-                boolean isOccupied = (boolean) method.invoke(space, timeSlot);
-                
-                if (isOccupied) {
-                    return false; // Not available for the entire duration
-                }
+        // Check if the space is available for each hour in the duration
+        for (int i = 0; i < selectedDuration; i++) {
+            int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
+            
+            // Use the isOccupied method that accepts a time parameter
+            if (space.isOccupied(timeSlot)) {
+                return false; // Not available for the entire duration
             }
-            return true; // Available for the entire duration
-        } catch (Exception e) {
-            // If the method doesn't exist, fall back to the basic isOccupied method
-            return !space.isOccupied();
         }
+        return true; // Available for the entire duration
     }
     
     public static void main(String[] args) {
