@@ -10,26 +10,23 @@ import businessLogic.ParkingLotObserver;
  * Implements the Singleton pattern for the ParkingLot
  * Ensures there is only one instance of the parking lot in the system
  */
-public class ParkingLot implements ParkingStatusObserver {
+public class ParkingLot  {
     // Singleton instance
     private static ParkingLot instance;
     
     private String name;
     private String location;
-    private int totalCapacity;
-    private List<ParkingSpace> spaces;
-    private Map<String, ParkingSensor> sensors;
-    private List<ParkingLotObserver> observers;
+    private int capacity;
+    private int id; // Added ID field
     private boolean enabled;
+    private ArrayList<ParkingSpace> spaces;
     
     // Private constructor for Singleton pattern
     public ParkingLot(String name, String location, int capacity) {
         this.name = name;
         this.location = location;
-        this.totalCapacity = capacity;
         this.spaces = new ArrayList<>();
-        this.sensors = new HashMap<>();
-        this.observers = new ArrayList<>();
+        this.capacity=capacity;
         this.enabled = true; 
         int parkingSpaceID = 1;
         ParkingSpace p = new ParkingSpace(parkingSpaceID,"Regular");
@@ -47,98 +44,56 @@ public class ParkingLot implements ParkingStatusObserver {
         	spaces.add(clonedParkingSpace);
         }
     }
-    
-    // Singleton getInstance method
-    public static synchronized ParkingLot getInstance(String name,String location, int capacity) {
-        if (instance == null) {
-            instance = new ParkingLot(name,location, capacity);
-        }
-        return instance;
-    }
-    
-    // Static method to get the instance without parameters (assumes already initialized)
-    public static ParkingLot getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("ParkingLot has not been initialized yet");
-        }
-        return instance;
-    }
-    
-    // Observer pattern for ParkingLot
-    public void addObserver(ParkingLotObserver observer) {
-        observers.add(observer);
-    }
-    
-    public void removeObserver(ParkingLotObserver observer) {
-        observers.remove(observer);
-    }
-    
-    private void notifySpaceStatusChanged(ParkingSpace space) {
-        for (ParkingLotObserver observer : observers) {
-            observer.onParkingSpaceStatusChanged(space);
-        }
-    }
-    
-    private void notifyAvailabilityChanged(List<ParkingSpace> list) {
-        for (ParkingLotObserver observer : observers) {
-            observer.onAvailabilityChanged(list);
-        }
-    }
-    
-    // Implementation of ParkingStatusObserver interface
-    @Override
-    public void update(ParkingSpace space, boolean occupied) {
-        notifySpaceStatusChanged(space);
-        notifyAvailabilityChanged(getAvailableSpaces());
-    }
-    
+    //Setters
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
+    public void setName(String name) {
+        this.name = name;
+    }
+    public void setLocation(String location) {
+        this.location = location;
+    }
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
+    }
     public boolean isEnabled() {
         return this.enabled;
     }
-    // Parking lot management
-    public void addParkingSpace(ParkingSpace space) {
-        spaces.add(space);
+    
+    public void setId(int id) {
+        this.id = id;
+    }
+    
         
-        // Create and associate a sensor
-        ParkingSensor sensor = new ParkingSensor(space.getSpaceId(), space);
-        sensor.addObserver(this);
-        sensors.put(String.valueOf(sensor.getSensorId()), sensor);
-        space.assignSensor(sensor);
-        
-        notifyAvailabilityChanged(getAvailableSpaces());
+    // Getters
+    public String getName() {
+        return name;
     }
     
-    public boolean removeParkingSpace(int spaceId) {
-        ParkingSpace spaceToRemove = findSpaceById(spaceId);
-        if (spaceToRemove != null) {
-            // Remove associated sensor
-            ParkingSensor sensor = spaceToRemove.getSensor();
-            if (sensor != null) {
-                sensor.removeObserver(this);
-                sensors.remove(sensor.getSensorId());
-            }
-            
-            spaces.remove(spaceToRemove);
-            notifyAvailabilityChanged(getAvailableSpaces());
-            return true;
-        }
-        return false;
+    public int getTotalCapacity() {
+        return capacity;
     }
-    
-    public ParkingSpace findSpaceById(int spaceId) {
-        for (ParkingSpace space : spaces) {
-            if (space.getSpaceId()==spaceId) {
-                return space;
-            }
-        }
-        return null;
+
+	public String getLocation() {
+		// TODO Auto-generated method stub
+		return this.location;
+	}
+
+	public int getCapcity() {
+		// TODO Auto-generated method stub
+		return getAvailableSpaces().size();
+	}
+	
+	public String getStatus() {
+		// TODO Auto-generated method stub
+        return enabled ? "Enabled" : "Disabled";
     }
-    
-    public List<ParkingSpace> getAvailableSpaces() {
+
+	public void setStatus(boolean enabled) {
+		this.enabled = enabled;
+	}
+	public List<ParkingSpace> getAvailableSpaces() {
         List<ParkingSpace> availableSpaces = new ArrayList<>();
         for (ParkingSpace space : spaces) {
             if (!space.isOccupied() && space.isEnabled()) {
@@ -154,41 +109,29 @@ public class ParkingLot implements ParkingStatusObserver {
     public int getAvailableSpacesCount() {
         return getAvailableSpaces().size();
     }
-    
-    // Getters
-    public String getName() {
-        return name;
+    public int getId() {
+        return id;
     }
-    
-    public int getTotalCapacity() {
-        return totalCapacity;
+    public ParkingSpace findSpaceById(int spaceId) {
+        for (ParkingSpace space : spaces) {
+            if (space.getSpaceId()==spaceId) {
+                return space;
+            }
+        }
+        return null;
     }
-    
-//    public List<ParkingSpace> getAllSpaces() {
-//        return new ArrayList<>(spaces);
-//    }
-    
-    public Map<String, ParkingSensor> getAllSensors() {
-        return new HashMap<>(sensors);
+    public void addParkingSpace(ParkingSpace space) {
+        space.setParkingLot(this);
+        spaces.add(space);
     }
 
-	public String getLocation() {
-		// TODO Auto-generated method stub
-		return this.location;
-	}
+    public boolean removeParkingSpace(int spaceId) {
+        ParkingSpace spaceToRemove = findSpaceById(spaceId);
+        if (spaceToRemove != null) {
+            return spaces.remove(spaceToRemove);
+        }
+        return false;
+    }
 
-	public int getCapcity() {
-		// TODO Auto-generated method stub
-		return getAvailableSpaces().size();
-	}
-	
-	public String getStatus() {
-		// TODO Auto-generated method stub
-		if(this.enabled) {return "Enabled";}else {return "Disabled";}
-	}
-
-	public void setStatus(boolean enabled) {
-		this.enabled = enabled;
-	}
 }
 

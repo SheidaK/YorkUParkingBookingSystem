@@ -13,9 +13,7 @@ public class ParkingSpace implements Cloneable {
     private Car parkedCar;
     private ParkingSensor sensor;
     private String type; // Regular, Handicapped, VIP, etc.
-    private Map<Integer, Boolean> timeOccupancyMap;
-
-    
+    private ParkingLot parkingLot; // Reference to the containing parking lot
     public ParkingSpace(int spaceId, String type) {
         this.spaceId = spaceId;
         this.type = type;
@@ -95,27 +93,42 @@ public class ParkingSpace implements Cloneable {
     public String getType() {
         return type;
     }
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public ParkingSensor getSensor() {
         return sensor;
     }
     // New method to check if the space is occupied at a specific time
-    public boolean isOccupiedAt(int timeSlot) {
-        Boolean isOccupied = timeOccupancyMap.get(timeSlot);
-        return isOccupied != null && isOccupied;
+    // Check if occupied at a specific time
+    public boolean isOccupied(int time) {
+        // Implement time-based occupation check
+        // This is a simplified version - in a real app, you'd check against scheduled times
+        return occupied;
+    }
+
+    
+ // Time-based occupation methods
+    public void occupyTime(int bookingID, int time) {
+        // Occupy the space for a specific time slot
+        this.occupied = true;
+    }
+
+    public void unoccupyTime(int bookingID) {
+        // Free up the space for a specific booking
+        this.occupied = false;
+    }
+
+    public void unoccupy(int bookingID) {
+        // Free up the space for a specific booking
+        this.occupied = false;
     }
     
-    // Method to occupy a time slot
-    public void occupyTime(int bookingId, int timeSlot) {
-        timeOccupancyMap.put(timeSlot, true);
+    public void setParkingLot(ParkingLot parkingLot) {
+        this.parkingLot = parkingLot;
     }
-    
-    // Method to free up a time slot
-    public void unoccupyTime(int bookingId) {
-        for (Integer timeSlot : timeOccupancyMap.keySet()) {
-            timeOccupancyMap.put(timeSlot, false);
-        }
-    }
+   
     @Override
     public String toString() {
         return "Space " + spaceId + " (" + type + "): " + 

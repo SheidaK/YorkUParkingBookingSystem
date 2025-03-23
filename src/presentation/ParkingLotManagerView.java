@@ -27,6 +27,7 @@ public class ParkingLotManagerView extends JFrame {
     private JLabel lblNewLabel_1;
     SystemDatabase systemDB = SystemDatabase.getInstance();
     private JButton backButton;
+    private JButton btnNewButton;
 
     
     public ParkingLotManagerView(int page) {
@@ -53,6 +54,7 @@ public class ParkingLotManagerView extends JFrame {
         parkingLotTable.addMouseListener(new MouseAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
+        		 if (e.getClickCount() == 2) {
         		 int selectedRow = parkingLotTable.getSelectedRow();
                  if (selectedRow >= 0) {
                      String name = (String) tableModel.getValueAt(selectedRow, 0);
@@ -62,6 +64,7 @@ public class ParkingLotManagerView extends JFrame {
                      setVisible(false);
                      dispose();
                  }
+        		 }
         	}
         });
         JScrollPane scrollPane = new JScrollPane(parkingLotTable);
@@ -117,6 +120,22 @@ public class ParkingLotManagerView extends JFrame {
         		dispose();
         	}
         });
+        
+        btnNewButton = new JButton("Manage Parking Spaces for Selected Parking Lot");
+        btnNewButton.addActionListener(new ActionListener() {
+        	public void actionPerformed(ActionEvent e) {
+        		 int selectedRow = parkingLotTable.getSelectedRow();
+                 if (selectedRow >= 0) {
+                     String name = (String) tableModel.getValueAt(selectedRow, 0);
+                     ParkingLot p = parkingSystem.getParkingLotInfo(name);
+                     ParkingSpaceManagerView view = new ParkingSpaceManagerView(p,page);
+                     view.showManagerView(p,page);
+                     setVisible(false);
+                     dispose();
+                 }
+        	}
+        });
+        actionPanel.add(btnNewButton);
         actionPanel.add(backButton);
         
         getContentPane().add(controlPanel, BorderLayout.SOUTH);
