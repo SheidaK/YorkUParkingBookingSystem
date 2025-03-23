@@ -175,7 +175,7 @@ public class BookingSystem {
     }
 
     private boolean confirmPayment(int bookingID, int payment) {
-        // Get payment system and confirm payment
+        // Get payment system 
         PaymentSystem paymentSystem = PaymentSystem.getInstance();
         return paymentSystem.confirmPayment(bookingID, "CREDIT_CARD", payment);
     }
