@@ -21,19 +21,31 @@ public class confirmedBookings {
             frame.setLayout(new BorderLayout());
 
             // Table model setup
-            String[] columnNames = {"Booking ID", "Client Email", "Parking Space", "Date", "Start Time", "End Time"};
+            String[] columnNames = {"Booking ID", "Client Email", "Parking Space", "Parking Lot", "Date", "Duration"};
             DefaultTableModel model = new DefaultTableModel(columnNames, 0);
             JTable table = new JTable(model);
             JScrollPane scrollPane = new JScrollPane(table);
             frame.add(scrollPane, BorderLayout.CENTER);
 
             // Load data from BookingSystem
-            loadBookings(model);
+            try {
+				loadBookings(model);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 
             // Button Panel
             JPanel buttonPanel = new JPanel();
             JButton refreshButton = new JButton("Refresh");
-            refreshButton.addActionListener(e -> loadBookings(model)); // Refresh on button click
+            refreshButton.addActionListener(e -> {
+				try {
+					loadBookings(model);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}); // Refresh on button click
             buttonPanel.add(refreshButton);
             frame.add(buttonPanel, BorderLayout.SOUTH);
 
@@ -41,18 +53,18 @@ public class confirmedBookings {
         });
     }
 
-    private static void loadBookings(DefaultTableModel model) {
+    private static void loadBookings(DefaultTableModel model) throws Exception {
         model.setRowCount(0); // Clear existing data
 
         // Fetch bookings from BookingSystem
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        Map<String, Visit> bookings = bookingSystem.getBookings();
+        Map<Integer, Visit> bookings = bookingSystem.getBookings();
 
-        for (Entry<String, Visit> entry : bookings.entrySet()) {
-            String bookingId = entry.getKey();
+        for (Entry<Integer, Visit> entry : bookings.entrySet()) {
+            Integer bookingId = entry.getKey();
             Visit visit = entry.getValue();
             model.addRow(new Object[]{
-                bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(), visit.getStartTime(), visit.getEndTime()
+                bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(), visit.getParkingLot(), visit.getDuration()
             });
         }
     }
