@@ -34,7 +34,7 @@ public class Visit {
 		this.moneyPaid = moneyPaid;
 		this.bookingID = bookingID;
 		
-		visitDatabase.put(bookingID, getVisit(bookingID));
+		visitDatabase.putIfAbsent(bookingID, this);
 	}
 	/**
 	 * @return the start time
@@ -129,6 +129,11 @@ public class Visit {
 	
 	public static Visit getVisit(String bookingID) {
 		return visitDatabase.get(bookingID);
+	}
+	
+	public static Visit getVisit(int bookingID) {
+		String str = String.valueOf(bookingID);
+		return visitDatabase.get(str);
 	}
 	
     public String getFormattedStartTime() {
