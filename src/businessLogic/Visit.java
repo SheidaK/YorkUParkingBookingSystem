@@ -1,5 +1,6 @@
 package businessLogic;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -44,14 +45,24 @@ public class Visit {
 	/**
 	 * @param date the date to set
 	 */
-	public void setStartTime(Date newStartTime) {
-       if (newStartTime != null && newStartTime.after(new Date()))
-    	   this.startTime = newStartTime;
+	public void setStartTime(int newStartTime) {
+        this.startTime = convertIntToDate(newStartTime);
 	}
+	
+    public void setStartTime(Date newStartTime) {
+        if (newStartTime != null && newStartTime.after(startTime))
+            this.startTime = newStartTime;
+      
+    }
 	
     public Date getEndTime() {
         return endTime;
     }
+    
+	public void setEndTime(int newEndTime) {
+        this.endTime = convertIntToDate(newEndTime);
+	}
+	
     
     public void setEndTime(Date newEndTime) {
         if (newEndTime != null && newEndTime.after(startTime))
@@ -126,6 +137,19 @@ public class Visit {
     
     public String getFormattedEndTime() {
         return DATE_FORMAT.format(endTime);
+    }
+    
+    private Date convertIntToDate(int startTime) {
+        int hour = startTime / 100;
+        int minute = startTime % 100;
+        
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hour);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        
+        return calendar.getTime(); // Return the Date object
     }
     
 	public int getDuration() {
