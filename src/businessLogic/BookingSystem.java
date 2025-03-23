@@ -5,138 +5,187 @@ import java.util.HashMap;
 import java.util.Map;
 
 import objects.Client;
+import objects.ParkingLot;
 import objects.ParkingSpace;
 
 public class BookingSystem {
-	static Map<String, Visit> bookings = new HashMap<String, Visit>();
-	
-	private static BookingSystem bookingSystem = null;
-	
-	private BookingSystem(Map<String, Visit> bookings) {
-		//super();
-		this.bookings = bookings;
-	}
+    static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
+    private static BookingSystem bookingSystem = null;
+    private SystemDatabase systemDatabase;
+    private ParkingSystem parkingSystem;
 
-	public static synchronized BookingSystem getInstance() {
-		if (bookingSystem == null)
-			bookingSystem = new BookingSystem(bookings);
-		return bookingSystem;
-	}
-	
-	/**
-	 * @return the bookings
-	 */
-	public Map<String, Visit> getBookings() {
-		return bookings;
-	}
+    private BookingSystem() throws Exception {
+        // Get reference to SystemDatabase
+        this.systemDatabase = SystemDatabase.getInstance();
+        this.parkingSystem = ParkingSystem.getInstance();
+    }
 
-	/**
-	 * @param bookings the bookings to set
-	 */
-	public void setBookings(Map<String, Visit> bookings) {
-		this.bookings = bookings;
-	}
-	
-	public boolean bookParkingSpace(String clientLicense, int parkingLotID, int parkingSpaceID, int deposit, int startTime, int hours) {
-		boolean bookingComplete = false;
-	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000);
-	    Date endTime = new Date(endTimeInMillis);
+    public static synchronized BookingSystem getInstance() throws Exception {
+        if (bookingSystem == null)
+            bookingSystem = new BookingSystem();
+        return bookingSystem;
+    }
 
-		ParkingSpace parkingSpot = parkingSpaceID.getInstance().getParkingSpace(); //Need to get parking spot info from parking spot class (parameter: ID)
-		//will also need one for parking lot
-		if (!parkingSpot.isOccupied(startTime, endTime) //Need to know if parking spot is occupied at start time all the way to end time
-			&& parkingSpot.isEnabled() //Need to know if parking spot is enabled, info from parking spot class
-			&& deposit >= clientLicense.getParkingRate()) //Need to get parking rate from client classes
-			{
-			String bookingID = UUID.randomUUID().toString();
-			parkingSpot.setOccupied(bookingID, startTime, endTime);  //have it at end time for now but i can change to hour if needed
-			//Need to be able to state what time client wants to book parking spot, can remove booking id if needed but need to occupy from 
-			//start time to end time, can change end time to hours if needed
-			SystemDatabase.addRevenue(deposit);
-			Client client = clientLicense.getClient(); //need to be able to access client and client needs to store license plate
-			Date date = new Date();
-			Visit visit = new Visit(startTime, endTime, client, parkingSpot.getInstance().getParkingLot(), parkingSpot, deposit); //need to figure out date
-			bookings.put(bookingID, visit);
-			bookingComplete = true;
-		}
-		return bookingComplete;
-	}
+    /**
+     * @return the bookings
+     */
+    public Map<Integer, Visit> getBookings() {
+        return bookings;
+    }
 
-	
-	public boolean bookParkingSpace(String bookingID, int ParkingID, int startTime, int hours) {
-		boolean bookingComplete = false;
-	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000); // Convert hours to milliseconds
-	    Date endTime = new Date(endTimeInMillis);
-	    
-		ParkingSpace parkingSpot = ParkingID.getParkingSpace();
-		if (!parkingSpot.isOccupied(startTime, endTime) && parkingSpot.isEnabled()) {
-			parkingSpot.setOccupied(bookingID, startTime, endTime); 
-			bookingComplete = true;
-		}
-		return bookingComplete;
-	}
+    /**
+     * @param bookings the bookings to set
+     */
+    public void setBookings(Map<Integer, Visit> bookings) {
+        this.bookings = bookings;
+    }
 
-	
-	public boolean editBooking(String bookingID, int ParkingID, int startTime, int hours) {
-		boolean bookingEdited = false;
-		ParkingSpace parkingSpot = ParkingID.getinstance().getParkingSpace();
-	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000); // Convert hours to milliseconds
-	    Date endTime = new Date(endTimeInMillis);
-	    Visit visit = Visit.getVisit(bookingID);
+    public boolean bookParkingSpace(String clientEmail, int parkingLotID, int parkingSpaceID, int deposit, int time) {
+        boolean bookingComplete = false;
+        
+        // Get parking lot by ID
+        ParkingLot parkingLot = null;
+        for (ParkingLot lot : systemDatabase.getParkingLots()) {
+            if (lot.getId() == parkingLotID) {
+                parkingLot = lot;
+                break;
+            }
+        }
+        
+        if (parkingLot == null) {
+            return false; // Parking lot not found
+        }
+        
+        // Get parking space by ID
+        ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
+        
+        // Get client by email
+        Client client = systemDatabase.getClientInfo(clientEmail);
+        
+        if (parkingSpot != null && client != null && 
+            !parkingSpot.isOccupied(time) && 
+            parkingSpot.isEnabled() && 
+            deposit >= client.getParkingRate()) {
+            
+            int bookingID = generateBookingID();
+            parkingSpot.occupyTime(bookingID, time);
+            
+            SystemDatabase.addRevenue(deposit);
+            
+            Date date = new Date();
+            Visit visit = new Visit(date, date, client, parkingLot, parkingSpot, deposit, String.valueOf(bookingID));
+            bookings.put(bookingID, visit);
+            bookingComplete = true;
+        }
+        return bookingComplete;
+    }
 
-		if (!parkingSpot.isOccupied(startTime, endTime) && parkingSpot.isEnabled()) {
-			cancelBooking(bookingID);
-			parkingSpot.unOccupy(startTime, endTime); //remove occupied status from start time to end time, can change to hours if needed
-			bookParkingSpace(bookingID, ParkingID, startTime, hours);
-			
-		}
+    private int generateBookingID() {
+        // Simple booking ID generation
+        return bookings.size() + 1;
+    }
 
-		return bookingEdited;
-	}
+    public boolean bookParkingSpace(int bookingID, int parkingLotID, int parkingSpaceID, int time) {
+        boolean bookingComplete = false;
+        
+        // Get parking lot by ID
+        ParkingLot parkingLot = null;
+        for (ParkingLot lot : systemDatabase.getParkingLots()) {
+            if (lot.getId() == parkingLotID) {
+                parkingLot = lot;
+                break;
+            }
+        }
+        
+        if (parkingLot == null) {
+            return false; // Parking lot not found
+        }
+        
+        // Get parking space by ID
+        ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
+        
+        if (parkingSpot != null && !parkingSpot.isOccupied(time) && parkingSpot.isEnabled()) {
+            parkingSpot.occupyTime(bookingID, time);
+            bookingComplete = true;
+        }
+        return bookingComplete;
+    }
 
-	
-	public boolean cancelBooking(String bookingID) {
-		boolean bookingCancelled = false;
-		Visit visit = Visit.getVisit(bookingID);
-			if (bookings.containsKey(bookingID)) {
-				ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-				parkingSpot.unOccupy(visit.startTime, visit.endTime);
-				bookings.remove(bookingID);
-				if (PaymentSystem.confirmRefund(bookingID))
-					bookingCancelled = true;
-			}
-		return bookingCancelled;
-	}
-	
-	public boolean extendBooking(String bookingID, int endTime, int hours) {
-		boolean bookingExtended = false;
-        Visit visit = bookings.get(bookingID);
-        long currentEndTime = endTime + visit.getDuration();  // Get the current end time in hours
-        Date newEndTime = new Date(currentEndTime + hours); 
-		ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-		if (bookings.containsKey(bookingID) && !parkingSpot.isOccupied(currentEndTime, newEndTime)) {
-			parkingSpot.setOccupied(bookingID, currentEndTime, newEndTime);
-			bookingExtended = true;
-		}
-		return bookingExtended;
-	}
-	
-	public boolean checkout(int bookingID, int payment) {
-		boolean checkedOut = false;
+    public boolean editBooking(int bookingID, int parkingLotID, int parkingSpaceID, int time) {
+        boolean bookingEdited = false;
+        
+        // Get parking lot by ID
+        ParkingLot parkingLot = null;
+        for (ParkingLot lot : systemDatabase.getParkingLots()) {
+            if (lot.getId() == parkingLotID) {
+                parkingLot = lot;
+                break;
+            }
+        }
+        
+        if (parkingLot == null) {
+            return false; // Parking lot not found
+        }
+        
+        // Get parking space by ID
+        ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
 
-		Visit visit = Visit.getVisit(bookingID);
-		Client client = visit.getClientDetail();
-		int duration = visit.getDuration();
-		int amount = duration * client.getParkingRate();
-		if (PaymentSystem.confirmPayment(bookingID, paymentMethod, amount)) 
-			checkedOut = true;
-		
-		return checkedOut;
-	}
-	
-	public void updateParkingAvailability(ParkingSpace space) {
-		// TODO Auto-generated method stub
-		
-	}
-	
+        if (parkingSpot != null && !parkingSpot.isOccupied(time) && parkingSpot.isEnabled()) {
+            cancelBooking(bookingID);
+            parkingSpot.unoccupyTime(bookingID);
+            bookParkingSpace(bookingID, parkingLotID, parkingSpaceID, time);
+            bookingEdited = true;
+        }
+
+        return bookingEdited;
+    }
+
+    public boolean cancelBooking(int bookingID) {
+        boolean bookingCancelled = false;
+        if (bookings.containsKey(bookingID)) {
+            ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
+            parkingSpot.unoccupy(bookingID);
+            bookings.remove(bookingID);
+            if (confirmRefund(bookingID))
+                bookingCancelled = true;
+        }
+        return bookingCancelled;
+    }
+
+    private boolean confirmRefund(int bookingID) {
+        // Get payment system and confirm refund
+        PaymentSystem paymentSystem = PaymentSystem.getInstance();
+        return paymentSystem.confirmRefund(bookingID);
+    }
+
+    public boolean extendBooking(int bookingID, int time) {
+        boolean bookingExtended = false;
+        if (bookings.containsKey(bookingID)) {
+            ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
+            if (!parkingSpot.isOccupied(time)) {
+                parkingSpot.occupyTime(bookingID, time);
+                bookingExtended = true;
+            }
+        }
+        return bookingExtended;
+    }
+
+    public boolean checkout(int bookingID, int payment) {
+        boolean checkedOut = false;
+        if (confirmPayment(bookingID, payment))
+            checkedOut = true;
+
+        return checkedOut;
+    }
+
+    private boolean confirmPayment(int bookingID, int payment) {
+        // Get payment system and confirm payment
+        PaymentSystem paymentSystem = PaymentSystem.getInstance();
+        return paymentSystem.confirmPayment(bookingID, "CREDIT_CARD", payment);
+    }
+
+    public void updateParkingAvailability(ParkingSpace space) {
+        // This method is for updating parking availability when changes occur
+        // For example, when space status changes, update any affected bookings
+    }
 }
