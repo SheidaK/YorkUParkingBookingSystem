@@ -3,7 +3,6 @@ package businessLogic;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import objects.Client;
 import objects.ParkingSpace;
@@ -38,7 +37,6 @@ public class BookingSystem {
 		this.bookings = bookings;
 	}
 	
-
 	public boolean bookParkingSpace(String clientLicense, int parkingLotID, int parkingSpaceID, int deposit, int startTime, int hours) {
 		boolean bookingComplete = false;
 	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000);
@@ -63,22 +61,21 @@ public class BookingSystem {
 		}
 		return bookingComplete;
 	}
+
 	
 	public boolean bookParkingSpace(String bookingID, int ParkingID, int startTime, int hours) {
 		boolean bookingComplete = false;
 	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000); // Convert hours to milliseconds
 	    Date endTime = new Date(endTimeInMillis);
-	    Visit visit = Visit.getVisit(bookingID);
 	    
 		ParkingSpace parkingSpot = ParkingID.getParkingSpace();
 		if (!parkingSpot.isOccupied(startTime, endTime) && parkingSpot.isEnabled()) {
 			parkingSpot.setOccupied(bookingID, startTime, endTime); 
-			visit.setStartTime(startTime);
-			visit.setEndTime(endTime);
 			bookingComplete = true;
 		}
 		return bookingComplete;
 	}
+
 	
 	public boolean editBooking(String bookingID, int ParkingID, int startTime, int hours) {
 		boolean bookingEdited = false;
@@ -86,36 +83,29 @@ public class BookingSystem {
 	    long endTimeInMillis = startTime + (hours * 60 * 60 * 1000); // Convert hours to milliseconds
 	    Date endTime = new Date(endTimeInMillis);
 	    Visit visit = Visit.getVisit(bookingID);
-		
+
 		if (!parkingSpot.isOccupied(startTime, endTime) && parkingSpot.isEnabled()) {
 			cancelBooking(bookingID);
 			parkingSpot.unOccupy(startTime, endTime); //remove occupied status from start time to end time, can change to hours if needed
 			bookParkingSpace(bookingID, ParkingID, startTime, hours);
-			visit.setStartTime(startTime);
-			visit.setEndTime(endTime);
+			
 		}
-		
+
 		return bookingEdited;
 	}
+
 	
 	public boolean cancelBooking(String bookingID) {
 		boolean bookingCancelled = false;
-		Date currentDate = new Date();
-		Date newEndTime;
-		long timeInMillis = currentDate.getTime();
-		if ((timeInMillis / (1000 * 60)) % 60 > 0) 
-			newEndTime = new Date (timeInMillis += (60 - (timeInMillis / (1000 * 60)) % 60) * 60 * 1000);
 		Visit visit = Visit.getVisit(bookingID);
 			if (bookings.containsKey(bookingID)) {
 				ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
 				parkingSpot.unOccupy(visit.startTime, visit.endTime);
 				bookings.remove(bookingID);
-				if (PaymentSystem.confirmRefund(bookingID) &&visit.getStartTime().after(newEndTime)) 
+				if (PaymentSystem.confirmRefund(bookingID))
 					bookingCancelled = true;
-				visit.setEndTime(newEndTime);
 			}
 		return bookingCancelled;
-				
 	}
 	
 	public boolean extendBooking(String bookingID, int endTime, int hours) {
@@ -126,14 +116,14 @@ public class BookingSystem {
 		ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
 		if (bookings.containsKey(bookingID) && !parkingSpot.isOccupied(currentEndTime, newEndTime)) {
 			parkingSpot.setOccupied(bookingID, currentEndTime, newEndTime);
-			visit.setEndTime(newEndTime);
 			bookingExtended = true;
 		}
 		return bookingExtended;
 	}
 	
-	public boolean checkout(String bookingID, int payment, String paymentMethod) {
+	public boolean checkout(int bookingID, int payment) {
 		boolean checkedOut = false;
+
 		Visit visit = Visit.getVisit(bookingID);
 		Client client = visit.getClientDetail();
 		int duration = visit.getDuration();

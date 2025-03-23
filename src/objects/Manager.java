@@ -28,10 +28,10 @@ public class Manager {
         return "Manager";
     }
 
-    // Add a new parking lot
-    public boolean addParkingLot() {
-        return SystemDatabase.getInstance().addParkingLot();
-    }
+//    // Add a new parking lot
+//    public boolean addParkingLot() {
+//        return SystemDatabase.getInstance().addParkingLot();
+//    }
 
     // Enable a parking lot
     public boolean enableParkingLot(String parkingLotID) {
@@ -43,15 +43,15 @@ public class Manager {
         return SystemDatabase.getInstance().setParkingLotStatus(parkingLotID, false);
     }
 
-    // Enable a specific parking space
-    public boolean enableParkingSpace(String parkingLotID, String parkingSpaceID) {
-        return SystemDatabase.getInstance().setParkingSpaceStatus(parkingLotID, parkingSpaceID, true);
-    }
-
-    // Disable a specific parking space
-    public boolean disableParkingSpace(String parkingLotID, String parkingSpaceID) {
-        return SystemDatabase.getInstance().setParkingSpaceStatus(parkingLotID, parkingSpaceID, false);
-    }
+//    // Enable a specific parking space
+//    public boolean enableParkingSpace(String parkingLotID, String parkingSpaceID) {
+//        return SystemDatabase.getInstance().setParkingSpaceStatus(parkingLotID, parkingSpaceID, true);
+//    }
+//
+//    // Disable a specific parking space
+//    public boolean disableParkingSpace(String parkingLotID, String parkingSpaceID) {
+//        return SystemDatabase.getInstance().setParkingSpaceStatus(parkingLotID, parkingSpaceID, false);
+//    }
 
     // Validate University Staff
     public boolean validateUniversityStaff(Client user) {

@@ -21,9 +21,15 @@ public class ParkingSpaceManagerView extends JFrame {
     private JComboBox<String> spaceTypeComboBox;
     
     public ParkingSpaceManagerView(ParkingLot parkingLot) {
-        parkingSystem = ParkingSystem.getInstance();
-        initComponents(parkingLot);
-        loadParkingSpaces(parkingLot);
+        try {
+			parkingSystem = ParkingSystem.getInstance();
+			initComponents(parkingLot);
+	        loadParkingSpaces(parkingLot);
+        } catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
     }
     
     private void initComponents(ParkingLot parkingLot) {
@@ -78,7 +84,7 @@ public class ParkingSpaceManagerView extends JFrame {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
-                boolean success = parkingSystem.removeParkingSpace(parkingLot,spaceId);
+                boolean success = parkingSystem.removeParkingSpace(parkingLot,Integer.valueOf(spaceId));
                 if (success) {
                     loadParkingSpaces(parkingLot);
                 } else {
@@ -92,7 +98,7 @@ public class ParkingSpaceManagerView extends JFrame {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
-               // parkingSystem.enableParkingSpace(spaceId);
+                parkingSystem.enableParkingSpace(parkingLot, Integer.valueOf(spaceId));
                 loadParkingSpaces(parkingLot);
             }
         });
@@ -101,7 +107,7 @@ public class ParkingSpaceManagerView extends JFrame {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
-                //parkingSystem.disableParkingSpace(spaceId);
+                parkingSystem.disableParkingSpace(parkingLot, Integer.valueOf(spaceId));
                 loadParkingSpaces(parkingLot);
             }
         });
@@ -111,7 +117,7 @@ public class ParkingSpaceManagerView extends JFrame {
             if (selectedRow >= 0) {
                 String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
                 boolean currentlyOccupied = "Yes".equals(tableModel.getValueAt(selectedRow, 3));
-               // parkingSystem.simulateVehicleDetection(spaceId, !currentlyOccupied);
+                parkingSystem.simulateVehicleDetection(parkingLot, Integer.valueOf(spaceId), !currentlyOccupied);
                 loadParkingSpaces(parkingLot);
             }
         });
@@ -119,19 +125,26 @@ public class ParkingSpaceManagerView extends JFrame {
 
     private void loadParkingSpaces(ParkingLot parkingLot) {
         tableModel.setRowCount(0);
-        List<ParkingSpace> spaces = ParkingSystem.getInstance().getAvailableSpaces(parkingLot);
+        List<ParkingSpace> spaces;
+		try {
+			spaces = ParkingSystem.getInstance().getAvailableSpaces(parkingLot);
+			for (ParkingSpace space : spaces) {
+	            Object[] row = {
+	                space.getSpaceId(),
+	                space.getType(),
+	                space.isEnabled() ? "Enabled" : "Disabled",
+	                space.isOccupied() ? "Yes" : "No",
+	                space.getParkedCar() != null ? space.getParkedCar().toString() : "None"
+	            };
+	            tableModel.addRow(row);
+	            
+	        }
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        for (ParkingSpace space : spaces) {
-            Object[] row = {
-                space.getSpaceId(),
-                space.getType(),
-                space.isEnabled() ? "Enabled" : "Disabled",
-                space.isOccupied() ? "Yes" : "No",
-                space.getParkedCar() != null ? space.getParkedCar().toString() : "None"
-            };
-            tableModel.addRow(row);
-            
-        }
+        
         
     }
 

@@ -66,8 +66,9 @@ public class ApprovalRequestsView {
 		btnParkingLots.setBounds(898, 43, 190, 40);
 		btnParkingLots.addActionListener(new ActionListener() {
 		public void actionPerformed(ActionEvent e) {
-			//Page where manager can view list of parking lots and the parking spaces within it and can enable/disable parking lots/parking spaces.
-			ParkingSpaceManagerView parkingView = new ParkingSpaceManagerView();
+			//Page where manager can view list of parking lots
+			ParkingLotManagerView parkingView = new ParkingLotManagerView(1);
+			parkingView.showManagerView(1);
 			frame.setVisible(false);
 			frame.dispose();
 		}

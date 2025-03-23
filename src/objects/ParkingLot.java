@@ -31,7 +31,16 @@ public class ParkingLot implements ParkingStatusObserver {
         this.sensors = new HashMap<>();
         this.observers = new ArrayList<>();
         this.enabled = true; 
-
+        int parkingSpaceID = 1;
+        ParkingSpace p = new ParkingSpace(parkingSpaceID,"Regular");
+        spaces.add(p);
+        ParkingSpace clonedParkingSpace;
+        for(int i=1;i<100;i++) {
+        	clonedParkingSpace = p.clone();
+        	parkingSpaceID++;
+        	p.setSpaceId(parkingSpaceID);
+        	spaces.add(clonedParkingSpace);
+        }
     }
     
     // Singleton getInstance method
@@ -98,7 +107,7 @@ public class ParkingLot implements ParkingStatusObserver {
         notifyAvailabilityChanged(getAvailableSpaces());
     }
     
-    public boolean removeParkingSpace(String spaceId) {
+    public boolean removeParkingSpace(int spaceId) {
         ParkingSpace spaceToRemove = findSpaceById(spaceId);
         if (spaceToRemove != null) {
             // Remove associated sensor
@@ -115,9 +124,9 @@ public class ParkingLot implements ParkingStatusObserver {
         return false;
     }
     
-    public ParkingSpace findSpaceById(String spaceId) {
+    public ParkingSpace findSpaceById(int spaceId) {
         for (ParkingSpace space : spaces) {
-            if (space.getSpaceId().equals(spaceId)) {
+            if (space.getSpaceId()==spaceId) {
                 return space;
             }
         }

@@ -176,12 +176,13 @@ public class SystemDatabase {
 			parkingLots.remove(parkingLot);
 		}
 	}
-	
+	/*
 	public boolean addParkingLot() {
 	    ParkingLot newLot = ParkingLot.getInstance("Lot_" + parkingLots.size(), 100); // Assign a unique name and default capacity
 	    parkingLots.add(newLot);
 	    return true;
 	}
+	*/
 
 	  public boolean setParkingLotStatus(String lotName, boolean enabled) {
 	        for (ParkingLot lot : parkingLots) {
@@ -193,7 +194,7 @@ public class SystemDatabase {
 	        return false;
 	    }
 
-	  public boolean setParkingSpaceStatus(String lotName, String parkingSpaceID, boolean enabled) {
+	  public boolean setParkingSpaceStatus(String lotName, int parkingSpaceID, boolean enabled) {
 	        for (ParkingLot lot : parkingLots) {
 	            if (lot.getName().equals(lotName)) {
 	                ParkingSpace space = lot.findSpaceById(parkingSpaceID); // Correct method
