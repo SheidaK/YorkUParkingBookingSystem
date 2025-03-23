@@ -7,14 +7,14 @@ import java.util.List;
  * Implements the Observer pattern for parking sensors
  * Notifies subscribers when parking status changes
  */
-public class ParkingSensor {
-    private String sensorId;
+public class ParkingSensor implements Cloneable{
+    private int sensorId;
     private boolean occupied;
     private ParkingSpace monitoredSpace;
     private List<ParkingStatusObserver> observers;
     
-    public ParkingSensor(String sensorId, ParkingSpace monitoredSpace) {
-        this.sensorId = sensorId;
+    public ParkingSensor(int parkingSpaceID, ParkingSpace monitoredSpace)  {
+        this.sensorId = parkingSpaceID;
         this.monitoredSpace = monitoredSpace;
         this.occupied = false;
         this.observers = new ArrayList<>();
@@ -45,7 +45,7 @@ public class ParkingSensor {
     }
     
     // Getters and setters
-    public String getSensorId() {
+    public int getSensorId() {
         return sensorId;
     }
     
@@ -55,6 +55,18 @@ public class ParkingSensor {
     
     public ParkingSpace getMonitoredSpace() {
         return monitoredSpace;
+    }
+    public ParkingSensor clone(int parkingSpaceID, ParkingSpace monitoredSpace) {
+        try {
+            ParkingSensor cloned = (ParkingSensor) super.clone();
+            cloned.sensorId = parkingSpaceID;
+            cloned.monitoredSpace = monitoredSpace;
+            cloned.occupied = false;
+            cloned.observers = new ArrayList<>();
+            return cloned;
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException("Failed to clone ParkingSpace", e);
+        }
     }
 }
 

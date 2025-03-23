@@ -34,11 +34,16 @@ public class ParkingLot implements ParkingStatusObserver {
         int parkingSpaceID = 1;
         ParkingSpace p = new ParkingSpace(parkingSpaceID,"Regular");
         spaces.add(p);
+        ParkingSensor s = new ParkingSensor(parkingSpaceID,p);
+    	p.assignSensor(s);
         ParkingSpace clonedParkingSpace;
+        ParkingSensor clonedParkingSensor;
         for(int i=1;i<100;i++) {
         	clonedParkingSpace = p.clone();
         	parkingSpaceID++;
-        	p.setSpaceId(parkingSpaceID);
+        	clonedParkingSpace.setSpaceId(parkingSpaceID);
+        	clonedParkingSensor =s.clone(parkingSpaceID, p);
+        	clonedParkingSpace.assignSensor(clonedParkingSensor);
         	spaces.add(clonedParkingSpace);
         }
     }
@@ -99,9 +104,9 @@ public class ParkingLot implements ParkingStatusObserver {
         spaces.add(space);
         
         // Create and associate a sensor
-        ParkingSensor sensor = new ParkingSensor("S" + space.getSpaceId(), space);
+        ParkingSensor sensor = new ParkingSensor(space.getSpaceId(), space);
         sensor.addObserver(this);
-        sensors.put(sensor.getSensorId(), sensor);
+        sensors.put(String.valueOf(sensor.getSensorId()), sensor);
         space.assignSensor(sensor);
         
         notifyAvailabilityChanged(getAvailableSpaces());
@@ -142,6 +147,9 @@ public class ParkingLot implements ParkingStatusObserver {
         }
         return availableSpaces;
     }
+    public List<ParkingSpace> getAllSpaces() {
+        return spaces;
+    }
     
     public int getAvailableSpacesCount() {
         return getAvailableSpaces().size();
@@ -156,9 +164,9 @@ public class ParkingLot implements ParkingStatusObserver {
         return totalCapacity;
     }
     
-    public List<ParkingSpace> getAllSpaces() {
-        return new ArrayList<>(spaces);
-    }
+//    public List<ParkingSpace> getAllSpaces() {
+//        return new ArrayList<>(spaces);
+//    }
     
     public Map<String, ParkingSensor> getAllSensors() {
         return new HashMap<>(sensors);

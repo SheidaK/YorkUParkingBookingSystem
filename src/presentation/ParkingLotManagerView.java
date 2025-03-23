@@ -10,6 +10,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 /**
  * GUI for parking lot managers to maintain parking services
@@ -24,7 +26,6 @@ public class ParkingLotManagerView extends JFrame {
     private JTextField name;
     private JLabel lblNewLabel_1;
     SystemDatabase systemDB = SystemDatabase.getInstance();
-    private JButton parkingSpaceButton;
     private JButton backButton;
 
     
@@ -49,6 +50,20 @@ public class ParkingLotManagerView extends JFrame {
         String[] columnNames = {"Name", "Location", "Status", "Maximum Capcity"};
         tableModel = new DefaultTableModel(columnNames, 0);
         parkingLotTable = new JTable(tableModel);
+        parkingLotTable.addMouseListener(new MouseAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		 int selectedRow = parkingLotTable.getSelectedRow();
+                 if (selectedRow >= 0) {
+                     String name = (String) tableModel.getValueAt(selectedRow, 0);
+                     ParkingLot p = parkingSystem.getParkingLotInfo(name);
+                     ParkingSpaceManagerView view = new ParkingSpaceManagerView(p,page);
+                     view.showManagerView(p,page);
+                     setVisible(false);
+                     dispose();
+                 }
+        	}
+        });
         JScrollPane scrollPane = new JScrollPane(parkingLotTable);
         getContentPane().add(scrollPane, BorderLayout.CENTER);
 
@@ -87,18 +102,6 @@ public class ParkingLotManagerView extends JFrame {
 
         controlPanel.add(addRemovePanel);
         controlPanel.add(actionPanel);
-        
-        parkingSpaceButton = new JButton("Manage Parking Spaces for Selected Parking Lot");
-        parkingSpaceButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-        		ParkingLot p = parkingSystem.getParkingLotInfo(name.getText());
-        		ParkingSpaceManagerView view = new ParkingSpaceManagerView(p);
-        		view.showManagerView(p);
-        		setVisible(false);
-        		dispose();
-        	}
-        });
-        actionPanel.add(parkingSpaceButton);
         
         backButton = new JButton("Back");
         backButton.addActionListener(new ActionListener() {

@@ -30,8 +30,33 @@ public class Database {
 		} 
 		return rows;
 	}
-	public void overWrite() {
-		
+	public void overWrite(String id,int numOfHeaders,int columnNum,String newValue) {
+
+		try {
+			CsvReader reader = new CsvReader(this.filePath);
+            reader.readHeaders(); 
+			 List<String[]> existingData = new ArrayList<>();
+			 String[] header = new String[numOfHeaders];
+			 header = reader.getHeaders();
+			 existingData.add(header);
+			 while (reader.readRecord()) {
+				 String[] row = reader.getValues();
+				 if(!row[1].trim().equals(id)) {
+					 existingData.add(row);
+				 }else {
+					 row[columnNum]= newValue;
+					 existingData.add(row);
+				 }
+	         }
+			 reader.close();
+			 CsvWriter csvOutput = new CsvWriter(new FileWriter(this.filePath, false), ',');
+			 for (String[] row : existingData) {
+				 csvOutput.writeRecord(row);
+	            }
+			csvOutput.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	public void update(String[] newRow) {
 		try {

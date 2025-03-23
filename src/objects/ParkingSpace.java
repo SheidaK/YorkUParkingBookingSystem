@@ -123,4 +123,13 @@ public class ParkingSpace implements Cloneable {
                (occupied ? "Occupied" : "Available") + 
                (sensor != null ? ", Sensor Attached" : ", No Sensor");
     }
+
+	public String getEnablesString() {
+		// TODO Auto-generated method stub
+		if(isEnabled()) {return "Enabled";}else {return "Disabled";}
+	}
+	public String getOccupiedString() {
+		// TODO Auto-generated method stub
+		if(isOccupied()) {return "Occupied";}else {return "Available";}
+	}
 }

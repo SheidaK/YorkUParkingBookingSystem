@@ -20,6 +20,7 @@ public class ParkingSystem implements ParkingLotObserver {
 	Database dbParkingSpace = new Database(path2);
     private ArrayList<ParkingLot> parkingLot=new ArrayList<ParkingLot>();
     private BookingSystem bookingSystem;
+    private int numOfSensors=0;
     
     // Private constructor for Singleton pattern
     private ParkingSystem() throws Exception {
@@ -41,23 +42,25 @@ public class ParkingSystem implements ParkingLotObserver {
 			parkingLot.add(l);
 		}
 		List<String[]> dataParkingSpace = dbParkingSpace.read();
+		int sensor = 1;
 			for(String[] row:dataParkingSpace) {
-				ParkingSpace s = getParkingLotInfo(row[0]).findSpaceById(Integer.valueOf(row[1].trim()));
-				if(row[2].trim().equals("Enabled")) {
-					s.setEnabled(true);
-				}else {
-					s.setEnabled(false);
+				ParkingLot l = getParkingLotInfo(row[0]);
+				if(l!=null) {
+					ParkingSpace s = l.findSpaceById(Integer.valueOf(row[1].trim()));
+					if(row[2].trim().equals("Enabled")) {
+						s.setEnabled(true);
+					}else {
+						s.setEnabled(false);
+					}
+					if(row[3].trim().equals("Occupied")) {
+						s.setOccupied(true);
+					}else {
+						s.setOccupied(false);
+					}
+					ParkingSensor newSensor = new ParkingSensor(Integer.valueOf(row[1].trim()),s);
+					s.assignSensor(newSensor);
 				}
-				if(row[3].trim().equals("Occupied")) {
-					s.setOccupied(true);
-				}else {
-					s.setOccupied(false);
-				}
-				ParkingLot l = new ParkingLot(row[0],row[1],Integer.valueOf(row[3].trim()));
-				if(row[2].trim().equals("Enabled")) {
-					l.setStatus(true);
-				}else {l.setStatus(false);}
-				parkingLot.add(l);
+				
 			}
     }
     
@@ -76,7 +79,7 @@ public class ParkingSystem implements ParkingLotObserver {
     
     // Facade methods for client interaction
     public List<ParkingSpace> getAvailableSpaces(ParkingLot parkingLot) {
-        return parkingLot.getAvailableSpaces();
+        return parkingLot.getAllSpaces();
     }
     
     public boolean parkCar(ParkingLot parkingLot,int spaceId, Car car) {
@@ -97,16 +100,18 @@ public class ParkingSystem implements ParkingLotObserver {
     
     // Manager operations
     public void enableParkingSpace(ParkingLot parkingLot, int spaceId) {
-        ParkingSpace space = parkingLot.findSpaceById(spaceId);
+        ParkingSpace space = parkingLot.findSpaceById(Integer.valueOf(spaceId));
         if (space != null) {
             space.setEnabled(true);
+            dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Enabled" );
         }
     }
     
     public void disableParkingSpace(ParkingLot parkingLot, int spaceId) {
-        ParkingSpace space = parkingLot.findSpaceById(spaceId);
+        ParkingSpace space = parkingLot.findSpaceById(Integer.valueOf(spaceId));
         if (space != null) {
             space.setEnabled(false);
+            dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Disabled" );
         }
     }
 //    public void addParkingSpace(ParkingLot lot, ParkingSpace space) {
@@ -189,6 +194,11 @@ public class ParkingSystem implements ParkingLotObserver {
 			parkingLot.add(newParkingLot);
 			String[] lst = {newParkingLot.getName(), newParkingLot.getLocation(), newParkingLot.getStatus(),String.valueOf(newParkingLot.getCapcity())};
 			dbParkingLots.update(lst);
+			
+			for(ParkingSpace s: newParkingLot.getAllSpaces()) {
+				String[] lst_spaces = {newParkingLot.getName(),String.valueOf(s.getSpaceId()),s.getEnablesString(),s.getOccupiedString(),String.valueOf(s.getSensor().getSensorId()),null};
+				dbParkingSpace.update(lst_spaces);
+			}
 		}
 	}
 	public ParkingLot getParkingLotInfo(String name) {
@@ -199,5 +209,14 @@ public class ParkingSystem implements ParkingLotObserver {
 		}    
 		return null;
 	}
+	public int getNumofSensor() {
+		return numOfSensors;
+	}
+	public void increaseNumofSensor() {
+		 numOfSensors++;
+	}
+
+
+	
 
 }
