@@ -17,7 +17,14 @@ public class BookingSystem {
     private BookingSystem() throws Exception {
         // Get reference to SystemDatabase
         this.systemDatabase = SystemDatabase.getInstance();
-        this.parkingSystem = ParkingSystem.getInstance();
+    }
+    
+    private ParkingSystem ParkingSystem() throws Exception {
+    	// Get reference to ParkingSystem
+        if (parkingSystem == null) {
+            parkingSystem = ParkingSystem.getInstance();
+        }
+        return parkingSystem;
     }
 
     public static synchronized BookingSystem getInstance() throws Exception {
@@ -25,6 +32,7 @@ public class BookingSystem {
             bookingSystem = new BookingSystem();
         return bookingSystem;
     }
+    
 
     /**
      * @return the bookings
@@ -171,9 +179,13 @@ public class BookingSystem {
     }
 
     public boolean checkout(int bookingID, int payment) {
+    	Visit visit = Visit.getVisit(bookingID);
         boolean checkedOut = false;
-        if (confirmPayment(bookingID, payment))
+        if (confirmPayment(bookingID, payment)) {
             checkedOut = true;
+            Date currentTime = new Date();
+            visit.setEndTime(currentTime);
+        }
 
         return checkedOut;
     }
