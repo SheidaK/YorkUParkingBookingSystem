@@ -1,78 +1,47 @@
 package objects;
 
-import java.util.Map;
-
-/**
- * Represents a single parking space in the parking lot.
- * Implements the Prototype pattern to allow cloning of parking spaces.
- */
-public class ParkingSpace implements Cloneable {
+public class ParkingSpace {
     private int spaceId;
+    private String type;
     private boolean occupied;
     private boolean enabled;
-    private Car parkedCar;
     private ParkingSensor sensor;
-    private String type; // Regular, Handicapped, VIP, etc.
-    private Map<Integer, Boolean> timeOccupancyMap;
+    private ParkingLot parkingLot; // Reference to the containing parking lot
+    private Car parkedCar; // Store the parked car
 
-    
+    // Constructor
     public ParkingSpace(int spaceId, String type) {
         this.spaceId = spaceId;
         this.type = type;
         this.occupied = false;
         this.enabled = true;
+        // Create a sensor ID based on the space ID
+        String sensorId = "SENSOR-" + spaceId;
+        this.sensor = new ParkingSensor(sensorId, this);
         this.parkedCar = null;
-    }
-
-    // Associate a sensor with this space
-    public void assignSensor(ParkingSensor sensor) {
-        this.sensor = sensor;
-    }
-
-    // Parking functionality
-    public boolean parkCar(Car car) {
-        if (!occupied && enabled) {
-            this.parkedCar = car;
-            this.occupied = true;
-            return true;
-        }
-        return false;
-    }
-
-    public Car removeCar() {
-        if (occupied) {
-            Car car = this.parkedCar;
-            this.parkedCar = null;
-            this.occupied = false;
-            return car;
-        }
-        return null;
-    }
-
-    // Prototype Pattern: Clone method
-    @Override
-    public ParkingSpace clone() {
-        try {
-            ParkingSpace cloned = (ParkingSpace) super.clone();
-            cloned.parkedCar = null; // Cloning a parking space should not retain parked cars
-            cloned.occupied = false; // Reset occupied status
-            cloned.sensor = null; // Sensor will be assigned separately
-            return cloned;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException("Failed to clone ParkingSpace", e);
-        }
     }
 
     // Getters and setters
     public int getSpaceId() {
         return spaceId;
     }
-    public void setSpaceId(int id) {
-       spaceId=id;
+
+    public String getType() {
+        return type;
     }
 
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public boolean isOccupied() {
+        return occupied;
+    }
+
+    // Check if occupied at a specific time
+    public boolean isOccupied(int time) {
+        // Implement time-based occupation check
+        // This is a simplified version - in a real app, you'd check against scheduled times
         return occupied;
     }
 
@@ -88,39 +57,51 @@ public class ParkingSpace implements Cloneable {
         this.enabled = enabled;
     }
 
-    public Car getParkedCar() {
-        return parkedCar;
-    }
-
-    public String getType() {
-        return type;
-    }
-
     public ParkingSensor getSensor() {
         return sensor;
     }
-    // New method to check if the space is occupied at a specific time
-    public boolean isOccupiedAt(int timeSlot) {
-        Boolean isOccupied = timeOccupancyMap.get(timeSlot);
-        return isOccupied != null && isOccupied;
+
+    public ParkingLot getParkingLot() {
+        return parkingLot;
     }
-    
-    // Method to occupy a time slot
-    public void occupyTime(int bookingId, int timeSlot) {
-        timeOccupancyMap.put(timeSlot, true);
+
+    public void setParkingLot(ParkingLot parkingLot) {
+        this.parkingLot = parkingLot;
     }
-    
-    // Method to free up a time slot
-    public void unoccupyTime(int bookingId) {
-        for (Integer timeSlot : timeOccupancyMap.keySet()) {
-            timeOccupancyMap.put(timeSlot, false);
+
+    // Parking functionality
+    public boolean parkCar(Car car) {
+        if (!occupied && enabled) {
+            occupied = true;
+            parkedCar = car; // Store the car reference
+            return true;
         }
+        return false;
     }
-    @Override
-    public String toString() {
-        return "Space " + spaceId + " (" + type + "): " + 
-               (enabled ? "Enabled" : "Disabled") + ", " +
-               (occupied ? "Occupied" : "Available") + 
-               (sensor != null ? ", Sensor Attached" : ", No Sensor");
+
+    public Car removeCar() {
+        if (occupied) {
+            occupied = false;
+            Car car = parkedCar; // Get the reference to return
+            parkedCar = null;    // Clear the reference
+            return car;          // Return the actual car
+        }
+        return null;
+    }
+
+    // Time-based occupation methods
+    public void occupyTime(int bookingID, int time) {
+        // Occupy the space for a specific time slot
+        this.occupied = true;
+    }
+
+    public void unoccupyTime(int bookingID) {
+        // Free up the space for a specific booking
+        this.occupied = false;
+    }
+
+    public void unoccupy(int bookingID) {
+        // Free up the space for a specific booking
+        this.occupied = false;
     }
 }
