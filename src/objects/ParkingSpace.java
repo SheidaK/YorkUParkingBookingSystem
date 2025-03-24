@@ -127,7 +127,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
 	   		}
 	    	String dateString = getDateString(date);
 	    	if(occupiedTimes.get(dateString)!=null) {
-		    	if(occupiedTimes.get(dateString).get(time)!=null) {
+		    	if(occupiedTimes.get(dateString).get(time1)!=null) {
 		    		return true;
 		    	}
 	    	}

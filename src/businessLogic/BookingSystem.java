@@ -37,6 +37,7 @@ public class BookingSystem implements ParkingStatusObserver{
 			int duration = Integer.valueOf(row[3].trim());
 			ParkingLot lot = parkingSystem.getParkingLotInfo(row[4]);
 			ParkingSpace s = lot.findSpaceById(Integer.valueOf(row[5]));
+			s.occupyTime(bookingId, date, startTime, duration);
 			Client c = systemDatabase.getClientInfo(row[6].trim());
 			String license = row[7].trim();
 			int moneyPaid = Integer.valueOf(row[8].trim());

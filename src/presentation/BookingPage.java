@@ -450,7 +450,7 @@ public class BookingPage extends JFrame {
         }
         
         // Get available parking spaces for the selected lot
-        ArrayList<ParkingSpace> spaces = (ArrayList<ParkingSpace>) selectedLot.getAllSpaces();
+        ArrayList<ParkingSpace> spaces = (ArrayList<ParkingSpace>) selectedLot.getAvailableSpaces();
         for (ParkingSpace space : spaces) {
             // Check if space is enabled and available for the entire duration
             if (space.isEnabled() && isAvailableForDuration(space)) {
@@ -469,15 +469,15 @@ public class BookingPage extends JFrame {
     
     private boolean isAvailableForDuration(ParkingSpace space) {
         // Check if the space is available for each hour in the duration
-        for (int i = 0; i < selectedDuration; i++) {
-            int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
+        //for (int i = 0; i < selectedDuration; i++) {
+         //   int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
             
             // Use the isOccupied method that accepts a time parameter
-            if (space.isOccupied(selectedDate, timeSlot,selectedDuration)) {
-                return false; // Not available for the entire duration
-            }
-        }
-        return true; // Available for the entire duration
+            return !space.isOccupied(selectedDate, selectedTimeSlot,selectedDuration);
+           //     return false; // Not available for the entire duration
+       //     }
+       // }
+       // return true; // Available for the entire duration
     }
     
     public static void showBookingPageView() {
