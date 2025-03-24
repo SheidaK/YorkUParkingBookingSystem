@@ -120,19 +120,20 @@ public class EditBookings {
         }
 
         int bookingId = (int) model.getValueAt(selectedRow, 0);
-        int parkingLotId = (int) model.getValueAt(selectedRow, 2); // Parking ID from the table
-        String parkingSpaceId = (String) model.getValueAt(selectedRow, 3);
+        String parkingLotName = (String) model.getValueAt(selectedRow, 3); // Parking lot name
+        int parkingSpaceId = (int) model.getValueAt(selectedRow, 2); // Parking space ID
         int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
+        
         BookingSystem bookingSystem = BookingSystem.getInstance();
-                
-                
-                if (bookingSystem.editBooking(bookingId, parkingSpaceId, parkingLotId, time)) {
-                    loadBookings(model);
-                    JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            } 
+        
+        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time)) {
+            loadBookings(model);  // Reload the updated bookings table
+            JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
    
 
     private static void cancelBooking(JTable table, DefaultTableModel model) throws Exception {
