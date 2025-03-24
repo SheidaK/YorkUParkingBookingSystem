@@ -280,7 +280,7 @@ public class BookingPage extends JFrame {
                 for (int i = 0; i < selectedDuration; i++) {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
                     int id = bookingSystem.generateBookingID();
-                    boolean hourSuccess = bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), timeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
+                    boolean hourSuccess = bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), selectedTimeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
                     if (!hourSuccess) {
                         success = false;
                         break;
