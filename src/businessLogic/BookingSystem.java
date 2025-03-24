@@ -1,8 +1,11 @@
 package businessLogic;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import database.Database;
@@ -20,6 +23,23 @@ public class BookingSystem {
     private BookingSystem() throws Exception {
         // Get reference to SystemDatabase
         this.systemDatabase = SystemDatabase.getInstance();
+        List<String[]> dataBookings = db.read();
+		for(String[] row:dataBookings) {
+			if(!row[0].isEmpty()) {
+			int bookingId = Integer.valueOf(row[0].trim());
+			Date date = convertIntToDate(row[1].trim());
+			int startTime = Integer.valueOf(row[2].trim());
+			int duration = Integer.valueOf(row[3].trim());
+			ParkingLot lot = parkingSystem.getParkingLotInfo(row[4]);
+			ParkingSpace s = lot.findSpaceById(Integer.valueOf(row[5]));
+			Client c = systemDatabase.getClientInfo(row[6].trim());
+			String license = row[7].trim();
+			int moneyPaid = Integer.valueOf(row[8].trim());
+			//row[1]=date
+			Visit v = new Visit(bookingId,date,startTime,duration,lot,s,c,moneyPaid,license);
+			bookings.put(Integer.valueOf(row[0]),v);
+			}
+		}
     }
     
     private ParkingSystem ParkingSystem() throws Exception {
@@ -46,7 +66,7 @@ public class BookingSystem {
     public Map<Integer,Visit> getBookingsForClient(Client c){
     	Map<Integer,Visit> bookingsClient = new HashMap<Integer, Visit>();
     	for (Map.Entry<Integer, Visit> entry : bookings.entrySet()) {
-    		if(entry.getValue().clientDetail.getEmail().equals(c.getEmail())) {
+    		if(entry.getValue().getClientDetail().getEmail().equals(c.getEmail())) {
     			bookingsClient.put(entry.getKey(),entry.getValue());
     		}
     	}
@@ -60,7 +80,7 @@ public class BookingSystem {
         this.bookings = bookings;
     }
 
-    public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time, Date date,int initialtime, int duration, String licence) {
+    public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time, Date date,int initialtime, int duration, String license) {
         boolean bookingComplete = false;
         int id =generateBookingID();
         // Get parking lot by ID
@@ -92,7 +112,8 @@ public class BookingSystem {
             
             SystemDatabase.addRevenue(deposit);
            // Date date = new Date();
-            Visit visit = new Visit(date,date, client, parkingLot, parkingSpot, deposit, String.valueOf(bookingID));
+			Visit visit = new Visit(bookingID,date,initialtime,duration,parkingLot,parkingSpot,client,deposit,license);
+
             bookings.put(bookingID, visit);
             bookingComplete = true;
         }
@@ -100,7 +121,7 @@ public class BookingSystem {
         String formattedDate = dateFormat.format(date);
         
         if(bookingComplete) {
-        	String[] newRow = {String.valueOf(id),formattedDate, String.valueOf(initialtime),String.valueOf(duration), parkingLotName, String.valueOf(parkingSpaceID),clientEmail,licence,String.valueOf(deposit)};
+        	String[] newRow = {String.valueOf(id),formattedDate, String.valueOf(initialtime),String.valueOf(duration), parkingLotName, String.valueOf(parkingSpaceID),clientEmail,license,String.valueOf(deposit)};
         	db.update(newRow);
         }
         return bookingComplete;
@@ -171,9 +192,12 @@ public class BookingSystem {
         if (bookings.containsKey(bookingID)) {
             ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
             parkingSpot.unoccupy(bookingID);
-            bookings.remove(bookingID);
-            if (confirmRefund(bookingID))
+            //if (confirmRefund(bookingID)) {
+                bookings.remove(bookingID);
                 bookingCancelled = true;
+                db.remove(String.valueOf(bookingID),9);
+            //}
+            
         }
         return bookingCancelled;
     }
@@ -218,4 +242,17 @@ public class BookingSystem {
         // This method is for updating parking availability when changes occur
         // For example, when space status changes, update any affected bookings
     }
+    private Date convertIntToDate(String dateString) {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date= null;
+         try {
+			date = dateFormat.parse(dateString);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return date;
+        }
+
 }

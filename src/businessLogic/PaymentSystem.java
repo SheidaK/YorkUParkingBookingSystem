@@ -45,7 +45,7 @@ public class PaymentSystem {
 
     // Confirm refund
     public boolean confirmRefund(int bookingID) {
-        if (!transactions.containsKey(bookingID)) {
+    	if (!transactions.containsKey(bookingID)) {
             return false; // No transaction found
         }
         transactions.remove(bookingID);

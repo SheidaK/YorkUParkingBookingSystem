@@ -147,7 +147,7 @@ public class Registration extends JFrame {
 						if(canRegister) {
 							try {
 								systemDB.addClient(c);
-								ClientView clientView = new ClientView(c);
+								EditBookings p = new EditBookings(c);
 								frame.setVisible(false);
 								frame.dispose();
 								frame.setVisible(false);

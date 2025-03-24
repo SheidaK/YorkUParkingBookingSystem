@@ -29,6 +29,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 public class ClientView {
 	protected static JFrame frame;
     private ImageIcon icon;
@@ -138,14 +139,19 @@ public class ClientView {
 	public void setVisible(boolean b) {
 		frame.setVisible(b);
 	}
-	private void loadBookings() {
-        model.setRowCount(0);
-         Map<Integer,Visit> bookings= bookingDB.getBookingsForClient(c);
-        if(bookings != null) {    	
-        	for (Map.Entry<Integer, Visit> entry : bookings.entrySet()) {
-        		model.addRow(new Object[]{
-        		});
-        }
+	private static void loadBookings(DefaultTableModel model) throws Exception {
+        model.setRowCount(0); 
+
+        BookingSystem bookingSystem = BookingSystem.getInstance();
+        Map<Integer, Visit> bookings = bookingSystem.getBookings();
+
+        for (Entry<Integer, Visit> entry : bookings.entrySet()) {
+            Integer bookingId = entry.getKey();
+            Visit visit = entry.getValue();
+            model.addRow(new Object[]{
+                    bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(),
+                    visit.getParkingLot().getName(), visit.getDuration()
+            });
         }
     }
 }

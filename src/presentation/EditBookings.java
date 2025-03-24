@@ -13,8 +13,9 @@ import businessLogic.*;
 import objects.*;
 
 public class EditBookings {
-    
+    private static Client c;
 	public EditBookings(Client c) {
+			this.c = c;
             JFrame frame = new JFrame("Confirmed Bookings");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setSize(1280, 720);
@@ -38,9 +39,9 @@ public class EditBookings {
             // Button Panel
             JPanel buttonPanel = new JPanel();
             JButton refreshButton = new JButton("Refresh");
-            JButton editButton = new JButton("Edit Booking");
-            JButton cancelButton = new JButton("Cancel Booking");
-            JButton extendButton = new JButton("Extend Booking");
+            JButton editButton = new JButton("Edit Selected Booking");
+            JButton cancelButton = new JButton("Cancel Selected Booking");
+            JButton extendButton = new JButton("Extend Selected Booking");
 
             refreshButton.addActionListener(e -> {
 				try {
@@ -81,15 +82,45 @@ public class EditBookings {
             buttonPanel.add(extendButton);
             frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
             
-            JButton backButton = new JButton("Back to View Bookings");
-            backButton.addActionListener(new ActionListener() {
+            JButton newBookingButton = new JButton("New Booking");
+            newBookingButton.addActionListener(new ActionListener() {
             	public void actionPerformed(ActionEvent e) {
-            		ClientView v = new ClientView(c);
-            		frame.setVisible(false);
-            		frame.dispose();
+            		//Page where client can make a new booking
+        			try {
+        				BookingPage p = new BookingPage(c);
+        				p.showBookingPageView();
+        				frame.setVisible(false);
+        				frame.dispose();
+        			} catch (Exception e1) {
+        				// TODO Auto-generated catch block
+        				e1.printStackTrace();
+        			}
+        			
             	}
             });
-            buttonPanel.add(backButton);
+            buttonPanel.add(newBookingButton);
+            
+            JButton signOutButton = new JButton("Sign Out");
+            signOutButton.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		MainPage main = new MainPage();
+    				frame.setVisible(false);
+    				frame.dispose();
+            	}
+            });
+            buttonPanel.add(signOutButton);
+    	    SystemDatabase systemDB = SystemDatabase.getInstance();
+
+            JButton deleteAccountButton = new JButton("Delete Account");
+            deleteAccountButton.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            		systemDB.removeClient(c);
+    				MainPage main = new MainPage();
+    				frame.setVisible(false);
+    				frame.dispose();
+            	}
+            });
+            buttonPanel.add(deleteAccountButton);
 
             frame.setVisible(true);
        
@@ -99,14 +130,14 @@ public class EditBookings {
         model.setRowCount(0); 
 
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        Map<Integer, Visit> bookings = bookingSystem.getBookings();
+        Map<Integer, Visit> bookings = bookingSystem.getBookingsForClient(c);
 
         for (Entry<Integer, Visit> entry : bookings.entrySet()) {
             Integer bookingId = entry.getKey();
             Visit visit = entry.getValue();
             model.addRow(new Object[]{
-                    bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace(),
-                    visit.getParkingLot(), visit.getDuration()
+                    bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace().getSpaceId(),
+                    visit.getParkingLot().getName(), visit.getDuration()
             });
         }
     }
@@ -123,9 +154,9 @@ public class EditBookings {
         String parkingLotName = (String) model.getValueAt(selectedRow, 3); // Parking lot name
         int parkingSpaceId = (int) model.getValueAt(selectedRow, 2); // Parking space ID
         int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
-        
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        
+                
+                
         if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time)) {
             loadBookings(model);  // Reload the updated bookings table
             JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -133,7 +164,7 @@ public class EditBookings {
             JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-
+            
    
 
     private static void cancelBooking(JTable table, DefaultTableModel model) throws Exception {
