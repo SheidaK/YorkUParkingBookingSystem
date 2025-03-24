@@ -10,7 +10,7 @@ import businessLogic.ParkingLotObserver;
  * Implements the Singleton pattern for the ParkingLot
  * Ensures there is only one instance of the parking lot in the system
  */
-public class ParkingLot  {
+public class ParkingLot  implements ParkingStatusObserver{
     // Singleton instance
     private static ParkingLot instance;
     
@@ -134,6 +134,11 @@ public class ParkingLot  {
         }
         return false;
     }
+	@Override
+	public void update(ParkingSpace space, boolean occupied) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }
 
