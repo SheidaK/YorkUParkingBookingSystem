@@ -239,7 +239,7 @@ public class BookingSystem implements ParkingStatusObserver{
     public boolean checkin(int bookingID, ParkingSpace s) {
     	Visit visit = Visit.getVisit(bookingID);
     	boolean checkedIn = false;
-    	Date declaredTime = new Date(System.currentTimeMillis() - (60 * 1000));
+    	Date declaredTime = new Date(System.currentTimeMillis() - (60 * 1000 * 60));
     	if (declaredTime.compareTo(visit.getStartTime()) < 0)
     		checkedIn = true;
     	return checkedIn;
