@@ -20,6 +20,8 @@ public class BookingPage extends JFrame {
     private JComboBox<String> amPmComboBox;
     private JSpinner durationSpinner;
     private JButton confirmDateTimeButton;
+    private JButton clientButton;
+
     
     // Second panel components - Parking selection
     private JPanel parkingSelectionPanel;
@@ -131,12 +133,28 @@ public class BookingPage extends JFrame {
         gbc.gridwidth = 2;
         dateTimePanel.add(durationSpinner, gbc);
         
-        // Confirm button
-        confirmDateTimeButton = new JButton("Find Available Spaces");
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        gbc.gridwidth = 3;
-        dateTimePanel.add(confirmDateTimeButton, gbc);
+		JPanel buttonPanel = new JPanel(new FlowLayout());
+		        
+		        clientButton = new JButton("Back");
+		        buttonPanel.add(clientButton);
+		        
+		        confirmDateTimeButton = new JButton("Find Available Spaces");
+		        buttonPanel.add(confirmDateTimeButton);
+		        
+		        gbc.gridx = 0;
+		        gbc.gridy = 3;
+		        gbc.gridwidth = 3;
+		        dateTimePanel.add(buttonPanel, gbc);
+		        
+		        // Add action listener to back button
+		        clientButton.addActionListener(new ActionListener() {
+		            public void actionPerformed(ActionEvent e) {
+		                // Return to client view
+		                ClientView clientView = new ClientView(c);
+		                dispose(); // Close the booking page
+		            }
+		        });
+        
         
         // Add action listener to confirm button
         confirmDateTimeButton.addActionListener(new ActionListener() {
