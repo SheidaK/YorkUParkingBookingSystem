@@ -14,6 +14,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     private ParkingSensor sensor;
     private String type; // Regular, Handicapped, VIP, etc.
     private ParkingLot parkingLot; // Reference to the containing parking lot
+    private String bookingId;
 
     public ParkingSpace(int spaceId, String type) {
         this.spaceId = spaceId;
@@ -21,6 +22,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
         this.occupied = false;
         this.enabled = true;
         this.parkedCar = null;
+        this.bookingId = "";
     }
 
     // Associate a sensor with this space
@@ -114,6 +116,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     public void occupyTime(int bookingID, int time) {
         // Occupy the space for a specific time slot
         this.occupied = true;
+        this.bookingId = Integer.toString(bookingID);
     }
 
     public void unoccupyTime(int bookingID) {
@@ -124,12 +127,17 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     public void unoccupy(int bookingID) {
         // Free up the space for a specific booking
         this.occupied = false;
+        this.bookingId = "";
     }
     
     public void setParkingLot(ParkingLot parkingLot) {
         this.parkingLot = parkingLot;
     }
     
+    public String getBookingId() {
+    	return this.bookingId;
+    	
+    }
     
     public void update(ParkingSpace space, boolean occupied) {
         // Update the parking space based on the sensor status

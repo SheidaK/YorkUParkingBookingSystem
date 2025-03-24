@@ -43,6 +43,7 @@ public class ParkingLot  {
         	clonedParkingSensor =s.clone(parkingSpaceID, p);
         	clonedParkingSpace.assignSensor(clonedParkingSensor);
         	spaces.add(clonedParkingSpace);
+        	clonedParkingSensor.addObserver(clonedParkingSpace);
         }
     }
     //Setters
