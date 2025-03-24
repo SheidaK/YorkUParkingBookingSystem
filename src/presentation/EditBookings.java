@@ -237,10 +237,13 @@ public class EditBookings {
             return; 
         }
 
-        String dateString = (String) model.getValueAt(selectedRow, 1);
+        String dateString = (String) model.getValueAt(selectedRow, 2);
         Date date;
 		date = convertIntToDate(dateString);
-		if (bookingSystem.extendBooking(bookingId, date, extraTime)) {
+        int startingTime = (int) model.getValueAt(selectedRow, 3);
+        int duration = (int) model.getValueAt(selectedRow, 6);
+
+		if (bookingSystem.extendBooking(bookingId, date,startingTime, extraTime+duration)) {
             loadBookings(model);
             JOptionPane.showMessageDialog(null, "Booking extended successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {

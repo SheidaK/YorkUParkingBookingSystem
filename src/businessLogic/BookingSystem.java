@@ -107,21 +107,21 @@ public class BookingSystem implements ParkingStatusObserver{
         
         // Get client by email
         Client client = systemDatabase.getClientInfo(clientEmail);
-        
+
         if (parkingSpot != null && client != null && 
-            !parkingSpot.isOccupied(date, time) && 
+            !parkingSpot.isOccupied(date, time,duration) && 
             parkingSpot.isEnabled() && 
             deposit >= client.getParkingRate()) {
-            
+
             int bookingID = generateBookingID();
-            parkingSpot.occupyTime(bookingID,date, time);
+            parkingSpot.occupyTime(bookingID,date, time,duration);
             
             SystemDatabase.addRevenue(deposit);
            // Date date = new Date();
 			Visit visit = new Visit(bookingID,date,time,duration,parkingLot,parkingSpot,client,deposit,license);
 
             bookings.put(bookingID, visit);
-            parkingSpot.occupyTime(bookingID, date, initialtime);
+            parkingSpot.occupyTime(bookingID, date, initialtime,duration);
             bookingComplete = true;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -139,7 +139,7 @@ public class BookingSystem implements ParkingStatusObserver{
         return bookings.size() + 1;
     }
 
-    public boolean bookParkingSpace(int bookingID, String parkingLotName, int parkingSpaceID, int time, Date date) {
+    public boolean bookParkingSpace(int bookingID, String parkingLotName, int parkingSpaceID, int time, Date date,int duration) {
         boolean bookingComplete = false;
         
         // Get parking lot by ID
@@ -158,8 +158,8 @@ public class BookingSystem implements ParkingStatusObserver{
         // Get parking space by ID
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
         
-        if (parkingSpot != null && !parkingSpot.isOccupied(date,time) && parkingSpot.isEnabled()) {
-            parkingSpot.occupyTime(bookingID, date, time);
+        if (parkingSpot != null && !parkingSpot.isOccupied(date,time,duration) && parkingSpot.isEnabled()) {
+            parkingSpot.occupyTime(bookingID, date, time,duration);
             bookingComplete = true;
         }
         return bookingComplete;
@@ -184,7 +184,7 @@ public class BookingSystem implements ParkingStatusObserver{
         // Get parking space by ID
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
         
-        if (parkingSpot != null && !parkingSpot.isOccupied(date,time) && parkingSpot.isEnabled()) {
+        if (parkingSpot != null && !parkingSpot.isOccupied(date,time,duration) && parkingSpot.isEnabled()) {
             cancelBooking(bookingID,true);
             parkingSpot.unoccupyTime(bookingID);
         	bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
@@ -229,12 +229,14 @@ public class BookingSystem implements ParkingStatusObserver{
         return paymentSystem.confirmRefund(bookingID);
     }
 
-    public boolean extendBooking(int bookingID, Date date,int time) {
+    public boolean extendBooking(int bookingID, Date date,int time,int duration) {
         boolean bookingExtended = false;
         if (bookings.containsKey(bookingID)) {
             ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-            if (!parkingSpot.isOccupied(date,time)) {
-                parkingSpot.occupyTime(bookingID,date, time);
+            if (!parkingSpot.isOccupied(date,time,duration)) {
+            	bookings.get(bookingID).setDuration(duration);
+            	db.overWrite(String.valueOf(bookingID),9,3,String.valueOf(duration),0);
+                //parkingSpot.occupyTime(bookingID,date, time,duration);
                 bookingExtended = true;
             }
         }

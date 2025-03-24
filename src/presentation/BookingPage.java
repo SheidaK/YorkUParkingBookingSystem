@@ -325,7 +325,8 @@ public class BookingPage extends JFrame {
                 	selectedTimeSlot=12;
                 }
                 // We need to book the space for each hour in the duration
-                for (int i = 0; i < selectedDuration; i++) {
+               //for (int i = 0; i < selectedDuration; i++) {
+                int i=0;
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
                     int id;
                     boolean hourSuccess=true;
@@ -336,11 +337,11 @@ public class BookingPage extends JFrame {
                     }
                     if (!hourSuccess) {
                         success = false;
-                        break;
+                        //break;
                     }
 
 
-                }
+               // }
                 
                 
                 if (success) {
@@ -471,7 +472,7 @@ public class BookingPage extends JFrame {
             int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
             
             // Use the isOccupied method that accepts a time parameter
-            if (space.isOccupied(selectedDate, timeSlot)) {
+            if (space.isOccupied(selectedDate, timeSlot,selectedDuration)) {
                 return false; // Not available for the entire duration
             }
         }

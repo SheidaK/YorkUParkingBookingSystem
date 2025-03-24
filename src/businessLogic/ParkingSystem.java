@@ -103,7 +103,7 @@ public class ParkingSystem  {
         ParkingSpace space = parkingLot.findSpaceById(Integer.valueOf(spaceId));
         if (space != null) {
             space.setEnabled(true);
-            dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Enabled" );
+            dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Enabled",1 );
         }
     }
     
@@ -111,7 +111,7 @@ public class ParkingSystem  {
         ParkingSpace space = parkingLot.findSpaceById(Integer.valueOf(spaceId));
         if (space != null) {
             space.setEnabled(false);
-            dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Disabled" );
+            dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Disabled" ,1);
         }
     }
 //    public void addParkingSpace(ParkingLot lot, ParkingSpace space) {

@@ -57,7 +57,7 @@ public class Database {
 			e.printStackTrace();
 		}
 	}
-	public void overWrite(String id,int numOfHeaders,int columnNum,String newValue) {
+	public void overWrite(String id,int numOfHeaders,int columnNum,String newValue,int column) {
 
 		try {
 			CsvReader reader = new CsvReader(this.filePath);
@@ -68,7 +68,7 @@ public class Database {
 			 existingData.add(header);
 			 while (reader.readRecord()) {
 				 String[] row = reader.getValues();
-				 if(!row[1].trim().equals(id)) {
+				 if(!row[column].trim().equals(id)) {
 					 existingData.add(row);
 				 }else {
 					 row[columnNum]= newValue;

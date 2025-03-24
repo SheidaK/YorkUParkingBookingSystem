@@ -1,18 +1,3 @@
 id,Date,Time,Duration,ParkingLot,ParkingSpaceID,ClientEmail,ClientLicence,MoneyPaid
-1,03/24/2025,12,1,Lot1,2,a@gmail.com,fddfg,50
-2,03/24/2025,12,1,Lot1,2,a2@gmail.com,fgsfdg,50
-3,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
-4,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
-5,03/24/2025,12,1,Lot1,2,a@gmail.com,wer,50
-"",,,1,,,,,
-6,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
-7,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
-8,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
-9,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
-10,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
-11,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
-12,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
-13,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
-14,03/24/2025,12,1,Lot1,2,a@gmail.com,ABCD123,50
-15,03/24/2025,12,2,Lot1,2,a@gmail.com,ABCD123,50
-16,03/29/2032,12,1,Lot1,2,a@gmail.com,SDFF 123,50
+1,03/24/2025,17,3,Lot1,2,a@gmail.com,SDFF 234,50
+2,03/24/2025,18,5,Lot1,2,a@gmail.com,WERR 234,50

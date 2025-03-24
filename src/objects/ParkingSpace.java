@@ -114,32 +114,48 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     }
     // New method to check if the space is occupied at a specific time
     // Check if occupied at a specific time
-    public boolean isOccupied(Date date, int time) {
+    public boolean isOccupied(Date date, int time,int duration) {
         // Implement time-based occupation check
         // This is a simplified version - in a real app, you'd check against scheduled times
-    	String dateString = getDateString(date);
-    	if(occupiedTimes.get(dateString)!=null) {
-    	if(occupiedTimes.get(dateString).get(time)!=null) {
-    		return true;
+    	int time1=time;
+   	 	long oneDayInMillis = 24 * 60 * 60 * 1000;
+   	 	for(int i=time;i<=time+duration;i++) {
+	   		if(i>24) {
+	   			time = i-24;
+	   	        date = new Date(date.getTime() + oneDayInMillis);
+	
+	   		}
+	    	String dateString = getDateString(date);
+	    	if(occupiedTimes.get(dateString)!=null) {
+		    	if(occupiedTimes.get(dateString).get(time)!=null) {
+		    		return true;
+		    	}
+	    	}
     	}
-
-    	}
-
-
     	return false;
     }
 
     
  // Time-based occupation methods
-    public void occupyTime(int bookingId, Date date, int time) {
+    public void occupyTime(int bookingId, Date date, int time, int duration) {
         // Occupy the space for a specific time slot
         //this.occupied = true;
         //this.bookingId = Integer.toString(bookingID);
-    	String dateString = getDateString(date);
+    	int time1=time;
+    	 long oneDayInMillis = 24 * 60 * 60 * 1000;
+    	for(int i=time;i<=time+duration;i++) {
+    		if(i>24) {
+    			time = i-24;
+    	        date = new Date(date.getTime() + oneDayInMillis);
 
-        Map<Integer, Integer> innerMap = new HashMap<>();
-        innerMap.put(time,bookingId);
-        occupiedTimes.put(dateString, innerMap);
+    		}
+    		String dateString = getDateString(date);
+    	
+    		Map<Integer, Integer> innerMap = new HashMap<>();
+    		innerMap.put(time1,bookingId);
+    		occupiedTimes.put(dateString, innerMap);
+    	}
+    	
     }
 
     public void unoccupyTime(int bookingID) {
