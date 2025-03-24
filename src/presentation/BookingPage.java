@@ -5,6 +5,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import businessLogic.BookingSystem;
 import businessLogic.ParkingSystem;
 import businessLogic.SystemDatabase;
@@ -20,8 +22,7 @@ public class BookingPage extends JFrame {
     private JComboBox<String> amPmComboBox;
     private JSpinner durationSpinner;
     private JButton confirmDateTimeButton;
-    private JButton clientButton;
-
+    private JButton backButton; // Added back button for date time panel
     
     // Second panel components - Parking selection
     private JPanel parkingSelectionPanel;
@@ -29,7 +30,7 @@ public class BookingPage extends JFrame {
     private JComboBox<String> parkingSpaceDropdown;
     private JTextField licensePlateField;
     private JButton bookButton;
-    private JButton backButton;
+    private JButton backButton2; // Existing back button for parking selection panel
     
     // System components
     private SystemDatabase systemDatabase;
@@ -75,6 +76,19 @@ public class BookingPage extends JFrame {
         CardLayout cl = (CardLayout)(getContentPane().getLayout());
         cl.show(getContentPane(), "dateTimePanel");
     }
+
+    // Method to validate Ontario license plate format
+    private boolean isValidOntarioLicensePlate(String licensePlate) {
+        // Remove any spaces from the license plate
+        licensePlate = licensePlate.replaceAll("\\s", "");
+        
+        // Regex pattern for 4 letters followed by 3 numbers
+        String plateRegex = "^[A-Za-z]{4}\\d{3}$";
+        
+        // Check if the license plate matches the pattern
+        return Pattern.matches(plateRegex, licensePlate);
+    }
+    
     private void initializeDateTimePanel() {
         dateTimePanel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
@@ -133,28 +147,28 @@ public class BookingPage extends JFrame {
         gbc.gridwidth = 2;
         dateTimePanel.add(durationSpinner, gbc);
         
-		JPanel buttonPanel = new JPanel(new FlowLayout());
-		        
-		        clientButton = new JButton("Back");
-		        buttonPanel.add(clientButton);
-		        
-		        confirmDateTimeButton = new JButton("Find Available Spaces");
-		        buttonPanel.add(confirmDateTimeButton);
-		        
-		        gbc.gridx = 0;
-		        gbc.gridy = 3;
-		        gbc.gridwidth = 3;
-		        dateTimePanel.add(buttonPanel, gbc);
-		        
-		        // Add action listener to back button
-		        clientButton.addActionListener(new ActionListener() {
-		            public void actionPerformed(ActionEvent e) {
-		                // Return to client view
-		                ClientView clientView = new ClientView(c);
-		                dispose(); // Close the booking page
-		            }
-		        });
+        // Button panel for confirm and back buttons
+        JPanel buttonPanel = new JPanel(new FlowLayout());
         
+        backButton = new JButton("Back");
+        buttonPanel.add(backButton);
+        
+        confirmDateTimeButton = new JButton("Find Available Spaces");
+        buttonPanel.add(confirmDateTimeButton);
+        
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 3;
+        dateTimePanel.add(buttonPanel, gbc);
+        
+        // Add action listener to back button
+        backButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                // Return to client view
+                ClientView clientView = new ClientView(c);
+                dispose(); // Close the booking page
+            }
+        });
         
         // Add action listener to confirm button
         confirmDateTimeButton.addActionListener(new ActionListener() {
@@ -239,8 +253,8 @@ public class BookingPage extends JFrame {
         // Button panel for back and book buttons
         JPanel buttonPanel = new JPanel(new FlowLayout());
         
-        backButton = new JButton("Back");
-        buttonPanel.add(backButton);
+        backButton2 = new JButton("Back");
+        buttonPanel.add(backButton2);
         
         bookButton = new JButton("Book Now");
         buttonPanel.add(bookButton);
@@ -251,7 +265,7 @@ public class BookingPage extends JFrame {
         parkingSelectionPanel.add(buttonPanel, gbc);
         
         // Add action listener to back button
-        backButton.addActionListener(new ActionListener() {
+        backButton2.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 CardLayout cl = (CardLayout)(getContentPane().getLayout());
                 cl.show(getContentPane(), "dateTimePanel");
@@ -268,7 +282,19 @@ public class BookingPage extends JFrame {
         // Add action listener to book button
         bookButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                String licensePlate = licensePlateField.getText();
+                String licensePlate = licensePlateField.getText().toUpperCase(); // Convert to uppercase for consistency
+                
+                // Validate license plate
+                if (!isValidOntarioLicensePlate(licensePlate)) {
+                    JOptionPane.showMessageDialog(null, 
+                        "Invalid License Plate Format\n" +
+                        "Please enter a valid Ontario license plate\n" +
+                        "Format: 4 letters followed by 3 numbers (e.g., ABCD 123)", 
+                        "Invalid Input", 
+                        JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                
                 if (licensePlate.isEmpty()) {
                     JOptionPane.showMessageDialog(null, "Please enter a valid license plate.");
                     return;
@@ -298,7 +324,7 @@ public class BookingPage extends JFrame {
                 for (int i = 0; i < selectedDuration; i++) {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
                     int id = bookingSystem.generateBookingID();
-                    boolean hourSuccess = bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), selectedTimeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
+                    boolean hourSuccess = bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), timeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
                     if (!hourSuccess) {
                         success = false;
                         break;
@@ -333,6 +359,14 @@ public class BookingPage extends JFrame {
                             "License Plate: " + licensePlate,
                             "Booking Confirmation",
                             JOptionPane.INFORMATION_MESSAGE);
+                    
+                 // Close current booking page
+                    dispose();
+                    
+                    // Open ClientView
+                    SwingUtilities.invokeLater(() -> {
+                        new ClientView(c);
+                    });
                     
                 } else {
                     JOptionPane.showMessageDialog(null, "Booking Failed. Space might be unavailable for the entire duration or system error occurred.");
@@ -424,7 +458,7 @@ public class BookingPage extends JFrame {
             int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
             
             // Use the isOccupied method that accepts a time parameter
-            if (space.isOccupied(timeSlot)) {
+            if (space.isOccupied(selectedDate, timeSlot)) {
                 return false; // Not available for the entire duration
             }
         }
@@ -444,5 +478,4 @@ public class BookingPage extends JFrame {
             
         });
     }
-
 }
