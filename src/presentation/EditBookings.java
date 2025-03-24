@@ -22,7 +22,7 @@ public class EditBookings {
             frame.getContentPane().setLayout(new BorderLayout());
 
             // Table model setup
-            String[] columnNames = {"Booking ID", "Client Email", "Parking Space", "Parking Lot", "Duration"};
+            String[] columnNames = {"Booking ID", "Client Email", "Date","Starting Time","Parking Space", "Parking Lot", "Duration"};
             DefaultTableModel model = new DefaultTableModel(columnNames, 0);
             JTable table = new JTable(model);
             JScrollPane scrollPane = new JScrollPane(table);
@@ -136,7 +136,7 @@ public class EditBookings {
             Integer bookingId = entry.getKey();
             Visit visit = entry.getValue();
             model.addRow(new Object[]{
-                    bookingId, visit.getClientDetail().getEmail(), visit.getParkingSpace().getSpaceId(),
+                    bookingId, visit.getClientDetail().getEmail(), visit.getDateString(),visit.getInitialTime(),visit.getParkingSpace().getSpaceId(),
                     visit.getParkingLot().getName(), visit.getDuration()
             });
         }
