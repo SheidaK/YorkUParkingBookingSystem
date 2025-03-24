@@ -273,7 +273,9 @@ public class BookingPage extends JFrame {
                 
                 // Call booking system to book the space
                 boolean success = true;
-                
+                if(selectedTimeSlot==0) {
+                	selectedTimeSlot=12;
+                }
                 // We need to book the space for each hour in the duration
                 for (int i = 0; i < selectedDuration; i++) {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed

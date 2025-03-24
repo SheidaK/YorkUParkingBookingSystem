@@ -112,7 +112,7 @@ public class BookingSystem {
             
             SystemDatabase.addRevenue(deposit);
            // Date date = new Date();
-			Visit visit = new Visit(bookingID,date,initialtime,duration,parkingLot,parkingSpot,client,deposit,license);
+			Visit visit = new Visit(bookingID,date,time,duration,parkingLot,parkingSpot,client,deposit,license);
 
             bookings.put(bookingID, visit);
             bookingComplete = true;
