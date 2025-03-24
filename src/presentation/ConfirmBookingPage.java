@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import businessLogic.PaymentSystem;
+import objects.Client;
 
 public class ConfirmBookingPage extends JFrame {
     private JLabel parkingSpaceLabel;
@@ -13,10 +14,9 @@ public class ConfirmBookingPage extends JFrame {
     private String licensePlate;
     private int parkingSpaceID;
 
-    public ConfirmBookingPage(String licensePlate, int parkingSpaceID) {
+    public ConfirmBookingPage(Client c, String licensePlate, int parkingSpaceID) {
         this.licensePlate = licensePlate;
         this.parkingSpaceID = parkingSpaceID;
-
         setTitle("Confirm Booking and Pay");
         setSize(400, 200);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -44,11 +44,32 @@ public class ConfirmBookingPage extends JFrame {
 
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Payment Successful! Your parking is confirmed.");
-                    dispose();
+                    try {
+						EditBookings p = new EditBookings(c);
+						setVisible(false);
+						dispose();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+                   
                 } else {
                     JOptionPane.showMessageDialog(null, "Payment Failed. Try a different method.");
                 }
             }
+        });
+    }
+    public static void showCofirmBookingPageView(Client c, String licensePlate, int parkingSpaceID) {
+        SwingUtilities.invokeLater(() -> {
+            ConfirmBookingPage view;
+			try {
+				view = new ConfirmBookingPage(c,licensePlate, parkingSpaceID);
+				view.setVisible(true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+            
         });
     }
 }

@@ -1,6 +1,13 @@
 package objects;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
+
+import businessLogic.Visit;
 
 /**
  * Represents a single parking space in the parking lot.
@@ -15,6 +22,8 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     private String type; // Regular, Handicapped, VIP, etc.
     private ParkingLot parkingLot; // Reference to the containing parking lot
     private String bookingId;
+    static Map<String, Map<Integer, Integer>> occupiedTimes = new HashMap<>();
+
 
     public ParkingSpace(int spaceId, String type) {
         this.spaceId = spaceId;
@@ -105,18 +114,32 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     }
     // New method to check if the space is occupied at a specific time
     // Check if occupied at a specific time
-    public boolean isOccupied(int time) {
+    public boolean isOccupied(Date date, int time) {
         // Implement time-based occupation check
         // This is a simplified version - in a real app, you'd check against scheduled times
-        return occupied;
+    	String dateString = getDateString(date);
+    	if(occupiedTimes.get(dateString)!=null) {
+    	if(occupiedTimes.get(dateString).get(time)!=null) {
+    		return true;
+    	}
+
+    	}
+
+
+    	return false;
     }
 
     
  // Time-based occupation methods
-    public void occupyTime(int bookingID, int time) {
+    public void occupyTime(int bookingId, Date date, int time) {
         // Occupy the space for a specific time slot
-        this.occupied = true;
-        this.bookingId = Integer.toString(bookingID);
+        //this.occupied = true;
+        //this.bookingId = Integer.toString(bookingID);
+    	String dateString = getDateString(date);
+
+        Map<Integer, Integer> innerMap = new HashMap<>();
+        innerMap.put(time,bookingId);
+        occupiedTimes.put(dateString, innerMap);
     }
 
     public void unoccupyTime(int bookingID) {
@@ -160,5 +183,10 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
 	public String getOccupiedString() {
 		// TODO Auto-generated method stub
 		if(isOccupied()) {return "Occupied";}else {return "Available";}
+	}
+	public String getDateString(Date date) {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String formattedDate = dateFormat.format(date);
+        return formattedDate;
 	}
 }
