@@ -11,7 +11,7 @@ public class ParkingSensor implements Cloneable{
     private int sensorId;
     private boolean occupied;
     private ParkingSpace monitoredSpace;
-    private List<ParkingStatusObserver> observers;
+    private List<ParkingStatusObserver> observers = new ArrayList<>();
     
     public ParkingSensor(int parkingSpaceID, ParkingSpace monitoredSpace)  {
         this.sensorId = parkingSpaceID;
@@ -35,7 +35,12 @@ public class ParkingSensor implements Cloneable{
         }
     }
     
-    // Sensor functionality
+    private void update(ParkingSpace monitoredSpace2, boolean occupied2) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	// Sensor functionality
     public void detectVehicle(boolean detected) {
         if (this.occupied != detected) {
             this.occupied = detected;
@@ -56,6 +61,7 @@ public class ParkingSensor implements Cloneable{
     public ParkingSpace getMonitoredSpace() {
         return monitoredSpace;
     }
+    
     public ParkingSensor clone(int parkingSpaceID, ParkingSpace monitoredSpace) {
         try {
             ParkingSensor cloned = (ParkingSensor) super.clone();
@@ -68,11 +74,4 @@ public class ParkingSensor implements Cloneable{
             throw new RuntimeException("Failed to clone ParkingSpace", e);
         }
     }
-}
-
-/**
- * Observer interface for the Observer pattern
- */
-interface ParkingStatusObserver {
-    void update(ParkingSpace space, boolean occupied);
 }

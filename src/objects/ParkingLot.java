@@ -33,6 +33,7 @@ public class ParkingLot  {
         spaces.add(p);
         ParkingSensor s = new ParkingSensor(parkingSpaceID,p);
     	p.assignSensor(s);
+    	s.addObserver(p);
         ParkingSpace clonedParkingSpace;
         ParkingSensor clonedParkingSensor;
         for(int i=1;i<100;i++) {
