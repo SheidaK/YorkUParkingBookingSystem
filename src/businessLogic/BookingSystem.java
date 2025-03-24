@@ -2,6 +2,7 @@ package businessLogic;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -12,8 +13,9 @@ import database.Database;
 import objects.Client;
 import objects.ParkingLot;
 import objects.ParkingSpace;
+import objects.ParkingStatusObserver;
 
-public class BookingSystem {
+public class BookingSystem implements ParkingStatusObserver{
     static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
     private static BookingSystem bookingSystem = null;
     private SystemDatabase systemDatabase;
@@ -37,6 +39,7 @@ public class BookingSystem {
 			int moneyPaid = Integer.valueOf(row[8].trim());
 			//row[1]=date
 			Visit v = new Visit(bookingId,date,startTime,duration,lot,s,c,moneyPaid,license);
+			s.getSensor().addObserver((ParkingStatusObserver) lot);
 			bookings.put(Integer.valueOf(row[0]),v);
 			}
 		}
@@ -231,13 +234,35 @@ public class BookingSystem {
 
         return checkedOut;
     }
+    
+    public boolean checkin(int bookingID, ParkingSpace s) {
+    	Visit visit = Visit.getVisit(bookingID);
+    	boolean checkedIn = false;
+    	Date declaredTime = new Date(System.currentTimeMillis() - (15 * 60 * 1000));
+    	if (declaredTime.compareTo(visit.getStartTime()) < 0)
+    		checkedIn = true;
+    	return checkedIn;
+    }
 
     private boolean confirmPayment(int bookingID, int payment) {
         // Get payment system and confirm payment
         PaymentSystem paymentSystem = PaymentSystem.getInstance();
         return paymentSystem.confirmPayment(bookingID, "CREDIT_CARD", payment);
     }
-
+    
+	@Override
+	public void update(ParkingSpace s, boolean occupied) {
+    	String bookingId = s.getBookingId();
+    	Visit visit = Visit.getVisit(bookingId);
+    	if (occupied == false) {
+    		checkout(Integer.valueOf(s.getBookingId()), visit.getDuration() * visit.getClientDetail().getParkingRate() - visit.getMoneyPaid());
+    	}
+    	
+    	else if (occupied == true) {
+    		checkin(Integer.valueOf(s.getBookingId()), s);
+    	}		
+	}
+    
     public void updateParkingAvailability(ParkingSpace space) {
         // This method is for updating parking availability when changes occur
         // For example, when space status changes, update any affected bookings
@@ -254,5 +279,7 @@ public class BookingSystem {
         
         return date;
         }
+
+
 
 }
