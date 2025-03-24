@@ -24,6 +24,7 @@ public class Visit {
     private ParkingSpace s;
     private Client clientDetail;
     private String license;
+    private boolean checkedIn;
 	int moneyPaid;
 	public Visit(int bookingId,Date date, int startTime, int duration, ParkingLot lot, ParkingSpace s,Client c, int moneyPaid,String license) {
 		this.bookingId=bookingId;
@@ -35,6 +36,7 @@ public class Visit {
 		this.clientDetail=c;
 		this.license = license;
 		String id = String.valueOf(bookingId);
+		this.checkedIn = false;
 		visitDatabase.putIfAbsent(id, this);
 	}
 	/**
@@ -132,10 +134,23 @@ public class Visit {
 		this.bookingId = Integer.valueOf(bookingID);
 	}
 	
+    public boolean isCheckedIn() {
+        return checkedIn;
+    }
+
+    public void checkIn() {
+        this.checkedIn = true;
+    }
+	
 	public static Visit getVisit(String bookingID) {
 		return visitDatabase.get(bookingID);
 	}
 	
+    public boolean hasExceededHour() {
+        long timeDifference = new Date().getTime() - startTime;
+        return timeDifference > (1 * 60 * 60 * 1000);
+    }
+    
 	public static Visit getVisit(int bookingID) {
 		String str = String.valueOf(bookingID);
 		return visitDatabase.get(str);
@@ -160,6 +175,14 @@ public class Visit {
         calendar.set(Calendar.MILLISECOND, 0);
         
         return calendar.getTime(); // Return the Date object
+    }
+    
+    public void setDuration() {
+    	this.duration =+ 1;
+    }
+    
+    public void setDuration(int time) {
+    	this.duration = time;
     }
     
 	public int getDuration() {

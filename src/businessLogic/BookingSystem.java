@@ -8,6 +8,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import database.Database;
 import objects.Client;
@@ -193,7 +196,13 @@ public class BookingSystem implements ParkingStatusObserver{
 
     public boolean cancelBooking(int bookingID) {
         boolean bookingCancelled = false;
-        if (bookings.containsKey(bookingID)) {
+        if (checkForNoShow(bookingID)) {
+        	checkout(bookingID, Visit.getVisit(bookingID).getClientDetail().getParkingRate());
+            bookings.remove(bookingID);
+            bookingCancelled = true;
+            db.remove(String.valueOf(bookingID),9);
+        }
+        else if (bookings.containsKey(bookingID)) {
             ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
             parkingSpot.unoccupy(bookingID);
             //if (confirmRefund(bookingID)) {
@@ -239,8 +248,7 @@ public class BookingSystem implements ParkingStatusObserver{
     public boolean checkin(int bookingID, ParkingSpace s) {
     	Visit visit = Visit.getVisit(bookingID);
     	boolean checkedIn = false;
-    	Date declaredTime = new Date(System.currentTimeMillis() - (60 * 1000 * 60));
-    	if (declaredTime.compareTo(visit.getStartTime()) < 0)
+    	if (visit.hasExceededHour())
     		checkedIn = true;
     	return checkedIn;
     }
@@ -249,6 +257,30 @@ public class BookingSystem implements ParkingStatusObserver{
         // Get payment system and confirm payment
         PaymentSystem paymentSystem = PaymentSystem.getInstance();
         return paymentSystem.confirmPayment(bookingID, "CREDIT_CARD", payment);
+    }
+    
+    public boolean checkForNoShow(int bookingId) {
+        Visit visit = bookings.get(bookingId);
+        if (visit != null && visit.hasExceededHour() && !visit.isCheckedIn()) {
+            return true; 
+        }
+        return false;
+    }
+    
+    public void checkForNoShows() {
+        for (Visit visit : bookings.values()) {
+            if (visit.hasExceededHour() && !visit.isCheckedIn()) {
+            	cancelBooking(Integer.valueOf(visit.getBookingID()));
+            }
+            else 
+            	visit.setDuration();
+        }
+    }
+    
+    private void startNoShowCheck() {
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(() -> {
+            checkForNoShows(); 
+        }, 0, 1, TimeUnit.HOURS); 
     }
     
 	@Override
