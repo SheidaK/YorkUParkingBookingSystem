@@ -258,7 +258,7 @@ public class BookingSystem implements ParkingStatusObserver{
     		checkout(Integer.valueOf(s.getBookingId()), visit.getDuration() * visit.getClientDetail().getParkingRate() - visit.getMoneyPaid());
     	}
     	
-    	else if (occupied == true) {
+    	else if (occupied == true && s.getParkedCar().getLicensePlate().equals(visit.getLicence())) {
     		checkin(Integer.valueOf(s.getBookingId()), s);
     	}		
 	}
