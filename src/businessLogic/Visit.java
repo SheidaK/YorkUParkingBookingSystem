@@ -44,6 +44,9 @@ public class Visit {
 		startTimeDate = convertIntToDate(this.startTime);
 		return startTimeDate;
 	}
+	public int getInitialTime() {
+		return startTime;
+	}
 	/**
 	 * @param date the date to set
 	 */

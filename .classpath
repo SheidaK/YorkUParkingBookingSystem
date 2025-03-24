@@ -6,7 +6,7 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/shagh/git/YorkUParkingBookingSystem/lib/javacsv.jar">
+	<classpathentry kind="lib" path="lib/javacsv.jar">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>

@@ -5,10 +5,11 @@ import java.util.Set;
 import java.util.Arrays;
 import java.util.HashSet;
 
+
 public class PaymentSystem {
     private static PaymentSystem instance = null;
     private HashMap<Integer, Integer> transactions;
-    private HashMap<Integer, String> paymentMethods; // Stores payment methods per transaction
+    private HashMap<Integer, PaymentStrategy> paymentStrategies;
 
     // Allowed payment methods
     private static final Set<String> ALLOWED_PAYMENT_METHODS = new HashSet<>(
@@ -17,7 +18,7 @@ public class PaymentSystem {
 
     private PaymentSystem() {
         transactions = new HashMap<>();
-        paymentMethods = new HashMap<>();
+        paymentStrategies = new HashMap<>();
     }
 
     public static PaymentSystem getInstance() {
@@ -25,6 +26,20 @@ public class PaymentSystem {
             instance = new PaymentSystem();
         }
         return instance;
+    }
+
+    // Factory method to create payment strategy
+    private PaymentStrategy createPaymentStrategy(String paymentMethod) {
+        switch (paymentMethod.toUpperCase()) {
+            case "CREDIT_CARD":
+                return new CreditCardPaymentStrategy();
+            case "DEBIT_CARD":
+                return new DebitCardPaymentStrategy();
+            case "MOBILE_PAYMENT":
+                return new MobilePaymentStrategy();
+            default:
+                throw new IllegalArgumentException("Invalid payment method");
+        }
     }
 
     // Confirm payment with a specific method (only if valid)
@@ -38,28 +53,50 @@ public class PaymentSystem {
             return false; // Transaction already exists
         }
         
-        transactions.put(bookingID, amount);
-        paymentMethods.put(bookingID, paymentMethod.toUpperCase()); // Store the validated payment method
-        return true;
+        try {
+            PaymentStrategy paymentStrategy = createPaymentStrategy(paymentMethod);
+            
+            // Process payment
+            if (paymentStrategy.processPayment(amount)) {
+                transactions.put(bookingID, amount);
+                paymentStrategies.put(bookingID, paymentStrategy);
+                return true;
+            }
+            return false;
+        } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     // Confirm refund
     public boolean confirmRefund(int bookingID) {
-    	if (!transactions.containsKey(bookingID)) {
+        if (!transactions.containsKey(bookingID)) {
             return false; // No transaction found
         }
-        transactions.remove(bookingID);
-        paymentMethods.remove(bookingID); // Remove associated payment method
-        return true;
+        
+        int amount = transactions.get(bookingID);
+        PaymentStrategy paymentStrategy = paymentStrategies.get(bookingID);
+        
+        if (paymentStrategy.processRefund(amount)) {
+            transactions.remove(bookingID);
+            paymentStrategies.remove(bookingID);
+            return true;
+        }
+        return false;
     }
 
     // Retrieve payment method used for a transaction
     public String getPaymentMethod(int bookingID) {
-        return paymentMethods.getOrDefault(bookingID, "Unknown");
+        PaymentStrategy strategy = paymentStrategies.get(bookingID);
+        if (strategy instanceof CreditCardPaymentStrategy) return "CREDIT_CARD";
+        if (strategy instanceof DebitCardPaymentStrategy) return "DEBIT_CARD";
+        if (strategy instanceof MobilePaymentStrategy) return "MOBILE_PAYMENT";
+        return "Unknown";
     }
 
     // Get allowed payment methods
     public static Set<String> getAllowedPaymentMethods() {
         return ALLOWED_PAYMENT_METHODS;
     }
-    }
+}
