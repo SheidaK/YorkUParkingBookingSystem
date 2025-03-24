@@ -5,6 +5,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -85,6 +87,7 @@ public class EditBookings {
             JButton newBookingButton = new JButton("New Booking");
             newBookingButton.addActionListener(new ActionListener() {
             	public void actionPerformed(ActionEvent e) {
+            		//Page where client can make a new booking
         			try {
         				BookingPage p = new BookingPage(c);
         				p.showBookingPageView();
@@ -149,32 +152,20 @@ public class EditBookings {
             return;
         }
 
-        Object bookingIdObj = model.getValueAt(selectedRow, 0);
-        int bookingId = (bookingIdObj instanceof Integer) ? (int) bookingIdObj : Integer.parseInt(bookingIdObj.toString());
-
-        Object parkingSpaceIdObj = model.getValueAt(selectedRow, 2);
-        int parkingSpaceId = (parkingSpaceIdObj instanceof Integer) ? (int) parkingSpaceIdObj : Integer.parseInt(parkingSpaceIdObj.toString());
-
-        String parkingLotName = model.getValueAt(selectedRow, 3).toString(); // Always safe for Strings
-
+        int bookingId = (int) model.getValueAt(selectedRow, 0);
+        String parkingLotName = (String) model.getValueAt(selectedRow, 4); // Parking lot name
+        int parkingSpaceId = (int) model.getValueAt(selectedRow, 3); // Parking space ID
+        int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
+        String dateString = (String) model.getValueAt(selectedRow, 1);
+        Date date;
+		
+		date = convertIntToDate(dateString);
+		
         BookingSystem bookingSystem = BookingSystem.getInstance();
-        
-        String input = JOptionPane.showInputDialog("Enter new duration in hours:");
-        if (input == null || input.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int time;
-        try {
-            time = Integer.parseInt(input.trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;  
-        }
-        
-        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time)) {
-            loadBookings(model);
+                
+                
+        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time,date)) {
+            loadBookings(model);  // Reload the updated bookings table
             JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -206,30 +197,21 @@ public class EditBookings {
             return;
         }
 
-        Object bookingIdObj = model.getValueAt(selectedRow, 0);
-        int bookingId = (bookingIdObj instanceof Integer) ? (int) bookingIdObj : Integer.parseInt(bookingIdObj.toString());
-        BookingSystem bookingSystem = BookingSystem.getInstance();
+        int bookingId = (int) model.getValueAt(selectedRow, 0);
 
-        String input = JOptionPane.showInputDialog("Enter extra time to extend (in hours):");
-        if (input == null || input.trim().isEmpty()) {
-            JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        
-        int extraTime;
-        try {
-            extraTime = Integer.parseInt(input.trim());
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return; 
-        }
-        
-        if (bookingSystem.extendBooking(bookingId, extraTime)) {
+        int extraTime = Integer.parseInt(JOptionPane.showInputDialog("Enter extra time to extend (in hours):"));
+
+        BookingSystem bookingSystem = BookingSystem.getInstance();
+        String dateString = (String) model.getValueAt(selectedRow, 1);
+        Date date;
+		date = convertIntToDate(dateString);
+		if (bookingSystem.extendBooking(bookingId, date, extraTime)) {
             loadBookings(model);
             JOptionPane.showMessageDialog(null, "Booking extended successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
             JOptionPane.showMessageDialog(null, "Unable to extend the booking. The parking spot might not be available.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
     }
     public static void editBookingPageView(Client c) {
         SwingUtilities.invokeLater(() -> {
@@ -244,5 +226,17 @@ public class EditBookings {
             
         });
     }
+    private static Date convertIntToDate(String dateString) {
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        Date date= null;
+         try {
+			date = dateFormat.parse(dateString);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        return date;
+        }
 
 }

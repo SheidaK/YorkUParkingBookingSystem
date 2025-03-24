@@ -1,1 +1,15 @@
 id,Date,Time,Duration,ParkingLot,ParkingSpaceID,ClientEmail,ClientLicence,MoneyPaid
+1,03/24/2025,12,1,Lot1,2,a@gmail.com,fddfg,50
+2,03/24/2025,12,1,Lot1,2,a2@gmail.com,fgsfdg,50
+3,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
+4,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
+5,03/24/2025,12,1,Lot1,2,a@gmail.com,wer,50
+,,,1,,,,,
+6,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
+7,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
+8,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
+9,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
+10,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
+11,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
+12,03/24/2025,12,1,Lot1,2,a@gmail.com,sdf,50
+13,03/24/2025,12,1,Lot1,2,a@gmail.com,dsf,50
