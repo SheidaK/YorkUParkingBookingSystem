@@ -169,8 +169,9 @@ public class BookingPage extends JFrame {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Return to client view
-                ClientView clientView = new ClientView(c);
-                dispose(); // Close the booking page
+            	EditBookings p = new EditBookings(c);
+				setVisible(false);
+				dispose();
             }
         });
         
