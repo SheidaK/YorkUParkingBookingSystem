@@ -6,7 +6,7 @@ import java.util.Map;
  * Represents a single parking space in the parking lot.
  * Implements the Prototype pattern to allow cloning of parking spaces.
  */
-public class ParkingSpace implements Cloneable {
+public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     private int spaceId;
     private boolean occupied;
     private boolean enabled;
@@ -14,6 +14,7 @@ public class ParkingSpace implements Cloneable {
     private ParkingSensor sensor;
     private String type; // Regular, Handicapped, VIP, etc.
     private ParkingLot parkingLot; // Reference to the containing parking lot
+
     public ParkingSpace(int spaceId, String type) {
         this.spaceId = spaceId;
         this.type = type;
@@ -128,6 +129,13 @@ public class ParkingSpace implements Cloneable {
     public void setParkingLot(ParkingLot parkingLot) {
         this.parkingLot = parkingLot;
     }
+    
+    
+    public void update(ParkingSpace space, boolean occupied) {
+        // Update the parking space based on the sensor status
+        this.occupied = occupied;
+    }
+
    
     @Override
     public String toString() {
