@@ -89,8 +89,8 @@ public class ClientView {
 		public void actionPerformed(ActionEvent e) {
 			//Page where client can make a new booking
 			try {
-				BookingPage p = new BookingPage(c);
-				p.showBookingPageView();
+//				BookingPage p = new BookingPage(c);
+//				p.showBookingPageView();
 				frame.setVisible(false);
 				frame.dispose();
 			} catch (Exception e1) {

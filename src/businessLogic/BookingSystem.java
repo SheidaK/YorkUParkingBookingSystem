@@ -165,12 +165,12 @@ public class BookingSystem implements ParkingStatusObserver{
         return bookingComplete;
     }
 
-    public boolean editBooking(int bookingID, String parkingLotName, int parkingSpaceID, int time,Date date) {
+    public boolean editBooking(int bookingID, String parkingLotName, int parkingSpaceID, int time,Date date,int duration,Client c,String license) {
         boolean bookingEdited = false;
         
         // Get parking lot by ID
         ParkingLot parkingLot = null;
-        for (ParkingLot lot : systemDatabase.getParkingLots()) {
+        for (ParkingLot lot : parkingSystem.getAvailableLots()) {
             if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
@@ -183,20 +183,28 @@ public class BookingSystem implements ParkingStatusObserver{
         
         // Get parking space by ID
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
-
+        
         if (parkingSpot != null && !parkingSpot.isOccupied(date,time) && parkingSpot.isEnabled()) {
-            cancelBooking(bookingID);
+            cancelBooking(bookingID,true);
             parkingSpot.unoccupyTime(bookingID);
-            bookParkingSpace(bookingID, parkingLotName, parkingSpaceID, time,date);
+        	bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
             bookingEdited = true;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        String formattedDate = dateFormat.format(date);
+        if(bookingEdited) {
+        	String[] newRow = {String.valueOf(bookingID),formattedDate, String.valueOf(time),String.valueOf(duration), parkingLotName, String.valueOf(parkingSpaceID),c.getEmail(),license,String.valueOf(c.getParkingRate())};
+        	db.overWrite(String.valueOf(bookingID), newRow,9);
         }
 
         return bookingEdited;
     }
 
-    public boolean cancelBooking(int bookingID) {
+
+
+    public boolean cancelBooking(int bookingID, boolean newBooking) {
         boolean bookingCancelled = false;
-        if (checkForNoShow(bookingID)) {
+        if (checkForNoShow(bookingID)&& !newBooking) {
         	checkout(bookingID, Visit.getVisit(bookingID).getClientDetail().getParkingRate());
             bookings.remove(bookingID);
             bookingCancelled = true;
@@ -270,7 +278,7 @@ public class BookingSystem implements ParkingStatusObserver{
     public void checkForNoShows() {
         for (Visit visit : bookings.values()) {
             if (visit.hasExceededHour() && !visit.isCheckedIn()) {
-            	cancelBooking(Integer.valueOf(visit.getBookingID()));
+            	cancelBooking(Integer.valueOf(visit.getBookingID()),false);
             }
             else 
             	visit.setDuration();

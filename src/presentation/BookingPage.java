@@ -44,8 +44,12 @@ public class BookingPage extends JFrame {
     private Map<String, ParkingLot> parkingLotMap;
     private Map<String, ParkingSpace> parkingSpaceMap;
     static Client c= null;
-    public BookingPage(Client c) throws Exception {
+    private static boolean edit;
+    private static int bookingID;
+    public BookingPage(Client c,boolean edit,int bookingID) throws Exception {
     	this.c = c;
+    	this.bookingID = bookingID;
+    	this.edit = edit;
 
         setTitle("Book a Parking Space");
         setSize(550, 450);
@@ -323,12 +327,18 @@ public class BookingPage extends JFrame {
                 // We need to book the space for each hour in the duration
                 for (int i = 0; i < selectedDuration; i++) {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
-                    int id = bookingSystem.generateBookingID();
-                    boolean hourSuccess = bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), timeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
+                    int id;
+                    boolean hourSuccess=true;
+                    if(!edit) {id = bookingSystem.generateBookingID();
+                    	hourSuccess= bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), selectedTimeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
+                    }else {
+                    	hourSuccess= bookingSystem.editBooking(bookingID,(String)parkingLotDropdown.getSelectedItem(), parkingSpaceId, selectedTimeSlot,selectedDate,selectedDuration,c,licensePlate);
+                    }
                     if (!hourSuccess) {
                         success = false;
                         break;
                     }
+
 
                 }
                 
@@ -361,12 +371,15 @@ public class BookingPage extends JFrame {
                             JOptionPane.INFORMATION_MESSAGE);
                     
                  // Close current booking page
+                    if(!edit) {
+                    	ConfirmBookingPage page = new ConfirmBookingPage(c,licensePlate,parkingSpaceId);
+                    	page.showCofirmBookingPageView(c, licensePlate, parkingSpaceId);
+                    }else {
+                    	EditBookings p = new EditBookings(c);
+                    }
+                    setVisible(false);
                     dispose();
-                    
-                    // Open ClientView
-                    SwingUtilities.invokeLater(() -> {
-                        new ClientView(c);
-                    });
+
                     
                 } else {
                     JOptionPane.showMessageDialog(null, "Booking Failed. Space might be unavailable for the entire duration or system error occurred.");
@@ -469,7 +482,7 @@ public class BookingPage extends JFrame {
         SwingUtilities.invokeLater(() -> {
             BookingPage view;
 			try {
-				view = new BookingPage(c);
+				view = new BookingPage(c,edit,bookingID);
 				view.setVisible(true);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

@@ -25,7 +25,12 @@ public class EditBookings {
 
             // Table model setup
             String[] columnNames = {"Booking ID", "Client Email", "Date","Starting Time","Parking Space", "Parking Lot", "Duration"};
-            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+            DefaultTableModel model = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;  // Disable editing for all cells
+            }
+            };
             JTable table = new JTable(model);
             JScrollPane scrollPane = new JScrollPane(table);
             frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
@@ -54,12 +59,28 @@ public class EditBookings {
 				}
 			});
             editButton.addActionListener(e -> {
-				try {
-					editBooking(table, model);
-				} catch (Exception e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
+//				try {
+//					editBooking(table, model);
+//				} catch (Exception e1) {
+//					// TODO Auto-generated catch block
+//					e1.printStackTrace();
+//				}
+            	 int selectedRow = table.getSelectedRow();
+                 if (selectedRow == -1) {
+                     JOptionPane.showMessageDialog(null, "Please select a booking to cancel.", "Error", JOptionPane.ERROR_MESSAGE);
+                     return;
+                 }
+
+                 int bookingId = (int) model.getValueAt(selectedRow, 0);
+            	try {
+        			BookingPage p = new BookingPage(c,true,bookingId);
+        			p.showBookingPageView();
+        			frame.setVisible(false);
+        			frame.dispose();
+        		} catch (Exception e1) {
+        			// TODO Auto-generated catch block
+        			e1.printStackTrace();
+        		}
 			});
             cancelButton.addActionListener(e -> {
 				try {
@@ -89,7 +110,7 @@ public class EditBookings {
             	public void actionPerformed(ActionEvent e) {
             		//Page where client can make a new booking
         			try {
-        				BookingPage p = new BookingPage(c);
+        				BookingPage p = new BookingPage(c,false,0);
         				p.showBookingPageView();
         				frame.setVisible(false);
         				frame.dispose();
@@ -146,30 +167,31 @@ public class EditBookings {
 
 
     private static void editBooking(JTable table, DefaultTableModel model) throws Exception {
-        int selectedRow = table.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a booking to edit.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int bookingId = (int) model.getValueAt(selectedRow, 0);
-        String parkingLotName = (String) model.getValueAt(selectedRow, 4); // Parking lot name
-        int parkingSpaceId = (int) model.getValueAt(selectedRow, 3); // Parking space ID
-        int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
-        String dateString = (String) model.getValueAt(selectedRow, 1);
-        Date date;
-		
-		date = convertIntToDate(dateString);
-		
-        BookingSystem bookingSystem = BookingSystem.getInstance();
-                
-                
-        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time,date)) {
-            loadBookings(model);  // Reload the updated bookings table
-            JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+    	
+//    	int selectedRow = table.getSelectedRow();
+//        if (selectedRow == -1) {
+//            JOptionPane.showMessageDialog(null, "Please select a booking to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+//            return;
+//        }
+//
+//        int bookingId = (int) model.getValueAt(selectedRow, 0);
+//        String parkingLotName = (String) model.getValueAt(selectedRow, 5); // Parking lot name
+//        int parkingSpaceId = (int) model.getValueAt(selectedRow, 3); // Parking space ID
+//        int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
+//        String dateString = (String) model.getValueAt(selectedRow, 1);
+//        Date date;
+//		
+//		date = convertIntToDate(dateString);
+//		
+//        BookingSystem bookingSystem = BookingSystem.getInstance();
+//                
+//                
+//        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time,date)) {
+//            loadBookings(model);  // Reload the updated bookings table
+//            JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+//        } else {
+//            JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
+//        }
     }
             
    
@@ -185,7 +207,7 @@ public class EditBookings {
         int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to cancel this booking?", "Confirm Cancellation", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            BookingSystem.getInstance().cancelBooking(bookingId);
+            BookingSystem.getInstance().cancelBooking(bookingId,true);
             loadBookings(model);
         }
     }
@@ -197,11 +219,24 @@ public class EditBookings {
             return;
         }
 
-        int bookingId = (int) model.getValueAt(selectedRow, 0);
-
-        int extraTime = Integer.parseInt(JOptionPane.showInputDialog("Enter extra time to extend (in hours):"));
-
+        Object bookingIdObj = model.getValueAt(selectedRow, 0);
+        int bookingId = (bookingIdObj instanceof Integer) ? (int) bookingIdObj : Integer.parseInt(bookingIdObj.toString());
         BookingSystem bookingSystem = BookingSystem.getInstance();
+
+        String input = JOptionPane.showInputDialog("Enter extra time to extend (in hours):");
+        if (input == null || input.trim().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "Invalid input. Please enter a number.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        int extraTime;
+        try {
+            extraTime = Integer.parseInt(input.trim());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+            return; 
+        }
+
         String dateString = (String) model.getValueAt(selectedRow, 1);
         Date date;
 		date = convertIntToDate(dateString);
