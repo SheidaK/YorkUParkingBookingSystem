@@ -1,9 +1,11 @@
 package businessLogic;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import database.Database;
 import objects.Client;
 import objects.ParkingLot;
 import objects.ParkingSpace;
@@ -13,7 +15,8 @@ public class BookingSystem {
     private static BookingSystem bookingSystem = null;
     private SystemDatabase systemDatabase;
     private ParkingSystem parkingSystem = ParkingSystem.getInstance();
-
+	String path = "src/database/BookingsDatabase.csv";
+    private Database db = new Database(path);
     private BookingSystem() throws Exception {
         // Get reference to SystemDatabase
         this.systemDatabase = SystemDatabase.getInstance();
@@ -40,6 +43,15 @@ public class BookingSystem {
     public Map<Integer, Visit> getBookings() {
         return bookings;
     }
+    public Map<Integer,Visit> getBookingsForClient(Client c){
+    	Map<Integer,Visit> bookingsClient = new HashMap<Integer, Visit>();
+    	for (Map.Entry<Integer, Visit> entry : bookings.entrySet()) {
+    		if(entry.getValue().clientDetail.getEmail().equals(c.getEmail())) {
+    			bookingsClient.put(entry.getKey(),entry.getValue());
+    		}
+    	}
+    	return bookingsClient;
+    }
 
     /**
      * @param bookings the bookings to set
@@ -48,9 +60,9 @@ public class BookingSystem {
         this.bookings = bookings;
     }
 
-    public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time) {
+    public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time, Date date,int initialtime, int duration, String licence) {
         boolean bookingComplete = false;
-        
+        int id =generateBookingID();
         // Get parking lot by ID
         ParkingLot parkingLot = null;
         for (ParkingLot lot : parkingSystem.getAvailableLots()) {
@@ -79,11 +91,17 @@ public class BookingSystem {
             parkingSpot.occupyTime(bookingID, time);
             
             SystemDatabase.addRevenue(deposit);
-            
-            Date date = new Date();
-            Visit visit = new Visit(date, date, client, parkingLot, parkingSpot, deposit, String.valueOf(bookingID));
+           // Date date = new Date();
+            Visit visit = new Visit(date,date, client, parkingLot, parkingSpot, deposit, String.valueOf(bookingID));
             bookings.put(bookingID, visit);
             bookingComplete = true;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        String formattedDate = dateFormat.format(date);
+        
+        if(bookingComplete) {
+        	String[] newRow = {String.valueOf(id),formattedDate, String.valueOf(initialtime),String.valueOf(duration), parkingLotName, String.valueOf(parkingSpaceID),clientEmail,licence,String.valueOf(deposit)};
+        	db.update(newRow);
         }
         return bookingComplete;
     }

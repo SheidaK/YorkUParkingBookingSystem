@@ -15,8 +15,11 @@ import javax.swing.JMenuItem;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 
+import businessLogic.BookingSystem;
 import businessLogic.SystemDatabase;
+import businessLogic.Visit;
 import objects.Client;
+import objects.Manager;
 
 import javax.swing.JEditorPane;
 import javax.swing.JTable;
@@ -24,12 +27,23 @@ import javax.swing.JPopupMenu;
 import java.awt.Component;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
+import java.util.Map;
 public class ClientView {
 	protected static JFrame frame;
     private ImageIcon icon;
     private JTable table;
+    private DefaultTableModel model;
+    private BookingSystem bookingDB;
+    private Client c;
 	public ClientView(Client c) {
-
+		this.c = c;
+		try {
+			bookingDB = BookingSystem.getInstance();
+		} catch (Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
 		frame = new JFrame("Client Page");
 		frame.setSize(1280, 720);
 		frame.getContentPane().setLayout(null);
@@ -39,7 +53,7 @@ public class ClientView {
 		frame.getContentPane().add(scrollPane);
 		String[] columnNames = {"Date", "Time", "ParkingLot","ParkingSpace"};
         Object[][] data = {};
-		DefaultTableModel model = new DefaultTableModel(data,columnNames);
+		model = new DefaultTableModel(data,columnNames);
 		table = new JTable(model);
 		scrollPane.setViewportView(table);
 		
@@ -124,4 +138,14 @@ public class ClientView {
 	public void setVisible(boolean b) {
 		frame.setVisible(b);
 	}
+	private void loadBookings() {
+        model.setRowCount(0);
+         Map<Integer,Visit> bookings= bookingDB.getBookingsForClient(c);
+        if(bookings != null) {    	
+        	for (Map.Entry<Integer, Visit> entry : bookings.entrySet()) {
+        		model.addRow(new Object[]{
+        		});
+        }
+        }
+    }
 }
