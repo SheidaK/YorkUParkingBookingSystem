@@ -14,11 +14,11 @@ public class ConfirmBookingPage extends JFrame {
     private String licensePlate;
     private int parkingSpaceID;
 
-    public ConfirmBookingPage(Client c, String licensePlate, int parkingSpaceID) {
+    public ConfirmBookingPage(Client c, String licensePlate, int parkingSpaceID, int money) {
         this.licensePlate = licensePlate;
         this.parkingSpaceID = parkingSpaceID;
         setTitle("Confirm Booking and Pay");
-        setSize(400, 200);
+        setSize(550, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLayout(new GridLayout(3, 2));
 
@@ -28,7 +28,7 @@ public class ConfirmBookingPage extends JFrame {
         add(parkingSpaceLabel);
 
         // Payment method selection
-        add(new JLabel("Select Payment Method:"));
+        add(new JLabel("Select Payment Method: Need to pay $"+money));
         paymentMethodDropdown = new JComboBox<>(new String[]{"CREDIT_CARD", "DEBIT_CARD", "MOBILE_PAYMENT"});
         add(paymentMethodDropdown);
 
@@ -59,11 +59,11 @@ public class ConfirmBookingPage extends JFrame {
             }
         });
     }
-    public static void showCofirmBookingPageView(Client c, String licensePlate, int parkingSpaceID) {
+    public static void showCofirmBookingPageView(Client c, String licensePlate, int parkingSpaceID,int money) {
         SwingUtilities.invokeLater(() -> {
             ConfirmBookingPage view;
 			try {
-				view = new ConfirmBookingPage(c,licensePlate, parkingSpaceID);
+				view = new ConfirmBookingPage(c,licensePlate, parkingSpaceID,money);
 				view.setVisible(true);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

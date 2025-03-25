@@ -1,7 +1,2 @@
 Email,Password,Client Type,Validation Status
-a@gmail.com,aA1!,Student,Not Validated
-a2@gmail.com,aA1!,Student,Not Validated
-a3@gmail.com,aA1!,Student,Not Validated
-a4@gmail.com,aA1!,FacultyMember,Not Validated
-student@gmail.com,aA1!,Student,Not Validated
-student2@gmail.com,aA1!,Student,Validated
+a@gmail.com,aA1!,Visitor,Validated

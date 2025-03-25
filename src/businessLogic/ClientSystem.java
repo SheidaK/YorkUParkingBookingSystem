@@ -42,7 +42,7 @@ public class ClientSystem {
 		if (!clients.contains(client)) {
 			clients.add(client);
 			String clientType = client.getClass().getName().replace("objects.","");
-			String[] lst = {client.getEmail(),client.getPassword(), clientType};
+			String[] lst = {client.getEmail(),client.getPassword(), clientType,client.getValidationStatus()};
 			dbClient.update(lst);
 		}
 		return this.clients;

@@ -373,8 +373,9 @@ public class BookingPage extends JFrame {
                     
                  // Close current booking page
                     if(!edit) {
-                    	ConfirmBookingPage page = new ConfirmBookingPage(c,licensePlate,parkingSpaceId);
-                    	page.showCofirmBookingPageView(c, licensePlate, parkingSpaceId);
+                    	
+                    	ConfirmBookingPage page = new ConfirmBookingPage(c,licensePlate,parkingSpaceId,c.getParkingRate());
+                    	page.showCofirmBookingPageView(c, licensePlate, parkingSpaceId,c.getParkingRate());
                     }
                     //setVisible(false);
                     //dispose();
