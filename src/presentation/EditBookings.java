@@ -247,12 +247,14 @@ public class EditBookings {
             return;
         }
         
-        int extraTime;
+        int extraTime = Integer.parseInt(input.trim());
         try {
-            extraTime = Integer.parseInt(input.trim());
+            if (extraTime <= 0) {
+                JOptionPane.showMessageDialog(null, "Please enter a positive number.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(null, "Please enter a valid number.", "Error", JOptionPane.ERROR_MESSAGE);
-            return; 
         }
 
         String dateString = (String) model.getValueAt(selectedRow, 2);
@@ -310,16 +312,12 @@ public class EditBookings {
             boolean checkoutSuccess = SystemDatabaseFacade.getInstance().checkout(bookingId, visit.getDuration() * visit.getClientDetail().getParkingRate());
 
             if (checkoutSuccess) {
-                loadBookings(model);  
-                JOptionPane.showMessageDialog(null, "Booking will be checked out in 15 minutes, if your car has left", "Success", JOptionPane.INFORMATION_MESSAGE);
+                model.removeRow(selectedRow);
+
+                JOptionPane.showMessageDialog(null, "Booking will be checked out in 15 minutes", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
-                // Only refund if payment was actually made
-                boolean refundSuccess = PaymentSystem.getInstance().confirmRefund(bookingId);
-                if (refundSuccess) {
-                    JOptionPane.showMessageDialog(null, "Your checkout failed. A refund has been processed.", "Error", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    JOptionPane.showMessageDialog(null, "Your checkout failed. Refund could not be processed.", "Error", JOptionPane.ERROR_MESSAGE);
-                }
+                PaymentSystem.getInstance().confirmRefund(bookingId);
+                JOptionPane.showMessageDialog(null, "Your checkout has been cancelled, a refund has been processed", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
     }

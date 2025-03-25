@@ -76,7 +76,10 @@ public class Visit {
 	
     
     public void setEndTime(Date newEndTime) {
-        if (newEndTime != null && newEndTime.after(startTimeDate))
+        if (newEndTime == null) {
+            return;
+        }
+    	else if (newEndTime != null && newEndTime.after(startTimeDate))
             this.endTimeDate = newEndTime;
       
     }

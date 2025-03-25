@@ -265,15 +265,33 @@ public class BookingSystem implements ParkingStatusObserver{
     }
 
     public boolean checkout(int bookingID, int payment) {
-    	Visit visit = Visit.getVisit(bookingID);
+        Visit visit = Visit.getVisit(bookingID);
+        Date currentTime = new Date();
+        if (currentTime.before(visit.getEndTime())) {
+            return false;
+        }
+        
         ParkingSpace s = visit.getParkingSpace();
         boolean checkedOut = false;
-        if (confirmPayment(bookingID, payment)) {
-            scheduler.schedule(() -> checkIfVehicleLeft(bookingID, s.getSpaceId()), 15, TimeUnit.MINUTES);
-            checkedOut = checkIfVehicleLeft(bookingID, s.getSpaceId());
-            Date currentTime = new Date();
-            visit.setEndTime(currentTime);
-        }
+
+        // if (confirmPayment(bookingID, payment)) {
+            checkedOut = true;
+            if (visit.getEndTime() == null) {
+                visit.setEndTime(currentTime);
+            } 
+        //} else {
+        //    return false;
+        //}
+
+        new Thread(() -> {
+            try {
+                Thread.sleep(200); 
+                if (!checkIfVehicleLeft(bookingID, s.getSpaceId())) {
+                    System.out.println("Vehicle is still in the parking space after checkout.");
+                }
+            } catch (InterruptedException e) {
+            }
+        }).start();
 
         return checkedOut;
     }
