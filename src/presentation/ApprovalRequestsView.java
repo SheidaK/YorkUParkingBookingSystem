@@ -32,7 +32,7 @@ public class ApprovalRequestsView {
     private JTable table;
     private DefaultTableModel model;
     private static final String UNIVERSITY_DB_PATH = "database/UniversityDatabase.csv";
-    
+    private SystemDatabaseFacade systemdb = SystemDatabaseFacade.getInstance();
 	public ApprovalRequestsView() {
 		frame = new JFrame("Manager: Approval Requests");
 		frame.setSize(1280, 720);
@@ -154,7 +154,8 @@ public class ApprovalRequestsView {
 				// Send confirmation email
 				sendApprovalEmail(clientEmail, "Registration Approved", 
 						"Your registration has been approved. You can now log in to the system.");
-				
+				systemdb.getClientInfo(clientEmail).setValidated(true);
+				systemdb.changeValidationStatus(clientEmail,"Validated");
 				model.removeRow(selectedRow);
 				JOptionPane.showMessageDialog(frame, "Registration approved and email sent to " + clientEmail);
 			}

@@ -17,6 +17,9 @@ public class ClientSystem {
 		ClientFactory clientFactory = new ClientFactory();
 		for(String[] row:dataClients) {
 			Client newClient = clientFactory.getNewClient(row[2],row[0],row[1]);
+			if(row[3].trim().equals("Validated")) {
+			newClient.setValidated(true);
+			}else {	newClient.setValidated(false);}
 			clients.add(newClient);
 		}
 	}
@@ -64,6 +67,9 @@ public class ClientSystem {
 			}
 		}
 		return null;
+	}
+	public void changeValidationStatus(String email, String status) {
+		dbClient.overWrite(email, 4, 3, status,0 );
 	}
 
 }

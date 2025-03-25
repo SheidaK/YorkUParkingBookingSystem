@@ -83,6 +83,9 @@ public class SystemDatabaseFacade {
 	        user.setValidated(true);
 	        return true;
 	}
+	public void changeValidationStatus(String email, String status) {
+		clientSystem.changeValidationStatus(email,status);
+	}
 	
 
 	
