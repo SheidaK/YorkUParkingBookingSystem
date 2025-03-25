@@ -144,21 +144,31 @@ public class Registration extends JFrame {
 					if(!exists) {
 						if(!((String) clientType.getSelectedItem()).equals("Visitor")) {
 							if(!systemDB.registerValidation(c)) {canRegister = false;}
+						} else {
+							// Automatically validate visitors
+							c.setValidated(true);
 						}
-						//Approval upon registration
 						if(canRegister) {
 							try {
-								c.setValidated(false);
+								if(!((String) clientType.getSelectedItem()).equals("Visitor")) {
+									c.setValidated(false);
+									JOptionPane.showMessageDialog(
+										frame,
+										"Registration successful! Your account is pending approval by a manager.\n" + 
+										"Please wait for email confirmation before logging in.",
+										"Registration Complete",
+										JOptionPane.INFORMATION_MESSAGE
+									);
+								} else {
+									JOptionPane.showMessageDialog(
+										frame,
+										"Registration successful! You can now log in.",
+										"Registration Complete",
+										JOptionPane.INFORMATION_MESSAGE
+									);
+								}
 								
 								systemDB.addClient(c);
-						
-								JOptionPane.showMessageDialog(
-									frame,
-									"Registration successful! Your account is pending approval by a manager.\n" + 
-									"Please wait for email confirmation before logging in.",
-									"Registration Complete",
-									JOptionPane.INFORMATION_MESSAGE
-								);
 								
 								Login loginPage = new Login(true);
 								frame.setVisible(false);
