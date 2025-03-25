@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import database.Database;
 import objects.Client;
 import objects.ParkingLot;
+import objects.ParkingSensor;
 import objects.ParkingSpace;
 import objects.ParkingStatusObserver;
 
@@ -23,11 +24,13 @@ public class BookingSystem implements ParkingStatusObserver{
     private static BookingSystem bookingSystem = null;
     private SystemDatabase systemDatabase;
     private ParkingSystem parkingSystem = ParkingSystem.getInstance();
+    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 	String path = "src/database/BookingsDatabase.csv";
     private Database db = new Database(path);
     private BookingSystem() throws Exception {
         // Get reference to SystemDatabase
         this.systemDatabase = SystemDatabase.getInstance();
+        startNoShowCheck(); //initalize periodic no show check
         List<String[]> dataBookings = db.read();
 		for(String[] row:dataBookings) {
 			if(!row[0].isEmpty()) {
@@ -186,9 +189,9 @@ public class BookingSystem implements ParkingStatusObserver{
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
         
         if (parkingSpot != null && !parkingSpot.isOccupied(date,time,duration) && parkingSpot.isEnabled()) {
-            cancelBooking(bookingID,true);
-            parkingSpot.unoccupyTime(bookingID);
         	bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
+        	cancelBooking(bookingID,true);
+            parkingSpot.unoccupyTime(bookingID);
             bookingEdited = true;
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
@@ -246,9 +249,11 @@ public class BookingSystem implements ParkingStatusObserver{
 
     public boolean checkout(int bookingID, int payment) {
     	Visit visit = Visit.getVisit(bookingID);
+        ParkingSpace s = visit.getParkingSpace();
         boolean checkedOut = false;
         if (confirmPayment(bookingID, payment)) {
-            checkedOut = true;
+            scheduler.schedule(() -> checkIfVehicleLeft(bookingID, s.getSpaceId()), 15, TimeUnit.MINUTES);
+            checkedOut = checkIfVehicleLeft(bookingID, s.getSpaceId());
             Date currentTime = new Date();
             visit.setEndTime(currentTime);
         }
@@ -294,6 +299,16 @@ public class BookingSystem implements ParkingStatusObserver{
         }, 0, 1, TimeUnit.HOURS); 
     }
     
+    private boolean checkIfVehicleLeft(int bookingID, int parkingSpaceId) {
+    	Visit visit = Visit.getVisit(bookingID);
+        ParkingSpace s = visit.getParkingSpace();
+        if (s.isOccupied() && s.getParkedCar().getLicensePlate().equalsIgnoreCase(visit.getLicence())) {
+        	return false;
+        } else {
+        	return true;
+        }
+    }
+    
 	@Override
 	public void update(ParkingSpace s, boolean occupied) {
     	String bookingId = s.getBookingId();
@@ -302,7 +317,7 @@ public class BookingSystem implements ParkingStatusObserver{
     		checkout(Integer.valueOf(s.getBookingId()), visit.getDuration() * visit.getClientDetail().getParkingRate() - visit.getMoneyPaid());
     	}
     	
-    	else if (occupied == true && s.getParkedCar().getLicensePlate().equals(visit.getLicence())) {
+    	else if (occupied == true && s.getParkedCar().getLicensePlate().equalsIgnoreCase(visit.getLicence())) {
     		checkin(Integer.valueOf(s.getBookingId()), s);
     	}		
 	}
