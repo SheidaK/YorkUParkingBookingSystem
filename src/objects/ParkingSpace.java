@@ -22,7 +22,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     private String type; // Regular, Handicapped, VIP, etc.
     private ParkingLot parkingLot; // Reference to the containing parking lot
     private String bookingId;
-    static Map<String, Map<Integer, Integer>> occupiedTimes = new HashMap<>();
+    private Map<String, Map<Integer, Integer>> occupiedTimes;
 
 
     public ParkingSpace(int spaceId, String type) {
@@ -32,6 +32,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
         this.enabled = true;
         this.parkedCar = null;
         this.bookingId = "";
+        this.occupiedTimes = new HashMap<>();
     }
 
     // Associate a sensor with this space
@@ -67,6 +68,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
             cloned.parkedCar = null; // Cloning a parking space should not retain parked cars
             cloned.occupied = false; // Reset occupied status
             cloned.sensor = null; // Sensor will be assigned separately
+            cloned.occupiedTimes = new HashMap<>();
             return cloned;
         } catch (CloneNotSupportedException e) {
             throw new RuntimeException("Failed to clone ParkingSpace", e);
@@ -155,7 +157,6 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
     		innerMap.put(time1,bookingId);
     		occupiedTimes.put(dateString, innerMap);
     	}
-    	
     }
 
     public void unoccupyTime(int bookingID) {
@@ -201,7 +202,7 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
 		if(isOccupied()) {return "Occupied";}else {return "Available";}
 	}
 	public String getDateString(Date date) {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         String formattedDate = dateFormat.format(date);
         return formattedDate;
 	}

@@ -37,7 +37,7 @@ public class BookingSystem implements ParkingStatusObserver{
 			int duration = Integer.valueOf(row[3].trim());
 			ParkingLot lot = parkingSystem.getParkingLotInfo(row[4]);
 			ParkingSpace s = lot.findSpaceById(Integer.valueOf(row[5]));
-			//s.occupyTime(bookingId, date, startTime, duration);
+			s.occupyTime(bookingId, date, startTime, duration);
 			Client c = systemDatabase.getClientInfo(row[6].trim());
 			String license = row[7].trim();
 			int moneyPaid = Integer.valueOf(row[8].trim());
@@ -92,13 +92,14 @@ public class BookingSystem implements ParkingStatusObserver{
         int id =generateBookingID();
         // Get parking lot by ID
         ParkingLot parkingLot = null;
+
         for (ParkingLot lot : parkingSystem.getAvailableLots()) {
             if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
             }
         }
-        
+
         if (parkingLot == null) {
             return false; // Parking lot not found
         }
@@ -108,14 +109,13 @@ public class BookingSystem implements ParkingStatusObserver{
         
         // Get client by email
         Client client = systemDatabase.getClientInfo(clientEmail);
-
         if (parkingSpot != null && client != null && 
             !parkingSpot.isOccupied(date, time,duration) && 
             parkingSpot.isEnabled() && 
             deposit >= client.getParkingRate()) {
 
             int bookingID = generateBookingID();
-            parkingSpot.occupyTime(bookingID,date, time,duration);
+            //parkingSpot.occupyTime(bookingID,date, time,duration);
             
             SystemDatabase.addRevenue(deposit);
            // Date date = new Date();
@@ -145,20 +145,20 @@ public class BookingSystem implements ParkingStatusObserver{
         
         // Get parking lot by ID
         ParkingLot parkingLot = null;
+
         for (ParkingLot lot : systemDatabase.getParkingLots()) {
             if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;
             }
         }
-        
         if (parkingLot == null) {
             return false; // Parking lot not found
         }
         
         // Get parking space by ID
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
-        
+       
         if (parkingSpot != null && !parkingSpot.isOccupied(date,time,duration) && parkingSpot.isEnabled()) {
             parkingSpot.occupyTime(bookingID, date, time,duration);
             bookingComplete = true;
@@ -312,7 +312,7 @@ public class BookingSystem implements ParkingStatusObserver{
         // For example, when space status changes, update any affected bookings
     }
     private Date convertIntToDate(String dateString) {
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         Date date= null;
          try {
 			date = dateFormat.parse(dateString);

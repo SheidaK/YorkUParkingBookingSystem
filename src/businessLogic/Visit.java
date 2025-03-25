@@ -200,7 +200,7 @@ public class Visit {
 		return date;
 	}
 	public String getDateString() {
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         String formattedDate = dateFormat.format(date);
         return formattedDate;
 	}

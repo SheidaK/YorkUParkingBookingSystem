@@ -44,14 +44,14 @@ public class ConfirmBookingPage extends JFrame {
 
                 if (success) {
                     JOptionPane.showMessageDialog(null, "Payment Successful! Your parking is confirmed.");
-                    try {
-						EditBookings p = new EditBookings(c);
+//                    try {
+//						EditBookings p = new EditBookings(c);
 						setVisible(false);
 						dispose();
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+//					} catch (Exception e1) {
+//						// TODO Auto-generated catch block
+//						e1.printStackTrace();
+//					}
                    
                 } else {
                     JOptionPane.showMessageDialog(null, "Payment Failed. Try a different method.");

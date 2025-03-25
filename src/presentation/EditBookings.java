@@ -112,8 +112,8 @@ public class EditBookings {
         			try {
         				BookingPage p = new BookingPage(c,false,0);
         				p.showBookingPageView();
-        				frame.setVisible(false);
-        				frame.dispose();
+        				//frame.setVisible(false);
+        				//frame.dispose();
         			} catch (Exception e1) {
         				// TODO Auto-generated catch block
         				e1.printStackTrace();
@@ -265,7 +265,7 @@ public class EditBookings {
         });
     }
     private static Date convertIntToDate(String dateString) {
-    	SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    	SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         Date date= null;
          try {
 			date = dateFormat.parse(dateString);

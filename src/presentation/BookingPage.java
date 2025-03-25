@@ -169,7 +169,7 @@ public class BookingPage extends JFrame {
         backButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Return to client view
-            	EditBookings p = new EditBookings(c);
+            	//EditBookings p = new EditBookings(c);
 				setVisible(false);
 				dispose();
             }
@@ -194,7 +194,6 @@ public class BookingPage extends JFrame {
                 }
                 
                 selectedTimeSlot = hour24;
-                
                 // Get the selected duration
                 selectedDuration = (Integer) durationSpinner.getValue();
                 
@@ -376,11 +375,9 @@ public class BookingPage extends JFrame {
                     if(!edit) {
                     	ConfirmBookingPage page = new ConfirmBookingPage(c,licensePlate,parkingSpaceId);
                     	page.showCofirmBookingPageView(c, licensePlate, parkingSpaceId);
-                    }else {
-                    	EditBookings p = new EditBookings(c);
                     }
-                    setVisible(false);
-                    dispose();
+                    //setVisible(false);
+                    //dispose();
 
                     
                 } else {
