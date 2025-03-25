@@ -17,7 +17,7 @@ import java.awt.event.ActionEvent;
 import javax.swing.JTextPane;
 import javax.swing.border.LineBorder;
 
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 import objects.Client;
 import objects.ClientFactory;
 import objects.Manager;
@@ -115,7 +115,7 @@ public class Login extends JFrame {
 			}
 		});
 	    String emailFormat = "^[a-zA-Z0-9_.±]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+.[com ca]$";
-	    SystemDatabase systemDB = SystemDatabase.getInstance();
+	    SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(email.getText().isEmpty()) {

@@ -77,7 +77,6 @@ public class ParkingSystem  {
 //        this.bookingSystem = bookingSystem;
 //    }
 //    
-    // Facade methods for client interaction
     public List<ParkingSpace> getAvailableSpaces(ParkingLot parkingLot) {
         return parkingLot.getAllSpaces();
     }
@@ -173,14 +172,15 @@ public class ParkingSystem  {
 		return removed;
 	}
 
-	public void statusParkingLot(String name, boolean enabled) {
+	public boolean statusParkingLot(String name, boolean enabled) {
 		// TODO Auto-generated method stub
 		for(ParkingLot l: parkingLot) {
 			if(l.getName().equals(name)) {
 				l.setStatus(enabled);
-				break;
+				return true;
 			}
 		}
+		return false;
 	}
 
 	public ArrayList<ParkingLot> getAvailableLots() {

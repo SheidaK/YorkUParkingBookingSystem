@@ -22,7 +22,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 import objects.Client;
 import objects.Manager;
 
@@ -96,7 +96,7 @@ public class ApprovalRequestsView {
 			}
 		});
 		
-	    SystemDatabase systemDB = SystemDatabase.getInstance();
+	    SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setResizable(false);
@@ -110,7 +110,7 @@ public class ApprovalRequestsView {
 		model.setRowCount(0);
 		
 		// Get request data from system database
-		SystemDatabase systemDB = SystemDatabase.getInstance();
+		SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
 		
 		ArrayList<Client> clients = systemDB.getClients();
 		
@@ -208,7 +208,7 @@ public class ApprovalRequestsView {
 	 */
 	private boolean processRegistrationApproval(String email, boolean isUniversityStudent) {
 		try {
-			SystemDatabase systemDB = SystemDatabase.getInstance();
+			SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
 			
 			Client client = systemDB.getClientInfo(email);
 			
@@ -245,7 +245,7 @@ public class ApprovalRequestsView {
 	 */
 	private boolean processTransactionApproval(String email, String details) {
 		try {
-			SystemDatabase systemDB = SystemDatabase.getInstance();
+			SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
 			Client client = systemDB.getClientInfo(email);
 			
 			if (client == null) {
@@ -258,7 +258,7 @@ public class ApprovalRequestsView {
 				String amountStr = details.substring(details.indexOf("$") + 1);
 				double amount = Double.parseDouble(amountStr);
 			
-				SystemDatabase.addRevenue((int)amount);
+				SystemDatabaseFacade.addRevenue((int)amount);
 				
 				System.out.println("Processed transaction of $" + amount + " for " + email);
 				System.out.println("System revenue now: $" + systemDB.getRevenue());

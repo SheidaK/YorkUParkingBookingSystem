@@ -132,7 +132,7 @@ public class EditBookings {
             	}
             });
             buttonPanel.add(signOutButton);
-    	    SystemDatabase systemDB = SystemDatabase.getInstance();
+    	    SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
 
             JButton deleteAccountButton = new JButton("Delete Account");
             deleteAccountButton.addActionListener(new ActionListener() {
@@ -152,7 +152,7 @@ public class EditBookings {
     private static void loadBookings(DefaultTableModel model) throws Exception {
         model.setRowCount(0); 
 
-        BookingSystem bookingSystem = BookingSystem.getInstance();
+        SystemDatabaseFacade bookingSystem = SystemDatabaseFacade.getInstance();
         Map<Integer, Visit> bookings = bookingSystem.getBookingsForClient(c);
 
         for (Entry<Integer, Visit> entry : bookings.entrySet()) {
@@ -207,7 +207,7 @@ public class EditBookings {
         int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to cancel this booking?", "Confirm Cancellation", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-            BookingSystem.getInstance().cancelBooking(bookingId,true);
+        	SystemDatabaseFacade.getInstance().cancelBooking(bookingId,true);
             loadBookings(model);
         }
     }
@@ -221,7 +221,7 @@ public class EditBookings {
 
         Object bookingIdObj = model.getValueAt(selectedRow, 0);
         int bookingId = (bookingIdObj instanceof Integer) ? (int) bookingIdObj : Integer.parseInt(bookingIdObj.toString());
-        BookingSystem bookingSystem = BookingSystem.getInstance();
+        SystemDatabaseFacade bookingSystem = SystemDatabaseFacade.getInstance();
 
         String input = JOptionPane.showInputDialog("Enter extra time to extend (in hours):");
         if (input == null || input.trim().isEmpty()) {

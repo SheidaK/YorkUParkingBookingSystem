@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import businessLogic.PaymentSystem;
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 
 
 public class Manager {
@@ -35,27 +35,17 @@ public class Manager {
 
     // Enable a parking lot
     public boolean enableParkingLot(String parkingLotID) {
-        return SystemDatabase.getInstance().setParkingLotStatus(parkingLotID, true);
+        return SystemDatabaseFacade.getInstance().statusParkingLot(parkingLotID, true);
     }
 
     // Disable a parking lot
     public boolean disableParkingLot(String parkingLotID) {
-        return SystemDatabase.getInstance().setParkingLotStatus(parkingLotID, false);
+        return SystemDatabaseFacade.getInstance().statusParkingLot(parkingLotID, false);
     }
-
-//    // Enable a specific parking space
-//    public boolean enableParkingSpace(String parkingLotID, String parkingSpaceID) {
-//        return SystemDatabase.getInstance().setParkingSpaceStatus(parkingLotID, parkingSpaceID, true);
-//    }
-//
-//    // Disable a specific parking space
-//    public boolean disableParkingSpace(String parkingLotID, String parkingSpaceID) {
-//        return SystemDatabase.getInstance().setParkingSpaceStatus(parkingLotID, parkingSpaceID, false);
-//    }
 
     // Validate University Staff
     public boolean validateUniversityStaff(Client user) {
-        return SystemDatabase.getInstance().approveUser(user);
+        return SystemDatabaseFacade.getInstance().approveUser(user);
     }
 
     // Approve transaction for booking
