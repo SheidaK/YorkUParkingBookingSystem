@@ -1,7 +1,7 @@
 package presentation;
 
 import businessLogic.ParkingSystem;
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 import objects.*;
 
 import javax.swing.*;
@@ -17,7 +17,7 @@ import java.awt.event.MouseEvent;
  * GUI for parking lot managers to maintain parking services
  */
 public class ParkingLotManagerView extends JFrame {
-    private ParkingSystem parkingSystem;
+    //private ParkingSystem parkingSystem;
     private JTable parkingLotTable;
     private DefaultTableModel tableModel;
     private JButton addLotButton, removeSpaceButton, enableSpaceButton, disableSpaceButton;
@@ -25,15 +25,15 @@ public class ParkingLotManagerView extends JFrame {
     private JLabel lblNewLabel;
     private JTextField name;
     private JLabel lblNewLabel_1;
-    SystemDatabase systemDB = SystemDatabase.getInstance();
+    SystemDatabaseFacade systemDB;
     private JButton backButton;
     private JButton btnNewButton;
 
     
     public ParkingLotManagerView(int page) {
         try {
-			parkingSystem = ParkingSystem.getInstance();
-		} catch (Exception e) {
+        	systemDB = SystemDatabaseFacade.getInstance();
+        } catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -58,7 +58,7 @@ public class ParkingLotManagerView extends JFrame {
         		 int selectedRow = parkingLotTable.getSelectedRow();
                  if (selectedRow >= 0) {
                      String name = (String) tableModel.getValueAt(selectedRow, 0);
-                     ParkingLot p = parkingSystem.getParkingLotInfo(name);
+                     ParkingLot p = systemDB.getParkingLotInfo(name);
                      ParkingSpaceManagerView view = new ParkingSpaceManagerView(p,page);
                      view.showManagerView(p,page);
                      setVisible(false);
@@ -127,7 +127,7 @@ public class ParkingLotManagerView extends JFrame {
         		 int selectedRow = parkingLotTable.getSelectedRow();
                  if (selectedRow >= 0) {
                      String name = (String) tableModel.getValueAt(selectedRow, 0);
-                     ParkingLot p = parkingSystem.getParkingLotInfo(name);
+                     ParkingLot p = systemDB.getParkingLotInfo(name);
                      ParkingSpaceManagerView view = new ParkingSpaceManagerView(p,page);
                      view.showManagerView(p,page);
                      setVisible(false);
@@ -142,12 +142,12 @@ public class ParkingLotManagerView extends JFrame {
 
         // Action listeners
         addLotButton.addActionListener(e -> {
-        	if(parkingSystem.getParkingLotInfo(name.getText()) != null) {
+        	if(systemDB.getParkingLotInfo(name.getText()) != null) {
     			//ParkingLot already exists
                 JOptionPane.showMessageDialog(this, "Parking Lot already exists.", "Error", JOptionPane.ERROR_MESSAGE);
         	}else {    
         		ParkingLot parkingLot = new ParkingLot(name.getText(),location.getText(), 100);
-        		parkingSystem.addNewParkingLot(parkingLot);
+        		systemDB.addNewParkingLot(parkingLot);
         		loadParkingSpaces();
         	}
         });
@@ -156,7 +156,7 @@ public class ParkingLotManagerView extends JFrame {
             int selectedRow = parkingLotTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String name= (String) tableModel.getValueAt(selectedRow, 0);
-                boolean success = parkingSystem.removeParkingLot(name);
+                boolean success = systemDB.removeParkingLot(name);
                 if (success) {
                     loadParkingSpaces();
                 } else {
@@ -170,7 +170,7 @@ public class ParkingLotManagerView extends JFrame {
             int selectedRow = parkingLotTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String name = (String) tableModel.getValueAt(selectedRow, 0);
-                parkingSystem.statusParkingLot(name,true);
+                systemDB.statusParkingLot(name,true);
                 loadParkingSpaces();
             }
         });
@@ -179,7 +179,7 @@ public class ParkingLotManagerView extends JFrame {
             int selectedRow = parkingLotTable.getSelectedRow();
             if (selectedRow >= 0) {
                 String name = (String) tableModel.getValueAt(selectedRow, 0);
-                parkingSystem.statusParkingLot(name,false);
+                systemDB.statusParkingLot(name,false);
                 loadParkingSpaces();
             }
         });
@@ -189,7 +189,7 @@ public class ParkingLotManagerView extends JFrame {
         tableModel.setRowCount(0);
         List<ParkingLot> lots;
 		try {
-			lots = ParkingSystem.getInstance().getAvailableLots();
+			lots = systemDB.getAvailableLots();
 			if(lots !=null) {
 				for (ParkingLot lot : lots) {
 					Object[] row = {

@@ -2,7 +2,7 @@ package objects;
 
 import java.util.List;
 
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 
 public class SuperManager extends Manager {
 	private static SuperManager supermanager = null;

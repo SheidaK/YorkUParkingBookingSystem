@@ -1,5 +1,5 @@
 package objects;
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 
 public class Visitor extends Client {
 	public Visitor(String email, String password) {

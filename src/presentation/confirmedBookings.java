@@ -57,8 +57,8 @@ public class confirmedBookings {
         model.setRowCount(0); // Clear existing data
 
         // Fetch bookings from BookingSystem
-        BookingSystem bookingSystem = BookingSystem.getInstance();
-        Map<Integer, Visit> bookings = bookingSystem.getBookings();
+        SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
+        Map<Integer, Visit> bookings = systemDB.getBookings();
 
         for (Entry<Integer, Visit> entry : bookings.entrySet()) {
             Integer bookingId = entry.getKey();

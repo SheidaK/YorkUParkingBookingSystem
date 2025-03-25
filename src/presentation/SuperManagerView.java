@@ -6,7 +6,7 @@ import objects.SuperManager;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,7 +25,7 @@ public class SuperManagerView extends JFrame {
     private JButton createButton, removeButton;
     private JButton btnApprovalRequest;
     private JButton btnParkingView;
-    SystemDatabase systemDB = SystemDatabase.getInstance();
+    SystemDatabaseFacade systemDB = SystemDatabaseFacade.getInstance();
     private JButton signOutButton;
 
     public SuperManagerView() {

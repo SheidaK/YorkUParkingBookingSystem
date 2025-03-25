@@ -21,13 +21,13 @@ import objects.ParkingStatusObserver;
 public class BookingSystem implements ParkingStatusObserver{
     static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
     private static BookingSystem bookingSystem = null;
-    private SystemDatabase systemDatabase;
+    private ClientSystem clientSystem;
     private ParkingSystem parkingSystem = ParkingSystem.getInstance();
 	String path = "src/database/BookingsDatabase.csv";
     private Database db = new Database(path);
     private BookingSystem() throws Exception {
         // Get reference to SystemDatabase
-        this.systemDatabase = SystemDatabase.getInstance();
+        this.clientSystem = ClientSystem.getInstance();
         List<String[]> dataBookings = db.read();
 		for(String[] row:dataBookings) {
 			if(!row[0].isEmpty()) {
@@ -38,7 +38,7 @@ public class BookingSystem implements ParkingStatusObserver{
 			ParkingLot lot = parkingSystem.getParkingLotInfo(row[4]);
 			ParkingSpace s = lot.findSpaceById(Integer.valueOf(row[5]));
 			s.occupyTime(bookingId, date, startTime, duration);
-			Client c = systemDatabase.getClientInfo(row[6].trim());
+			Client c = clientSystem.getClientInfo(row[6].trim());
 			String license = row[7].trim();
 			int moneyPaid = Integer.valueOf(row[8].trim());
 			//row[1]=date
@@ -108,7 +108,7 @@ public class BookingSystem implements ParkingStatusObserver{
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
         
         // Get client by email
-        Client client = systemDatabase.getClientInfo(clientEmail);
+        Client client = clientSystem.getClientInfo(clientEmail);
         if (parkingSpot != null && client != null && 
             !parkingSpot.isOccupied(date, time,duration) && 
             parkingSpot.isEnabled() && 
@@ -117,7 +117,7 @@ public class BookingSystem implements ParkingStatusObserver{
             int bookingID = generateBookingID();
             //parkingSpot.occupyTime(bookingID,date, time,duration);
             
-            SystemDatabase.addRevenue(deposit);
+            SystemDatabaseFacade.addRevenue(deposit);
            // Date date = new Date();
 			Visit visit = new Visit(bookingID,date,time,duration,parkingLot,parkingSpot,client,deposit,license);
 
@@ -146,7 +146,7 @@ public class BookingSystem implements ParkingStatusObserver{
         // Get parking lot by ID
         ParkingLot parkingLot = null;
 
-        for (ParkingLot lot : systemDatabase.getParkingLots()) {
+        for (ParkingLot lot : parkingSystem.getAvailableLots()) {
             if (lot.getName().equals(parkingLotName)) {
                 parkingLot = lot;
                 break;

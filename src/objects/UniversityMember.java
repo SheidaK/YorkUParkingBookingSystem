@@ -1,5 +1,5 @@
 package objects;
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 public abstract class UniversityMember extends Client {
 
 	public UniversityMember(String email, String password) {

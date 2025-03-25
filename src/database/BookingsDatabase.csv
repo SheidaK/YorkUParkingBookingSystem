@@ -1,1 +1,4 @@
 id,Date,Time,Duration,ParkingLot,ParkingSpaceID,ClientEmail,ClientLicence,MoneyPaid
+3,06/25/2025,20,13,Lot1,5,a@gmail.com,SDFG 123,5
+2,06/25/2027,12,1,Lot1,2,a@gmail.com,SDFG 234,5
+3,06/25/2027,12,1,Lot1,5,a2@gmail.com,FSDF 123,5

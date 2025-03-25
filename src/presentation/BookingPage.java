@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import businessLogic.BookingSystem;
 import businessLogic.ParkingSystem;
-import businessLogic.SystemDatabase;
+import businessLogic.SystemDatabaseFacade;
 import objects.Client;
 import objects.ParkingLot;
 import objects.ParkingSpace;
@@ -33,9 +33,9 @@ public class BookingPage extends JFrame {
     private JButton backButton2; // Existing back button for parking selection panel
     
     // System components
-    private SystemDatabase systemDatabase;
-    private ParkingSystem parkingSystemDB= ParkingSystem.getInstance();
-    private BookingSystem bookingSystem;
+    private SystemDatabaseFacade systemDatabase;
+    //private System systemDB= ParkingSystem.getInstance();
+   // private BookingSystem bookingSystem;
     private Date selectedDate;
     private int selectedTimeSlot; // 24-hour format time slot
     private int selectedDuration; // Duration in hours
@@ -56,9 +56,9 @@ public class BookingPage extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         // Initialize system components
-        systemDatabase = SystemDatabase.getInstance();
+        systemDatabase = SystemDatabaseFacade.getInstance();
         try {
-            bookingSystem = BookingSystem.getInstance();
+            systemDatabase = SystemDatabaseFacade.getInstance();
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error initializing booking system: " + e.getMessage(), 
                                          "System Error", JOptionPane.ERROR_MESSAGE);
@@ -330,10 +330,10 @@ public class BookingPage extends JFrame {
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
                     int id;
                     boolean hourSuccess=true;
-                    if(!edit) {id = bookingSystem.generateBookingID();
-                    	hourSuccess= bookingSystem.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), selectedTimeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
+                    if(!edit) {id = systemDatabase.generateBookingID();
+                    	hourSuccess= systemDatabase.bookParkingSpace(c.getEmail(), (String)parkingLotDropdown.getSelectedItem(),parkingSpaceId,c.getParkingRate(), selectedTimeSlot,selectedDate,selectedTimeSlot,selectedDuration,licensePlate);
                     }else {
-                    	hourSuccess= bookingSystem.editBooking(bookingID,(String)parkingLotDropdown.getSelectedItem(), parkingSpaceId, selectedTimeSlot,selectedDate,selectedDuration,c,licensePlate);
+                    	hourSuccess= systemDatabase.editBooking(bookingID,(String)parkingLotDropdown.getSelectedItem(), parkingSpaceId, selectedTimeSlot,selectedDate,selectedDuration,c,licensePlate);
                     }
                     if (!hourSuccess) {
                         success = false;
@@ -413,7 +413,7 @@ public class BookingPage extends JFrame {
         parkingLotMap.clear();
         
         // Get available parking lots from database
-        ArrayList<ParkingLot> availableLots = parkingSystemDB.getAvailableLots();
+        ArrayList<ParkingLot> availableLots = systemDatabase.getAvailableLots();
         
         // Filter enabled parking lots
         for (ParkingLot lot : availableLots) {
