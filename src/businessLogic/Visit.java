@@ -169,13 +169,11 @@ public class Visit {
     }
     
     Date convertIntToDate(int startTime) {
-        int hour = startTime / 100;
-        int minute = startTime % 100;
-        
+
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(this.date);
-        calendar.set(Calendar.HOUR_OF_DAY, hour);
-        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.HOUR_OF_DAY, startTime);
+        calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         
