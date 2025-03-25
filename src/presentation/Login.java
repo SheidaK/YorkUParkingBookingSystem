@@ -142,6 +142,13 @@ public class Login extends JFrame {
 						}else if(!passwordField_1.getText().equals(c.getPassword())) {
 							warningLabel.setVisible(true);
 							warningLabel.setText("Entered password is incorrect!");
+						}
+						
+						else if(!c.isValidated()) {
+							// Check if the client is validated
+							warningLabel.setVisible(true);
+							warningLabel.setText("Your account is pending approval by a manager. Please wait for approval email.");
+						
 						}else {
 							EditBookings p = new EditBookings(c);
 							frame.setVisible(false);

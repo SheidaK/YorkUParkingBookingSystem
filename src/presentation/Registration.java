@@ -1,6 +1,7 @@
 package presentation;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
@@ -146,11 +147,22 @@ public class Registration extends JFrame {
 						}
 						if(canRegister) {
 							try {
+								c.setValidated(false);
+								
 								systemDB.addClient(c);
-								EditBookings p = new EditBookings(c);
+						
+								JOptionPane.showMessageDialog(
+									frame,
+									"Registration successful! Your account is pending approval by a manager.\n" + 
+									"Please wait for email confirmation before logging in.",
+									"Registration Complete",
+									JOptionPane.INFORMATION_MESSAGE
+								);
+								
+								Login loginPage = new Login(true);
 								frame.setVisible(false);
 								frame.dispose();
-								frame.setVisible(false);
+								
 							} catch (Exception e1) {
 								// TODO Auto-generated catch block
 								e1.printStackTrace();
