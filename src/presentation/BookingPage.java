@@ -381,7 +381,7 @@ public class BookingPage extends JFrame {
 
                     
                 } else {
-                    JOptionPane.showMessageDialog(null, "Booking Failed. Space might be unavailable for the entire duration or system error occurred.");
+                    JOptionPane.showMessageDialog(null, "Booking Failed. Space might be unavailable for the entire duration or you might be editing a booking that is past starting time or system error occurred.");
                 }
             }
         });

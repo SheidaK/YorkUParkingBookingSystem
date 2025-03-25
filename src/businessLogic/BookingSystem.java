@@ -3,6 +3,8 @@ package businessLogic;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -119,8 +121,8 @@ public class BookingSystem implements ParkingStatusObserver{
 
             int bookingID = generateBookingID();
             //parkingSpot.occupyTime(bookingID,date, time,duration);
-            
             SystemDatabaseFacade.addRevenue(deposit);
+
            // Date date = new Date();
 			Visit visit = new Visit(bookingID,date,time,duration,parkingLot,parkingSpot,client,deposit,license);
 
@@ -165,6 +167,7 @@ public class BookingSystem implements ParkingStatusObserver{
         if (parkingSpot != null && !parkingSpot.isOccupied(date,time,duration) && parkingSpot.isEnabled()) {
             parkingSpot.occupyTime(bookingID, date, time,duration);
             bookingComplete = true;
+            
         }
         return bookingComplete;
     }
@@ -189,10 +192,14 @@ public class BookingSystem implements ParkingStatusObserver{
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
         
         if (parkingSpot != null && !parkingSpot.isOccupied(date,time,duration) && parkingSpot.isEnabled()) {
-        	bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
-        	cancelBooking(bookingID,true);
-            parkingSpot.unoccupyTime(bookingID);
-            bookingEdited = true;
+        	 Date currentDate = new Date();
+             Date bookedDate = bookings.get(bookingID).convertIntToDate(bookings.get(bookingID).getInitialTime());
+             if (currentDate.before(bookedDate)){
+	        	bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
+	            parkingSpot.unoccupyTime(bookingID);
+	        	cancelBooking(bookingID,true);
+	            bookingEdited = true;
+             }
         }
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         String formattedDate = dateFormat.format(date);
@@ -216,12 +223,16 @@ public class BookingSystem implements ParkingStatusObserver{
         }
         else if (bookings.containsKey(bookingID)) {
             ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-            parkingSpot.unoccupy(bookingID);
+            Date currentDate = new Date();
+            Date bookedDate = bookings.get(bookingID).convertIntToDate(bookings.get(bookingID).getInitialTime());
+            if (currentDate.before(bookedDate)){
             //if (confirmRefund(bookingID)) {
+                parkingSpot.unoccupy(bookingID);
                 bookings.remove(bookingID);
                 bookingCancelled = true;
                 db.remove(String.valueOf(bookingID),9);
             //}
+            }
             
         }
         return bookingCancelled;
@@ -237,7 +248,9 @@ public class BookingSystem implements ParkingStatusObserver{
         boolean bookingExtended = false;
         if (bookings.containsKey(bookingID)) {
             ParkingSpace parkingSpot = bookings.get(bookingID).getParkingSpace();
-            if (!parkingSpot.isOccupied(date,time,duration)) {
+            Date currentDate = new Date();
+            Date endDate = bookings.get(bookingID).getEndTime();
+            if (currentDate.before(endDate) && !parkingSpot.isOccupied(date,time,duration)) {
             	bookings.get(bookingID).setDuration(duration);
             	db.overWrite(String.valueOf(bookingID),9,3,String.valueOf(duration),0);
                 //parkingSpot.occupyTime(bookingID,date, time,duration);

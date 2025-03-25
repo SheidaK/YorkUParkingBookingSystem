@@ -63,6 +63,10 @@ public class Visit {
     }
 	
     public Date getEndTime() {
+    	Calendar calendar = Calendar.getInstance();
+    	calendar.setTime(getStartTime());
+    	calendar.add(Calendar.HOUR,this.duration);
+    	this.endTimeDate = calendar.getTime();
         return endTimeDate;
     }
     
@@ -164,17 +168,19 @@ public class Visit {
         return DATE_FORMAT.format(endTimeDate);
     }
     
-    private Date convertIntToDate(int startTime) {
+    Date convertIntToDate(int startTime) {
         int hour = startTime / 100;
         int minute = startTime % 100;
         
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(this.date);
         calendar.set(Calendar.HOUR_OF_DAY, hour);
         calendar.set(Calendar.MINUTE, minute);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
         
         return calendar.getTime(); // Return the Date object
+        
     }
     
     public void setDuration() {

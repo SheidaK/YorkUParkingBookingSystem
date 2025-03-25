@@ -59,28 +59,13 @@ public class EditBookings {
 				}
 			});
             editButton.addActionListener(e -> {
-//				try {
-//					editBooking(table, model);
-//				} catch (Exception e1) {
-//					// TODO Auto-generated catch block
-//					e1.printStackTrace();
-//				}
-            	 int selectedRow = table.getSelectedRow();
-                 if (selectedRow == -1) {
-                     JOptionPane.showMessageDialog(null, "Please select a booking to extend.", "Error", JOptionPane.ERROR_MESSAGE);
-                     return;
-                 }
-
-                 int bookingId = (int) model.getValueAt(selectedRow, 0);
-            	try {
-        			BookingPage p = new BookingPage(c,true,bookingId);
-        			p.showBookingPageView();
-        			//frame.setVisible(false);
-        			//frame.dispose();
-        		} catch (Exception e1) {
-        			// TODO Auto-generated catch block
-        			e1.printStackTrace();
-        		}
+				try {
+					editBooking(table, model);
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+            	 
 			});
             cancelButton.addActionListener(e -> {
 				try {
@@ -185,7 +170,23 @@ public class EditBookings {
 //		
 //        BookingSystem bookingSystem = BookingSystem.getInstance();
 //                
-//                
+//    
+    	int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Please select a booking to extend.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int bookingId = (int) model.getValueAt(selectedRow, 0);
+   	try {
+			BookingPage p = new BookingPage(c,true,bookingId);
+			p.showBookingPageView();
+			//frame.setVisible(false);
+			//frame.dispose();
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 //        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time,date)) {
 //            loadBookings(model);  // Reload the updated bookings table
 //            JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
@@ -207,7 +208,13 @@ public class EditBookings {
         int confirm = JOptionPane.showConfirmDialog(null, "Are you sure you want to cancel this booking?", "Confirm Cancellation", JOptionPane.YES_NO_OPTION);
 
         if (confirm == JOptionPane.YES_OPTION) {
-        	SystemDatabaseFacade.getInstance().cancelBooking(bookingId,true);
+          if (SystemDatabaseFacade.getInstance().cancelBooking(bookingId,true)) {
+        	  loadBookings(model);  // Reload the updated bookings table
+        	  JOptionPane.showMessageDialog(null, "Booking cancelled successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
+          } else {
+        	  JOptionPane.showMessageDialog(null, "Your booking time has started.It can not be cancelled.", "Error", JOptionPane.ERROR_MESSAGE);
+          }
+        	
             loadBookings(model);
         }
     }

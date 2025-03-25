@@ -20,8 +20,6 @@ public class SuperManagerView extends JFrame {
     private SuperManager superManager;
     private JTable managersTable;
     private DefaultTableModel tableModel;
-    private JTextField usernameField;
-    private JPasswordField passwordField;
     private JButton createButton, removeButton;
     private JButton btnApprovalRequest;
     private JButton btnParkingView;
@@ -41,7 +39,7 @@ public class SuperManagerView extends JFrame {
         getContentPane().setLayout(new BorderLayout());
 
         // Table setup
-        String[] columnNames = {"Username", "Role"};
+        String[] columnNames = {"Username","Password", "Role"};
         tableModel = new DefaultTableModel(columnNames, 0);
         managersTable = new JTable(tableModel);
         JScrollPane scrollPane = new JScrollPane(managersTable);
@@ -51,17 +49,8 @@ public class SuperManagerView extends JFrame {
         FlowLayout fl_inputPanel = new FlowLayout();
         fl_inputPanel.setAlignOnBaseline(true);
         JPanel inputPanel = new JPanel(fl_inputPanel);
-        usernameField = new JTextField(10);
-        passwordField = new JPasswordField(10);
         createButton = new JButton("Create Manager");
         removeButton = new JButton("Remove Selected");
-
-        JLabel label = new JLabel("Username:");
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        inputPanel.add(label);
-        inputPanel.add(usernameField);
-        inputPanel.add(new JLabel("Password:"));
-        inputPanel.add(passwordField);
         inputPanel.add(createButton);
         inputPanel.add(removeButton);
 
@@ -105,18 +94,13 @@ public class SuperManagerView extends JFrame {
     }
 
     private void createManager(ActionEvent e) {
-        String username = usernameField.getText();
-        String password = new String(passwordField.getPassword());
+		String[] account = superManager.generateManagerAccount();
+		String username = account[0];
+		String password = account[1];
 
-        if (username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Username and Password required.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (createManager(username, password, "Manager")) {
-        	Manager m = new Manager(username, password);
-            systemDB.addManager(m);
-            loadManagers();
-        }
+        Manager m = new Manager(username, password);
+        systemDB.addManager(m);
+        loadManagers();
     }
 
     private void removeManager(ActionEvent e) {
@@ -136,7 +120,7 @@ public class SuperManagerView extends JFrame {
         tableModel.setRowCount(0);
         List<Manager> managers = systemDB.getManagers();
         if(managers != null) {for (Manager manager : managers) {
-            tableModel.addRow(new Object[]{manager.getUserName(), manager.getRole()});
+            tableModel.addRow(new Object[]{manager.getUserName(), manager.getPassword(),manager.getRole()});
         }
         }
     }
@@ -147,24 +131,4 @@ public class SuperManagerView extends JFrame {
             view.setVisible(true);
         });
     }
-	public boolean createManager(String username, String password, String string) {
-		if(systemDB.getManagerInfo(username) != null) {
-			//username already exists
-            JOptionPane.showMessageDialog(this, "Manager already exists.", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}else if (!password.matches(".*[0-9].*")) {
-            JOptionPane.showMessageDialog(this, "Password must contain numbers.", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}else if(!password.matches(".*[a-z].*")){
-            JOptionPane.showMessageDialog(this, "Password must lower case letters.", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		} else if(!password.matches(".*[A-Z].*")){
-            JOptionPane.showMessageDialog(this, "Password must contain uppercase letters.", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}else if(!password.matches(".*[^a-zA-Z0-9\\s].*")){
-            JOptionPane.showMessageDialog(this, "Password must contain symbols.", "Error", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-		return true;
-	}
 }
