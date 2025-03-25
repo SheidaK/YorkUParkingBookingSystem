@@ -54,7 +54,7 @@ public class ConfirmBookingPage extends JFrame {
 //					}
                    
               //  } else {
-                    JOptionPane.showMessageDialog(null, "Payment Failed. Try a different method.");
+                 //   JOptionPane.showMessageDialog(null, "Payment Failed. Try a different method.");
                // }
             }
         });

@@ -197,9 +197,11 @@ public class BookingSystem implements ParkingStatusObserver{
              Date bookedDate = bookings.get(bookingID).convertIntToDate(bookings.get(bookingID).getInitialTime());
              if (currentDate.before(bookedDate)){
                 // int id =generateBookingID();
+            	 cancelBooking(bookingID,true);
+            	 parkingSpot.unoccupyTime(bookingID);
             	 bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
-	        	cancelBooking(bookingID,true);
-	             parkingSpot.unoccupyTime(bookingID);
+	        	
+	             
 	            bookingEdited = true;
              }
         }
