@@ -244,6 +244,9 @@ public class SystemDatabaseFacade {
     	return bookingSystem.extendBooking(bookingID,date,time,duration);
 
     }
+	public boolean checkout(int bookingId, int payment) {
+		return bookingSystem.checkout(bookingId, payment);
+	}
 	
 	
 }

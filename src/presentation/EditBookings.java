@@ -49,7 +49,8 @@ public class EditBookings {
             JButton editButton = new JButton("Edit Selected Booking");
             JButton cancelButton = new JButton("Cancel Selected Booking");
             JButton extendButton = new JButton("Extend Selected Booking");
-
+            JButton checkoutButton = new JButton("Checkout Selected Booking");
+            
             refreshButton.addActionListener(e -> {
 				try {
 					loadBookings(model);
@@ -83,11 +84,19 @@ public class EditBookings {
 					e1.printStackTrace();
 				}
 			});
+            checkoutButton.addActionListener(e -> {
+            	try {
+            		checkoutBooking(table, model);
+            	} catch (Exception e1) {
+            		e1.printStackTrace();
+            	}
+            });
 
             buttonPanel.add(refreshButton);
             buttonPanel.add(editButton);
             buttonPanel.add(cancelButton);
             buttonPanel.add(extendButton);
+            buttonPanel.add(checkoutButton);
             frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
             
             JButton newBookingButton = new JButton("New Booking");
@@ -258,6 +267,61 @@ public class EditBookings {
         }
         
     }
+    
+    private static void checkoutBooking(JTable table, DefaultTableModel model) throws Exception {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(null, "Please select a booking to checkout.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        int bookingId = (int) model.getValueAt(selectedRow, 0);
+        Visit visit = Visit.getVisit(bookingId);
+        int amountDue = (visit.getDuration() - 1) * visit.getClientDetail().getParkingRate(); 
+        JPanel panel = new JPanel(new GridLayout(2, 1));
+        panel.add(new JLabel("Total Amount Due: $" + amountDue)); 
+        JComboBox<String> paymentMethodDropdown = new JComboBox<>(new String[]{"CREDIT_CARD", "DEBIT_CARD", "MOBILE_PAYMENT"});
+        panel.add(paymentMethodDropdown);
+
+        int result = JOptionPane.showConfirmDialog(null, panel, "Payment Required", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            String paymentMethod = (String) paymentMethodDropdown.getSelectedItem();
+
+            boolean success = PaymentSystem.getInstance().confirmPayment(bookingId, paymentMethod, amountDue);
+            if (!success) {
+                JOptionPane.showMessageDialog(null, "Payment Failed. Try a different method.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                JOptionPane.showMessageDialog(null, "Payment Successful! Proceeding to checkout.", "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Checkout cancelled.", "Cancelled", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Confirm checkout
+        int confirm = JOptionPane.showConfirmDialog(null, 
+            "Payment confirmed. Do you want to proceed with checkout?", 
+            "Confirm Checkout", JOptionPane.YES_NO_OPTION);
+
+        if (confirm == JOptionPane.YES_OPTION) {
+            boolean checkoutSuccess = SystemDatabaseFacade.getInstance().checkout(bookingId, visit.getDuration() * visit.getClientDetail().getParkingRate());
+
+            if (checkoutSuccess) {
+                loadBookings(model);  
+                JOptionPane.showMessageDialog(null, "Booking will be checked out in 15 minutes, if your car has left", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Only refund if payment was actually made
+                boolean refundSuccess = PaymentSystem.getInstance().confirmRefund(bookingId);
+                if (refundSuccess) {
+                    JOptionPane.showMessageDialog(null, "Your checkout failed. A refund has been processed.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(null, "Your checkout failed. Refund could not be processed.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
+    }
+
     public static void editBookingPageView(Client c) {
         SwingUtilities.invokeLater(() -> {
             EditBookings view;
