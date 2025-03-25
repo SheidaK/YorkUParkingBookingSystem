@@ -60,7 +60,22 @@ public class EditBookings {
 			});
             editButton.addActionListener(e -> {
 				try {
-					editBooking(table, model);
+					int selectedRow = table.getSelectedRow();
+			        if (selectedRow == -1) {
+			            JOptionPane.showMessageDialog(null, "Please select a booking to extend.", "Error", JOptionPane.ERROR_MESSAGE);
+			            return;
+			        }
+
+			        int bookingId = (int) model.getValueAt(selectedRow, 0);
+			   	try {
+						BookingPage p = new BookingPage(c,true,bookingId);
+						p.showBookingPageView(true);
+						//frame.setVisible(false);
+						//frame.dispose();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -96,7 +111,7 @@ public class EditBookings {
             		//Page where client can make a new booking
         			try {
         				BookingPage p = new BookingPage(c,false,0);
-        				p.showBookingPageView();
+        				p.showBookingPageView(false);
         				//frame.setVisible(false);
         				//frame.dispose();
         			} catch (Exception e1) {
@@ -171,22 +186,7 @@ public class EditBookings {
 //        BookingSystem bookingSystem = BookingSystem.getInstance();
 //                
 //    
-    	int selectedRow = table.getSelectedRow();
-        if (selectedRow == -1) {
-            JOptionPane.showMessageDialog(null, "Please select a booking to extend.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        int bookingId = (int) model.getValueAt(selectedRow, 0);
-   	try {
-			BookingPage p = new BookingPage(c,true,bookingId);
-			p.showBookingPageView();
-			//frame.setVisible(false);
-			//frame.dispose();
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+    	
 //        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time,date)) {
 //            loadBookings(model);  // Reload the updated bookings table
 //            JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);

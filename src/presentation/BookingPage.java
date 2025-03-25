@@ -44,7 +44,7 @@ public class BookingPage extends JFrame {
     private Map<String, ParkingLot> parkingLotMap;
     private Map<String, ParkingSpace> parkingSpaceMap;
     static Client c= null;
-    private static boolean edit;
+    private boolean edit;
     private static int bookingID;
     public BookingPage(Client c,boolean edit,int bookingID) throws Exception {
     	this.c = c;
@@ -477,7 +477,7 @@ public class BookingPage extends JFrame {
        // return true; // Available for the entire duration
     }
     
-    public static void showBookingPageView() {
+    public static void showBookingPageView(boolean edit) {
         SwingUtilities.invokeLater(() -> {
             BookingPage view;
 			try {

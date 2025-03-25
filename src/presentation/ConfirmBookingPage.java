@@ -42,7 +42,7 @@ public class ConfirmBookingPage extends JFrame {
                 String paymentMethod = (String) paymentMethodDropdown.getSelectedItem();
                 boolean success = PaymentSystem.getInstance().confirmPayment(parkingSpaceID, paymentMethod, 10);
 
-                if (success) {
+               // if (success) {
                     JOptionPane.showMessageDialog(null, "Payment Successful! Your parking is confirmed.");
 //                    try {
 //						EditBookings p = new EditBookings(c);
@@ -53,9 +53,9 @@ public class ConfirmBookingPage extends JFrame {
 //						e1.printStackTrace();
 //					}
                    
-                } else {
+              //  } else {
                     JOptionPane.showMessageDialog(null, "Payment Failed. Try a different method.");
-                }
+               // }
             }
         });
     }

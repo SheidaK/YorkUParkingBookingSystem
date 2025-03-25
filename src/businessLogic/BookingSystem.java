@@ -22,7 +22,7 @@ import objects.ParkingSpace;
 import objects.ParkingStatusObserver;
 
 public class BookingSystem implements ParkingStatusObserver{
-    static Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
+    Map<Integer, Visit> bookings = new HashMap<Integer, Visit>();
     private static BookingSystem bookingSystem = null;
     private ClientSystem clientSystem;
     private ParkingSystem parkingSystem = ParkingSystem.getInstance();
@@ -77,6 +77,7 @@ public class BookingSystem implements ParkingStatusObserver{
     }
     public Map<Integer,Visit> getBookingsForClient(Client c){
     	Map<Integer,Visit> bookingsClient = new HashMap<Integer, Visit>();
+    	
     	for (Map.Entry<Integer, Visit> entry : bookings.entrySet()) {
     		if(entry.getValue().getClientDetail().getEmail().equals(c.getEmail())) {
     			bookingsClient.put(entry.getKey(),entry.getValue());
@@ -94,7 +95,7 @@ public class BookingSystem implements ParkingStatusObserver{
 
     public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time, Date date,int initialtime, int duration, String license) {
         boolean bookingComplete = false;
-        int id =generateBookingID();
+        //int id =generateBookingID();
         // Get parking lot by ID
         ParkingLot parkingLot = null;
 
@@ -111,7 +112,7 @@ public class BookingSystem implements ParkingStatusObserver{
         
         // Get parking space by ID
         ParkingSpace parkingSpot = parkingLot.findSpaceById(parkingSpaceID);
-        
+        int bookingID=0;
         // Get client by email
         Client client = clientSystem.getClientInfo(clientEmail);
         if (parkingSpot != null && client != null && 
@@ -119,7 +120,7 @@ public class BookingSystem implements ParkingStatusObserver{
             parkingSpot.isEnabled() && 
             deposit >= client.getParkingRate()) {
 
-            int bookingID = generateBookingID();
+        	bookingID = generateBookingID();
             //parkingSpot.occupyTime(bookingID,date, time,duration);
             SystemDatabaseFacade.addRevenue(deposit);
 
@@ -134,7 +135,7 @@ public class BookingSystem implements ParkingStatusObserver{
         String formattedDate = dateFormat.format(date);
         
         if(bookingComplete) {
-        	String[] newRow = {String.valueOf(id),formattedDate, String.valueOf(initialtime),String.valueOf(duration), parkingLotName, String.valueOf(parkingSpaceID),clientEmail,license,String.valueOf(deposit)};
+        	String[] newRow = {String.valueOf(bookingID),formattedDate, String.valueOf(initialtime),String.valueOf(duration), parkingLotName, String.valueOf(parkingSpaceID),clientEmail,license,String.valueOf(deposit)};
         	db.update(newRow);
         }
         return bookingComplete;
@@ -195,9 +196,10 @@ public class BookingSystem implements ParkingStatusObserver{
         	 Date currentDate = new Date();
              Date bookedDate = bookings.get(bookingID).convertIntToDate(bookings.get(bookingID).getInitialTime());
              if (currentDate.before(bookedDate)){
-	        	bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
-	            parkingSpot.unoccupyTime(bookingID);
+                // int id =generateBookingID();
+            	 bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
 	        	cancelBooking(bookingID,true);
+	             parkingSpot.unoccupyTime(bookingID);
 	            bookingEdited = true;
              }
         }

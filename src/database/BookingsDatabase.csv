@@ -1,2 +1,6 @@
 id,Date,Time,Duration,ParkingLot,ParkingSpaceID,ClientEmail,ClientLicence,MoneyPaid
-2,03/25/2025,23,1,Lot1,1,student2@gmail.com,SDFG 234,5
+1,07/25/2025,12,3,Lot1,1,student2@gmail.com,DSFG 345,5
+2,11/25/2025,12,1,Lot1,1,student2@gmail.com,RBXN 546,5
+4,02/25/2026,12,1,Lot2,1,student2@gmail.com,GHJK 567,5
+6,10/25/2025,12,6,Lot2,1,student2@gmail.com,GHJK 456,5
+6,07/25/2025,12,6,Lot2,1,student2@gmail.com,RTYU 456,5
