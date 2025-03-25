@@ -145,7 +145,6 @@ public class Login extends JFrame {
 						}
 						
 						else if(!c.isValidated()) {
-							// Check if the client is validated
 							warningLabel.setVisible(true);
 							warningLabel.setText("Your account is pending approval by a manager. Please wait for approval email.");
 						

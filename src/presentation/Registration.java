@@ -145,6 +145,7 @@ public class Registration extends JFrame {
 						if(!((String) clientType.getSelectedItem()).equals("Visitor")) {
 							if(!systemDB.registerValidation(c)) {canRegister = false;}
 						}
+						//Approval upon registration
 						if(canRegister) {
 							try {
 								c.setValidated(false);
