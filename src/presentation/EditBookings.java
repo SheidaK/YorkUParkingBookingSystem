@@ -67,7 +67,7 @@ public class EditBookings {
 //				}
             	 int selectedRow = table.getSelectedRow();
                  if (selectedRow == -1) {
-                     JOptionPane.showMessageDialog(null, "Please select a booking to cancel.", "Error", JOptionPane.ERROR_MESSAGE);
+                     JOptionPane.showMessageDialog(null, "Please select a booking to extend.", "Error", JOptionPane.ERROR_MESSAGE);
                      return;
                  }
 
@@ -75,8 +75,8 @@ public class EditBookings {
             	try {
         			BookingPage p = new BookingPage(c,true,bookingId);
         			p.showBookingPageView();
-        			frame.setVisible(false);
-        			frame.dispose();
+        			//frame.setVisible(false);
+        			//frame.dispose();
         		} catch (Exception e1) {
         			// TODO Auto-generated catch block
         			e1.printStackTrace();
@@ -243,7 +243,7 @@ public class EditBookings {
         int startingTime = (int) model.getValueAt(selectedRow, 3);
         int duration = (int) model.getValueAt(selectedRow, 6);
 
-		if (bookingSystem.extendBooking(bookingId, date,startingTime, extraTime+duration)) {
+		if (bookingSystem.extendBooking(bookingId, date,startingTime+1, extraTime+duration)) {
             loadBookings(model);
             JOptionPane.showMessageDialog(null, "Booking extended successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
         } else {
