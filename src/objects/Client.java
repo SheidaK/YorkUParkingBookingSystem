@@ -1,6 +1,6 @@
 package objects;
 
-public class Client {
+public abstract class Client {
     private String email;
     private String password;
     private boolean validated;
@@ -45,4 +45,5 @@ public class Client {
     public void setParkingRate(int parkingRate) {
         this.parkingRate = parkingRate;
     }
+    public abstract String getValidationStatus();
 }

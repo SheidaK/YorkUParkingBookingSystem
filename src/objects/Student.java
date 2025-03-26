@@ -6,4 +6,9 @@ public class Student extends UniversityMember {
 		super(email, password);
 		this.setParkingRate(5);
 	}
+	public String getValidationStatus() {
+    	if(isValidated()) {
+    		return "Validated";
+    	}else {return "NotValidated";}
+    }
 }

@@ -6,4 +6,9 @@ public class Visitor extends Client {
 		super(email, password);
 		this.setParkingRate(15);
 	}
+	public String getValidationStatus() {
+	    
+	    return "Validated";
+	    
+	}
 }

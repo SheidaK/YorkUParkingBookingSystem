@@ -79,8 +79,10 @@ public class BookingSystem implements ParkingStatusObserver{
     	Map<Integer,Visit> bookingsClient = new HashMap<Integer, Visit>();
     	
     	for (Map.Entry<Integer, Visit> entry : bookings.entrySet()) {
-    		if(entry.getValue().getClientDetail().getEmail().equals(c.getEmail())) {
-    			bookingsClient.put(entry.getKey(),entry.getValue());
+    		if(entry.getValue().getClientDetail()!=null) {
+	    		if(entry.getValue().getClientDetail().getEmail().equals(c.getEmail())) {
+	    			bookingsClient.put(entry.getKey(),entry.getValue());
+	    		}
     		}
     	}
     	return bookingsClient;
