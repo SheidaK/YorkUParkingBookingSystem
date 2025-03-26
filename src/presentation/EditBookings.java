@@ -313,7 +313,7 @@ public class EditBookings {
 
             if (checkoutSuccess) {
                 model.removeRow(selectedRow);
-
+                loadBookings(model);
                 JOptionPane.showMessageDialog(null, "Booking will be checked out in 15 minutes", "Success", JOptionPane.INFORMATION_MESSAGE);
             } else {
                 PaymentSystem.getInstance().confirmRefund(bookingId);

@@ -269,22 +269,24 @@ public class BookingSystem implements ParkingStatusObserver{
     public boolean checkout(int bookingID, int payment) {
         Visit visit = Visit.getVisit(bookingID);
         Date currentTime = new Date();
-        if (currentTime.before(visit.getEndTime())) {
+        if (currentTime.before(visit.getStartTime())) {
             return false;
         }
         
         ParkingSpace s = visit.getParkingSpace();
-        boolean checkedOut = false;
+        boolean checkedOut = true;
+        s.unoccupy(bookingID);
+        bookings.remove(bookingID);
+        db.remove(String.valueOf(bookingID),9);
 
         // if (confirmPayment(bookingID, payment)) {
-            checkedOut = true;
             if (visit.getEndTime() == null) {
                 visit.setEndTime(currentTime);
             } 
         //} else {
         //    return false;
         //}
-
+            
         new Thread(() -> {
             try {
                 Thread.sleep(200); 
