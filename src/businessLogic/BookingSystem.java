@@ -46,7 +46,6 @@ public class BookingSystem implements ParkingStatusObserver{
 			Client c = clientSystem.getClientInfo(row[6].trim());
 			String license = row[7].trim();
 			int moneyPaid = Integer.valueOf(row[8].trim());
-			//row[1]=date
 			Visit v = new Visit(bookingId,date,startTime,duration,lot,s,c,moneyPaid,license);
 			s.getSensor().addObserver((ParkingStatusObserver) lot);
 			bookings.put(Integer.valueOf(row[0]),v);
@@ -97,7 +96,6 @@ public class BookingSystem implements ParkingStatusObserver{
 
     public boolean bookParkingSpace(String clientEmail, String parkingLotName, int parkingSpaceID, int deposit, int time, Date date,int initialtime, int duration, String license) {
         boolean bookingComplete = false;
-        //int id =generateBookingID();
         // Get parking lot by ID
         ParkingLot parkingLot = null;
 
@@ -123,7 +121,6 @@ public class BookingSystem implements ParkingStatusObserver{
             deposit >= client.getParkingRate()) {
 
         	bookingID = generateBookingID();
-            //parkingSpot.occupyTime(bookingID,date, time,duration);
             SystemDatabaseFacade.addRevenue(deposit);
 
            // Date date = new Date();
@@ -198,7 +195,6 @@ public class BookingSystem implements ParkingStatusObserver{
         	 Date currentDate = new Date();
              Date bookedDate = bookings.get(bookingID).convertIntToDate(bookings.get(bookingID).getInitialTime());
              if (currentDate.before(bookedDate)){
-                // int id =generateBookingID();
             	 cancelBooking(bookingID,true);
             	 parkingSpot.unoccupyTime(bookingID);
             	 bookParkingSpace(c.getEmail(), parkingLotName,parkingSpaceID,c.getParkingRate(), time,date,time,duration,license);
@@ -259,7 +255,6 @@ public class BookingSystem implements ParkingStatusObserver{
             if (currentDate.before(endDate) && !parkingSpot.isOccupied(date,time,duration)) {
             	bookings.get(bookingID).setDuration(duration);
             	db.overWrite(String.valueOf(bookingID),9,3,String.valueOf(duration),0);
-                //parkingSpot.occupyTime(bookingID,date, time,duration);
                 bookingExtended = true;
             }
         }

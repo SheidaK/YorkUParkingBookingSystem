@@ -131,29 +131,8 @@ public class SystemDatabaseFacade {
     public void disableParkingSpace(ParkingLot parkingLot, int spaceId) {
 		parkingSystem.disableParkingSpace(parkingLot,spaceId);
     }
-//
-//	  public boolean setParkingLotStatus(String lotName, boolean enabled) {
-//	        for (ParkingLot lot : parkingLots) {
-//	            if (lot.getName().equals(lotName)) { // Match by name instead of ID
-//	                lot.setEnabled(enabled);
-//	                return true;
-//	            }
-//	        }
-//	        return false;
-//	    }
 
-//	  public boolean setParkingSpaceStatus(String lotName, int parkingSpaceID, boolean enabled) {
-//	        for (ParkingLot lot : parkingLots) {
-//	            if (lot.getName().equals(lotName)) {
-//	                ParkingSpace space = lot.findSpaceById(parkingSpaceID); // Correct method
-//	                if (space != null) {
-//	                    space.setEnabled(enabled);
-//	                    return true;
-//	                }
-//	            }
-//	        }
-//	        return false;
-//	    }
+
 	  public void addNewParkingLot(ParkingLot newParkingLot) {
 			parkingSystem.addNewParkingLot(newParkingLot);
 		}

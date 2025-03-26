@@ -24,15 +24,6 @@ public class ParkingSystem  {
     
     // Private constructor for Singleton pattern
     private ParkingSystem() throws Exception {
-        //this.parkingLot = ParkingLot.getInstance();
-        //this.parkingLot.addObserver(this);
-        
-        // Get reference to the booking system (also a singleton)
-//        try {
-//            this.bookingSystem = BookingSystem.getInstance();
-//        } catch (Exception e) {
-//            System.err.println("Warning: BookingSystem not initialized yet. Will be set later.");
-//        }
         List<String[]> dataParkingLots = dbParkingLots.read();
 		for(String[] row:dataParkingLots) {
 			ParkingLot l = new ParkingLot(row[0],row[1],Integer.valueOf(row[3].trim()));
@@ -113,10 +104,7 @@ public class ParkingSystem  {
             dbParkingSpace.overWrite(String.valueOf(spaceId),7,2,"Disabled" ,1);
         }
     }
-//    public void addParkingSpace(ParkingLot lot, ParkingSpace space) {
-//		String[] lst = {lot.getName(), String.valueOf(space.getSpaceId()), space.getSpaceId()),String.valueOf(newParkingLot.getCapcity())};
-//		dbParkingLots.update(lst);
-//    }
+
     
     public void addNewParkingSpace(ParkingLot parkingLot,String type) {
         int nextId = parkingLot.getAllSpaces().size() + 1;
@@ -136,15 +124,7 @@ public class ParkingSystem  {
         }
     }
     
-//    // Observer implementation
-//    @Override
-//    public void onParkingSpaceStatusChanged(ParkingSpace space) {
-//        // Notify booking system of changes if needed
-//        if (bookingSystem != null) {
-//            bookingSystem.updateParkingAvailability(space);
-//        }
-//    }
-    
+
    
     public void onAvailabilityChanged(int availableSpaces) {
         // Can be used to trigger system-wide notifications
@@ -177,6 +157,11 @@ public class ParkingSystem  {
 		for(ParkingLot l: parkingLot) {
 			if(l.getName().equals(name)) {
 				l.setStatus(enabled);
+				if(enabled) {
+					dbParkingLots.overWrite(name,4,2,"Enabled",0 );
+				}else {
+					dbParkingLots.overWrite(name,4,2,"Disabled",0 );
+				}
 				return true;
 			}
 		}
