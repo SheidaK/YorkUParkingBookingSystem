@@ -141,8 +141,6 @@ public class ParkingSpace implements Cloneable, ParkingStatusObserver {
  // Time-based occupation methods
     public void occupyTime(int bookingId, Date date, int time, int duration) {
         // Occupy the space for a specific time slot
-        //this.occupied = true;
-        //this.bookingId = Integer.toString(bookingID);
     	int time1=time;
     	 long oneDayInMillis = 24 * 60 * 60 * 1000;
     	for(int i=time;i<=time+duration;i++) {

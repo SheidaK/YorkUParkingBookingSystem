@@ -194,9 +194,7 @@ public class Visit {
     
 	public int getDuration() {
 		return duration;
-//		    long durationInMillis = endTimeDate.getTime() - startTimeDate.getTime(); 
-//		    int durationInHours = (int) (durationInMillis / (1000 * 60 * 60));
-//		    return durationInHours; 
+
 	}
 	public String getLicence() {
 		// TODO Auto-generated method stub

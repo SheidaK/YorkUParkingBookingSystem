@@ -175,36 +175,6 @@ public class EditBookings {
             });
         }
     }
-
-
-    private static void editBooking(JTable table, DefaultTableModel model) throws Exception {
-    	
-//    	int selectedRow = table.getSelectedRow();
-//        if (selectedRow == -1) {
-//            JOptionPane.showMessageDialog(null, "Please select a booking to edit.", "Error", JOptionPane.ERROR_MESSAGE);
-//            return;
-//        }
-//
-//        int bookingId = (int) model.getValueAt(selectedRow, 0);
-//        String parkingLotName = (String) model.getValueAt(selectedRow, 5); // Parking lot name
-//        int parkingSpaceId = (int) model.getValueAt(selectedRow, 3); // Parking space ID
-//        int time = Integer.parseInt(JOptionPane.showInputDialog("Enter new duration in hours:"));
-//        String dateString = (String) model.getValueAt(selectedRow, 1);
-//        Date date;
-//		
-//		date = convertIntToDate(dateString);
-//		
-//        BookingSystem bookingSystem = BookingSystem.getInstance();
-//                
-//    
-    	
-//        if (bookingSystem.editBooking(bookingId, parkingLotName, parkingSpaceId, time,date)) {
-//            loadBookings(model);  // Reload the updated bookings table
-//            JOptionPane.showMessageDialog(null, "Booking updated successfully.", "Success", JOptionPane.INFORMATION_MESSAGE);
-//        } else {
-//            JOptionPane.showMessageDialog(null, "This time slot is not available.", "Error", JOptionPane.ERROR_MESSAGE);
-//        }
-    }
             
    
 
@@ -327,9 +297,7 @@ public class EditBookings {
             EditBookings view;
 			try {
 				view = new EditBookings(c);
-				//view.setVisible(true);
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
             

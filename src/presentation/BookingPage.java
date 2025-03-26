@@ -34,8 +34,6 @@ public class BookingPage extends JFrame {
     
     // System components
     private SystemDatabaseFacade systemDatabase;
-    //private System systemDB= ParkingSystem.getInstance();
-   // private BookingSystem bookingSystem;
     private Date selectedDate;
     private int selectedTimeSlot; // 24-hour format time slot
     private int selectedDuration; // Duration in hours
@@ -325,7 +323,6 @@ public class BookingPage extends JFrame {
                 	selectedTimeSlot=12;
                 }
                 // We need to book the space for each hour in the duration
-               //for (int i = 0; i < selectedDuration; i++) {
                 int i=0;
                     int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
                     int id;
@@ -337,8 +334,7 @@ public class BookingPage extends JFrame {
                     }
                     if (!hourSuccess) {
                         success = false;
-                        //break;
-                    }
+                                            }
 
 
                // }
@@ -467,15 +463,10 @@ public class BookingPage extends JFrame {
     
     private boolean isAvailableForDuration(ParkingSpace space) {
         // Check if the space is available for each hour in the duration
-        //for (int i = 0; i < selectedDuration; i++) {
-         //   int timeSlot = (selectedTimeSlot + i) % 24; // Wrap around if needed
-            
+        
             // Use the isOccupied method that accepts a time parameter
             return !space.isOccupied(selectedDate, selectedTimeSlot,selectedDuration);
-           //     return false; // Not available for the entire duration
-       //     }
-       // }
-       // return true; // Available for the entire duration
+           
     }
     
     public static void showBookingPageView(boolean edit) {

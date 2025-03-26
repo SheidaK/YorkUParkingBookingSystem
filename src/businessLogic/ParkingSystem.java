@@ -62,12 +62,7 @@ public class ParkingSystem  {
         }
         return instance;
     }
-    
-//    // Set the booking system reference if not available at construction time
-//    public void setBookingSystem(BookingSystem bookingSystem) {
-//        this.bookingSystem = bookingSystem;
-//    }
-//    
+  
     public List<ParkingSpace> getAvailableSpaces(ParkingLot parkingLot) {
         return parkingLot.getAllSpaces();
     }

@@ -28,10 +28,7 @@ public class Manager {
         return "Manager";
     }
 
-//    // Add a new parking lot
-//    public boolean addParkingLot() {
-//        return SystemDatabase.getInstance().addParkingLot();
-//    }
+
 
     // Enable a parking lot
     public boolean enableParkingLot(String parkingLotID) {
