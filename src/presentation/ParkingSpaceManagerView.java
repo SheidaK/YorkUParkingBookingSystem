@@ -95,7 +95,7 @@ public class ParkingSpaceManagerView extends JFrame {
         simulateButton.addActionListener(e -> {
             int selectedRow = parkingSpacesTable.getSelectedRow();
             if (selectedRow >= 0) {
-                String spaceId = (String) tableModel.getValueAt(selectedRow, 0);
+                int spaceId = (int) tableModel.getValueAt(selectedRow, 0);
                 boolean currentlyOccupied = "Yes".equals(tableModel.getValueAt(selectedRow, 3));
                 systemDB.simulateVehicleDetection(parkingLot, Integer.valueOf(spaceId), !currentlyOccupied);
                 loadParkingSpaces(parkingLot);
