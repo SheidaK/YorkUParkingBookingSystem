@@ -1,8 +1,8 @@
 module YorkUParkingBookingSystem {
-	exports presentation;
-	exports database;
-	exports objects;
-	exports businessLogic;
+	exports main.java.database;
+	exports main.java.presentation;
+	exports main.java.objects;
+	exports main.java.businessLogic;
 
 	requires java.desktop;
 	requires javacsv;

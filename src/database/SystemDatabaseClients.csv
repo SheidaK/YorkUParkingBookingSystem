@@ -1,5 +1,0 @@
-Email,Password,Client Type,Validation Status
-a@gmail.com,aA1!,Visitor,Validated
-student@gmail.com,aA1!,Student,Validated
-visitor@gmail.com,aA1!,Visitor,Validated
-faculty@gmail.com,aA1!,FacultyMember,Validated
