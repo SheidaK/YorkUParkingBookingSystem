@@ -1,4 +1,4 @@
-package main.java.database;
+package test.java.database;
 
 import main.java.database.Database;
 import org.junit.jupiter.api.*;

@@ -4,12 +4,9 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import main.java.businessLogic.ClientSystem;
 import main.java.objects.Client;
+import main.java.businessLogic.ClientSystem;
 import main.java.objects.FacultyMember;
-import main.java.objects.Student;
-
 public class ClientSystemTest {
 //	@Test
 //	public void testClientSystem() {}

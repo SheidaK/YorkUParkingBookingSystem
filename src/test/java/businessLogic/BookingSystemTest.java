@@ -1,4 +1,4 @@
-package main.java.businessLogic;
+package test.java.businessLogic;
 import main.java.businessLogic.*;
 import main.java.objects.*;
 
