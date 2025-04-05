@@ -6,4 +6,6 @@ module YorkUParkingBookingSystem {
 
 	requires java.desktop;
 	requires javacsv;
+    requires org.junit.jupiter.api;
+    requires org.junit.jupiter.engine;
 }
