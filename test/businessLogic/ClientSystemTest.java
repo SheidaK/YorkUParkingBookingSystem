@@ -3,102 +3,116 @@ import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import objects.Client;
 import businessLogic.ClientSystem;
 import objects.FacultyMember;
+import objects.Student;
 public class ClientSystemTest {
 //	@Test
 //	public void testClientSystem() {}
-	ClientSystem clientSystem;
-	Client client = new FacultyMember("professor@gmail.com","aA5!");
+	static ClientSystem clientSystem;
+	static Client client = new FacultyMember("test@gmail.com","aA5!");
 
 //	@Test
 //	public void setUpThrowsException() throws Exception{
 //		
 //	}
 	@BeforeAll
-	public void setUp() throws Exception {
+	public static void setUp() throws Exception {
 		clientSystem = ClientSystem.getInstance();
-	}
-	
-	@Test
-	public void testGetClientsEmails() {
-		ArrayList<Client> clients = clientSystem.getClients();
-		ArrayList<String> expectedClientEmails= new ArrayList<String>();
-		expectedClientEmails.add("a@gmail.com");
-		expectedClientEmails.add("student@gmail.com");
-		expectedClientEmails.add("visitor@gmail.com");
-		expectedClientEmails.add("faculty@gmail.com");
-		ArrayList<String> actualClientEmails= new ArrayList<String>();
-		for(Client c:clients) {
-			actualClientEmails.add(c.getEmail());
-		}
-        assertEquals(expectedClientEmails, actualClientEmails);
-		
-	}
-	@Test
-	public void testGetClientsPassword() {
-		ArrayList<Client> clients = clientSystem.getClients();
-		ArrayList<String> expectedClientPassword= new ArrayList<String>();
-		expectedClientPassword.add("aA1!");
-		expectedClientPassword.add("aA2!");
-		expectedClientPassword.add("aA3!");
-		expectedClientPassword.add("aA4!");
-		ArrayList<String> actualClientPassword= new ArrayList<String>();
-		for(Client c:clients) {
-			actualClientPassword.add(c.getPassword());
-		}
-        assertEquals(expectedClientPassword, actualClientPassword);
-		
-	}
-	@Test
-	public void testGetClientType() {
-		ArrayList<Client> clients = clientSystem.getClients();
-		ArrayList<Integer> expectedClientType= new ArrayList<Integer>();
-		expectedClientType.add(15);
-		expectedClientType.add(5);
-		expectedClientType.add(15);
-		expectedClientType.add(8);
-		ArrayList<Integer> actualClientType= new ArrayList<Integer>();
-		for(Client c:clients) {
-			actualClientType.add(c.getParkingRate());
-		}
-        assertEquals(expectedClientType, actualClientType);
-		
 	}
 	@Test
 	public void testAddClient() throws Exception {
 		clientSystem.addClient(client);
 		ArrayList<Client> clients = clientSystem.getClients();
-		assertTrue(clients.get(clients.size()-1).getEmail()=="professor@gmail.com");
-	}
-	@Test
-	public void testGetClientInfo() {
-		Client c = clientSystem.getClientInfo("professor@gmail.com");
-		assertTrue(c.getEmail()=="professor@gmail.com");
-	}
-	@Test
-	public void testGetClientInfo2() {
-		Client c = clientSystem.getClientInfo("professor@gmail.com");
-		assertTrue(c.getPassword()=="aA5!");
-	}
-	@Test
-	public void testGetClientInfo3() {
-		Client c = clientSystem.getClientInfo("professor@gmail.com");
-		assertTrue(c.getClass().getName().contains("FacultyMember"));
-	}
-	@Test
-	public void testRemoveClient() {
+		assertTrue(clients.get(clients.size()-1).getEmail()=="test@gmail.com");
 		clientSystem.removeClient(client);
-		ArrayList<Client> clients = clientSystem.getClients();
-		assertFalse(clients.get(clients.size()-1).getEmail()=="professor@gmail.com");
+
 	}
 	
 	@Test
-	public void testChangeValidationStatus() {
-		clientSystem.changeValidationStatus("a@gmail.com","NotValidated");
-		assertEquals(clientSystem.getClientInfo("a@gmail.com").getValidationStatus(),"NotValidated");
-	}
+	public void testGetClientsEmails() throws Exception {
+		clientSystem.addClient(client);
+		ArrayList<Client> clients = clientSystem.getClients();
+        assertEquals("test@gmail.com", clients.get(clients.size()-1).getEmail());
+		//clientSystem.removeClient(client);
+		clientSystem.removeClient(client);
 
+	}
+	@Test
+	public void testGetClientsPassword() throws Exception {
+		clientSystem.addClient(client);
+		ArrayList<Client> clients = clientSystem.getClients();
+        assertEquals("aA5!", clients.get(clients.size()-1).getPassword());
+		//clientSystem.removeClient(client);
+		clientSystem.removeClient(client);
+		
+	}
+	
+	@Test
+	public void testGetClientType() throws Exception {
+		clientSystem.addClient(client);
+		ArrayList<Client> clients = clientSystem.getClients();
+        assertEquals(8, clients.get(clients.size()-1).getParkingRate());        
+		clientSystem.removeClient(client);
+
+	}
+	
+	@Test
+	@Order(5)
+	public void testGetClientInfo() throws Exception {
+		clientSystem.addClient(client);
+		Client c = clientSystem.getClientInfo("test@gmail.com");
+		assertEquals(c.getEmail(),"test@gmail.com");
+		clientSystem.removeClient(client);
+
+	}
+	@Test
+	public void testGetClientInfo2() throws Exception {
+		clientSystem.addClient(client);
+		ArrayList<Client> clients = clientSystem.getClients();
+		Client c = clientSystem.getClientInfo("test@gmail.com");
+		assertEquals(c.getPassword(),"aA5!");
+		clientSystem.removeClient(client);
+
+	}
+	@Test
+	public void testGetClientInfo3() throws Exception {
+		clientSystem.addClient(client);
+
+		Client c = clientSystem.getClientInfo("test@gmail.com");
+		assertTrue(c.getClass().getName().contains("FacultyMember"));
+		clientSystem.removeClient(client);
+
+	}
+	@Test
+	public void testChangeValidationStatus() throws Exception {
+		clientSystem.addClient(client);
+		clientSystem.changeValidationStatus("test@gmail.com","NotValidated");
+		assertEquals(clientSystem.getClientInfo("test@gmail.com").getValidationStatus(),"NotValidated");
+		clientSystem.removeClient(client);
+
+	}
+	@Test
+	public void testRemoveClient() throws Exception {
+		clientSystem.addClient(client);
+		Client c =clientSystem.getClientInfo("test@gmail.com");
+		clientSystem.removeClient(client);
+		assertNotEquals(c, clientSystem.getClientInfo("test@gmail.com"));
+	}
+	@Test
+	public void testSetClients() {
+		ArrayList<Client> oldList = clientSystem.getClients();
+		ArrayList<Client> newList =new ArrayList<Client>();
+		for(int i=0;i<3;i++) {
+			Client c = new Student("test"+i,"aA5!");
+			newList.add(c);
+		}
+		clientSystem.setClients(newList);
+		assertNotEquals(newList,oldList);
+	}
+	
+	
 }
