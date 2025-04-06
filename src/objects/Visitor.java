@@ -7,7 +7,7 @@ public class Visitor extends Client {
 		this.setParkingRate(15);
 	}
 	public String getValidationStatus() {
-	    
+	    super.setValidated(true);
 	    return "Validated";
 	    
 	}

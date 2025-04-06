@@ -13,11 +13,11 @@ import objects.NonFacultyStaff;
 import objects.Student;
 
 public class NonFacultyStaffTest {
-	NonFacultyStaff staff;
-	String testEmail = "staff@gmail.com";
-	String testPassword ="aA2!";
+	static NonFacultyStaff staff;
+	static String testEmail = "staff@gmail.com";
+	static String testPassword ="aA2!";
 	@BeforeAll
-	public void setUp() {
+	public static  void setUp() {
 		staff = new NonFacultyStaff(testEmail,testPassword);
 	}
 	@Test
@@ -68,12 +68,8 @@ public class NonFacultyStaffTest {
 	@Test
 	public void testSetValidated() {
 		staff.setValidated(true);
-		assertTrue(staff.isValidated());
+		assertTrue(staff.isValidated() && staff.getValidationStatus().equals("Validated"));
 
-	}
-	@Test
-	public void testGetValidationStatus2() {
-		assertEquals(staff.getValidationStatus(),"Validated");
 	}
 
 	@Test

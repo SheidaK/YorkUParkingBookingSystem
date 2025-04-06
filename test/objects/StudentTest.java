@@ -13,11 +13,11 @@ import objects.Student;
 import objects.Visitor;
 
 public class StudentTest {
-	Student student;
-	String testEmail = "student@gmail.com";
-	String testPassword ="aA3!";
+	static Student student;
+	static String testEmail = "student@gmail.com";
+	static String testPassword ="aA3!";
 	@BeforeAll
-	public void setUp() {
+	public static void setUp() {
 		student = new Student(testEmail,testPassword);
 	}
 	@Test
@@ -27,7 +27,7 @@ public class StudentTest {
 	@Test
 	public void testClassType2() {
 		Client visitor = new Visitor(testEmail,testPassword);
-		assertFalse(student.getClass().equals(student.getClass()));
+		assertFalse(student.getClass().equals(visitor.getClass()));
 
 	}
 	@Test
@@ -68,12 +68,8 @@ public class StudentTest {
 	@Test
 	public void testSetValidated() {
 		student.setValidated(true);
-		assertTrue(student.isValidated());
+		assertTrue(student.isValidated() && student.getValidationStatus().equals("Validated"));
 
-	}
-	@Test
-	public void testGetValidationStatus2() {
-		assertEquals(student.getValidationStatus(),"Validated");
 	}
 
 	@Test

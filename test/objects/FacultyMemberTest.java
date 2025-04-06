@@ -4,16 +4,17 @@ import objects.UniversityMember;
 import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import objects.Client;
 import objects.FacultyMember;
 import objects.Student;
 public class FacultyMemberTest {
-	FacultyMember member;
-	String testEmail = "facultyMember@gmail.com";
-	String testPassword ="aA1!";
+	static FacultyMember member;
+	static String testEmail = "facultyMember@gmail.com";
+	static String testPassword ="aA1!";
 	@BeforeAll
-	public void setUp() {
+	public static void setUp() {
 		member = new FacultyMember(testEmail,testPassword);
 	}
 	@Test
@@ -58,19 +59,17 @@ public class FacultyMemberTest {
 
 	}
 	@Test
+
 	public void testGetValidationStatus() {
 		assertEquals(member.getValidationStatus(),"NotValidated");
 	}
 	@Test
 	public void testSetValidated() {
 		member.setValidated(true);
-		assertTrue(member.isValidated());
+		assertTrue(member.isValidated() && member.getValidationStatus().equals("Validated"));
 
 	}
-	@Test
-	public void testGetValidationStatus2() {
-		assertEquals(member.getValidationStatus(),"Validated");
-	}
+
 	@Test
 	public void testGetParkingRate() {
 		assertEquals(member.getParkingRate(),8);

@@ -11,11 +11,11 @@ import objects.Student;
 import objects.Visitor;
 
 public class VisitorTest {
-	Visitor visitor;
-	String testEmail = "visitor@gmail.com";
-	String testPassword ="aA4!";
+	static Visitor visitor;
+	static String testEmail = "visitor@gmail.com";
+	static String testPassword ="aA4!";
 	@BeforeAll
-	public void setUp() {
+	public static void setUp() {
 		visitor = new Visitor(testEmail,testPassword);
 	}
 	@Test
@@ -62,17 +62,7 @@ public class VisitorTest {
 	@Test
 	public void testGetValidationStatus() {
 		assertEquals(visitor.getValidationStatus(),"Validated");
-	}
-	@Test
-	public void testSetValidated() {
-		visitor.setValidated(false);
-		assertTrue(visitor.isValidated());
-
-	}
-	@Test
-	public void testGetValidationStatus2() {
-		assertEquals(visitor.getValidationStatus(),"NotValidated");
-	}
+	}	
 
 	@Test
 	public void testGetParkingRate() {

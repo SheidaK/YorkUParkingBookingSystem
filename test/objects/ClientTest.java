@@ -12,17 +12,23 @@ import objects.Student;
 import objects.Visitor;
 
 public class ClientTest {
-	Client client;
-	String testEmail = "student@gmail.com";
+	String testEmail = "visitor@gmail.com";
 	String testPassword ="aA3!";
+	Client client=new Visitor(testEmail,testPassword);
+
 	@Test
 	public void testClassType() {
-		assertTrue(client.getClass().getName().contains("Client"));
+		assertTrue(client.getClass().getSuperclass().getName().contains("Client"));
 	}
 	@Test
 	public void testClassType2() {
-		Client visitor = new Visitor(testEmail,testPassword);
-		assertFalse(client.getClass().equals(visitor.getClass()));
+		Client student = new Student(testEmail,testPassword);
+		assertFalse(client.getClass().equals(student.getClass()));
+	}
+	@Test
+	public void testClassType3() {
+		Client student = new Student(testEmail,testPassword);
+		assertFalse(client.getClass().getSuperclass().equals(student.getClass().getSuperclass()));
 	}
 	
 	@Test
@@ -36,12 +42,13 @@ public class ClientTest {
 	}
 
 	@Test
-	public void testGetParkingRate() {
+	public void testSetParkingRate() {
+		client.setParkingRate(50);
 		assertEquals(client.getParkingRate(),50);
 	}
 	@Test
 	public void testGetEmail() {
-		assertNull(client.getEmail());
+		assertEquals(client.getEmail(),"visitor@gmail.com");	
 	}
 	@Test
 	public void testSetEmail() {
@@ -50,7 +57,7 @@ public class ClientTest {
 	}
 	@Test
 	public void testGetPassword() {
-		assertNull(client.getPassword());
+		assertEquals(client.getPassword(),"aA3!");
 	}
 	@Test
 	public void testSetPassword() {

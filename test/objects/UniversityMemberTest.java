@@ -13,17 +13,23 @@ import objects.UniversityMember;
 import objects.Visitor;
 
 public class UniversityMemberTest {
-	UniversityMember member;
+	
 	String testEmail = "student@gmail.com";
 	String testPassword ="aA3!";
+	UniversityMember member=new Student(testEmail,testPassword);
 	@Test
 	public void testClassType() {
-		assertTrue(member.getClass().getName().contains("UniversityMember"));
+		assertTrue(member.getClass().getSuperclass().getName().contains("UniversityMember"));
 	}
 	@Test
 	public void testClassType2() {
 		Client visitor = new Visitor(testEmail,testPassword);
 		assertFalse(member.getClass().equals(visitor.getClass()));
+	}
+	@Test
+	public void testClassType3() {
+		Client visitor = new Visitor(testEmail,testPassword);
+		assertFalse(member.getClass().getSuperclass().equals(visitor.getClass().getSuperclass()));
 	}
 	
 	@Test
@@ -37,12 +43,13 @@ public class UniversityMemberTest {
 	}
 
 	@Test
-	public void testGetParkingRate() {
+	public void testSetParkingRate() {
+		member.setParkingRate(50);
 		assertEquals(member.getParkingRate(),50);
 	}
 	@Test
 	public void testGetEmail() {
-		assertNull(member.getEmail());
+		assertEquals(member.getEmail(),"student@gmail.com");	
 	}
 	@Test
 	public void testSetEmail() {
@@ -51,8 +58,7 @@ public class UniversityMemberTest {
 	}
 	@Test
 	public void testGetPassword() {
-		assertNull(member.getPassword());
-	}
+		assertEquals(member.getPassword(),"aA3!");	}
 	@Test
 	public void testSetPassword() {
 		member.setPassword(testPassword);
