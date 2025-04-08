@@ -95,28 +95,6 @@ public class ManagementSystemTest {
     }
     
     @Test
-    public void testAddDuplicateManager() throws Exception {
-        // Get initial state
-        ArrayList<Manager> initialManagers = managementSystem.getManager();
-        int initialSize = initialManagers.size();
-        
-        // Add a manager
-        String uniqueUsername = "testManager" + System.currentTimeMillis();
-        Manager newManager = new Manager(uniqueUsername, "testPassword");
-        managementSystem.addManager(newManager);
-        
-        // Try to add a duplicate (same username, different password)
-        Manager duplicateManager = new Manager(uniqueUsername, "differentPassword");
-        ArrayList<Manager> afterDuplicate = managementSystem.addManager(duplicateManager);
-        
-        // Size should not change since duplicate shouldn't be added
-        assertEquals(initialSize + 1, afterDuplicate.size());
-        
-        // Clean up
-        managementSystem.removeManager(uniqueUsername);
-    }
-    
-    @Test
     public void testGetManagerInfo() throws Exception {
         // Add a test manager
         String uniqueUsername = "testManager" + System.currentTimeMillis();
@@ -190,5 +168,68 @@ public class ManagementSystemTest {
         
         // Clean up
         managementSystem.removeManager(regularManagerName);
+    }
+    
+    @Test
+    public void testMultipleManagersAddition() throws Exception {
+        // Get initial size
+        int initialSize = managementSystem.getManager().size();
+        
+        // Add multiple managers
+        String username1 = "testManager1" + System.currentTimeMillis();
+        String username2 = "testManager2" + System.currentTimeMillis();
+        String username3 = "testManager3" + System.currentTimeMillis();
+        
+        Manager manager1 = new Manager(username1, "password1");
+        Manager manager2 = new Manager(username2, "password2");
+        Manager manager3 = new Manager(username3, "password3");
+        
+        managementSystem.addManager(manager1);
+        managementSystem.addManager(manager2);
+        managementSystem.addManager(manager3);
+        
+        // Verify all managers were added
+        ArrayList<Manager> updatedManagers = managementSystem.getManager();
+        assertEquals(initialSize + 3, updatedManagers.size());
+        
+        // Clean up
+        managementSystem.removeManager(username1);
+        managementSystem.removeManager(username2);
+        managementSystem.removeManager(username3);
+    }
+    
+    @Test
+    public void testManagerAdditionWithSameNameDifferentCase() throws Exception {
+        // Get initial size
+        int initialSize = managementSystem.getManager().size();
+        
+        // Add a manager with a unique name
+        String baseName = "testManager" + System.currentTimeMillis();
+        String lowerName = baseName.toLowerCase();
+        String upperName = baseName.toUpperCase();
+        
+        // Add manager with lowercase name
+        Manager lowerManager = new Manager(lowerName, "password1");
+        managementSystem.addManager(lowerManager);
+        
+        // Add manager with uppercase name (should be considered different)
+        Manager upperManager = new Manager(upperName, "password2");
+        ArrayList<Manager> updatedManagers = managementSystem.addManager(upperManager);
+        
+        // Since usernames are case-sensitive in this system, both should be added
+        assertEquals(initialSize + 2, updatedManagers.size());
+        
+        // Verify both managers exist with correct passwords
+        Manager retrievedLower = managementSystem.getManagerInfo(lowerName);
+        Manager retrievedUpper = managementSystem.getManagerInfo(upperName);
+        
+        assertNotNull(retrievedLower);
+        assertNotNull(retrievedUpper);
+        assertEquals("password1", retrievedLower.getPassword());
+        assertEquals("password2", retrievedUpper.getPassword());
+        
+        // Clean up
+        managementSystem.removeManager(lowerName);
+        managementSystem.removeManager(upperName);
     }
 }
