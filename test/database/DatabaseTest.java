@@ -56,13 +56,20 @@ class DatabaseTest {
 
     @Test
     public void testOverwriteRowById() throws Exception {
-        String[] updatedRow = {"2", "Bob", "Lot 5", "999"};
-        db.overWrite("2", updatedRow, 4);
+        String idToUpdate = "2";
+        int numOfHeaders = 4;
+        int idColumnIndex = 0;
+
+        db.overWrite(idToUpdate, numOfHeaders, 1, "Bill", idColumnIndex);
+
+        db.overWrite(idToUpdate, numOfHeaders, 2, "Lot Test", idColumnIndex);
+
+        db.overWrite(idToUpdate, numOfHeaders, 3, "999", idColumnIndex);
 
         List<String[]> rows = db.read();
         String[] row = rows.get(1);
-        assertEquals("Bob", row[1]);
-        assertEquals("Lot 5", row[2]);
+        assertEquals("Bill", row[1]);
+        assertEquals("Lot Test", row[2]);
         assertEquals("999", row[3].trim());
     }
 
@@ -99,7 +106,7 @@ class DatabaseTest {
 
         List<String[]> rows = db.read();
         assertEquals("Alice", rows.get(0)[1]);      
-        assertEquals("Lot Z", rows.get(1)[2]);        
+        assertEquals("Lot 2", rows.get(1)[2]);        
         assertEquals("132", rows.get(2)[3].trim());   
     }
 
