@@ -1,5 +1,11 @@
 Name,Location,Status,Capacity
 Lot1,Keele Campus,Enabled,100
 Lot2,Keele Campus,Enabled,100
+New Lot,New Location,Enabled,100
+Test Lookup,Test Location,Enabled,100
+New Lot,New Location,Enabled,100
+Test Lookup,Test Location,Enabled,100
+New Lot,New Location,Enabled,100
+Test Lookup,Test Location,Enabled,100
 Test Lot,Keele Campus,Enabled,100
 Test Lot,Keele Campus,Enabled,100

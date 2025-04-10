@@ -8,4 +8,5 @@ module YorkUParkingBookingSystem {
 	requires javacsv;
 	requires org.junit.jupiter.api;
 	requires junit;
+	exports Randoop;
 }
