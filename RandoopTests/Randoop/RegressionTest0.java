@@ -42,7 +42,7 @@ public class RegressionTest0 {
             // Expected exception.
         }
     }
-
+ 
     @Test
     public void test003() throws Throwable {
         if (debug)
