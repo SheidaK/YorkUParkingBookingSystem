@@ -34,6 +34,27 @@ class SystemDatabaseFacadeTest {
         Client retrievedClient = systemFacade.getClientInfo("alice.smith@example.com");
 		assertNotEquals(clientToRemove, retrievedClient);
     }
+    
+    @Test
+    void testApproveUser() throws Exception {
+        Client client = new Visitor("alice.smith@example.com", "aA1!");
+        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
+
+        systemFacade.addClient(client);
+       
+        boolean result = systemFacade.approveUser(client);
+        
+        assertTrue(result);
+    }
+    
+    @Test
+    void testApproveUser_Fail() throws Exception {
+        Client client = new Visitor("alice.smith@example.com", "aA1!");
+        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
+        
+        boolean result = systemFacade.approveUser(client);
+        assertFalse(result);
+    }
 
     @Test
     void testAddParkingLot() {
@@ -58,6 +79,17 @@ class SystemDatabaseFacadeTest {
 
         ParkingLot retrievedLot = systemFacade.getParkingLotInfo("Test Lot");
         assertNotEquals(retrievedLot, parkingLot);
+    }
+    
+    @Test
+    void testStatusParkingLot_Enabled() {
+        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
+        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
+
+        systemFacade.addNewParkingLot(parkingLot);
+        
+        boolean result = systemFacade.statusParkingLot("Test Lot", true);
+        assertTrue(result);
     }
 
     @Test
@@ -107,6 +139,31 @@ class SystemDatabaseFacadeTest {
 
         assertTrue(editResult);
     }
+    
+    @Test
+    void testGenerateBookingID() {
+    	SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
+    	int bookingId = systemFacade.generateBookingID();
+    	assertNotNull(bookingId);
+    }
+    
+    @Test
+    void testExtendBooking() throws Exception {
+        Client client = new Visitor("visitor@example.com", "aA1!");
+        ParkingLot parkingLot = new ParkingLot("Test Lot","Keele Campus", 10);
+        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
+        Date testDate = new SimpleDateFormat("MM/dd/yyyy").parse("04/04/2026");
+
+        systemFacade.addNewParkingLot(parkingLot);
+        systemFacade.addClient(client);
+        
+        int bookingId = systemFacade.generateBookingID();
+        systemFacade.bookParkingSpace("visitor@example.com", "Test Lot", 3, 30, 10, testDate, 12, 2, "ABCD123");
+        boolean extendResult = systemFacade.extendBooking(bookingId,testDate, 10 ,3);
+
+        assertTrue(extendResult);    
+        }
+    
 
     @Test
     void testRevenueCalculation() {
