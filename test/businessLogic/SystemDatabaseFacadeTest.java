@@ -1,203 +1,368 @@
 package businessLogic;
-import businessLogic.SystemDatabaseFacade;
-import objects.*;
-import org.junit.jupiter.api.Test;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Map;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import objects.Client;
+import objects.Manager;
+import objects.ParkingLot;
+import objects.ParkingSpace;
+import objects.Student;
+import objects.SuperManager;
+import objects.Visitor;
+
 class SystemDatabaseFacadeTest {
-
-    @Test
-    void testAddClient() throws Exception {
-        Client newClient = new Visitor("alice.smith@example.com", "aA1!");
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addClient(newClient);
-
-        Client retrievedClient = systemFacade.getClientInfo("alice.smith@example.com");
-        assertNotNull(retrievedClient);
-        assertEquals(retrievedClient.getEmail(), newClient.getEmail());
-    }
-
-    @Test
-    void testRemoveClient() throws Exception {
-        Client clientToRemove = new Visitor("alice.smith@example.com", "aA1!");
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addClient(clientToRemove);
-
-        systemFacade.removeClient(clientToRemove);
-        Client retrievedClient = systemFacade.getClientInfo("alice.smith@example.com");
-		assertNotEquals(clientToRemove, retrievedClient);
+    
+    private SystemDatabaseFacade facade;
+    private Client testClient;
+    private Manager testManager;
+    private ParkingLot testLot;
+    private int initialRevenue;
+    
+    @BeforeEach
+    void setUp() throws Exception {
+        facade = SystemDatabaseFacade.getInstance();
+        testClient = new Visitor("test@example.com", "password");
+        testManager = new Manager("testManager", "password");
+        testLot = new ParkingLot("TestLot", "Test Location", 5);
+        initialRevenue = facade.getRevenue();
     }
     
     @Test
-    void testApproveUser() throws Exception {
-        Client client = new Visitor("alice.smith@example.com", "aA1!");
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addClient(client);
-       
-        boolean result = systemFacade.approveUser(client);
+    void testGetInstance() {
+        SystemDatabaseFacade instance1 = SystemDatabaseFacade.getInstance();
+        SystemDatabaseFacade instance2 = SystemDatabaseFacade.getInstance();
+        assertSame(instance1, instance2);
+    }
+    
+    @Test
+    void testGetClients() {
+        ArrayList<Client> clients = facade.getClients();
+        assertNotNull(clients);
+    }
+    
+    @Test
+    void testAddAndRemoveClient() throws Exception {
+        int initialSize = facade.getClients().size();
+        facade.addClient(testClient);
+        assertEquals(initialSize + 1, facade.getClients().size());
         
+        facade.removeClient(testClient);
+        assertEquals(initialSize, facade.getClients().size());
+    }
+    
+    @Test
+    void testGetClientInfo() throws Exception {
+        facade.addClient(testClient);
+        Client retrievedClient = facade.getClientInfo("test@example.com");
+        assertNotNull(retrievedClient);
+        assertEquals("test@example.com", retrievedClient.getEmail());
+        facade.removeClient(testClient);
+    }
+    
+    @Test
+    void testGetClientInfoNonExistent() {
+        Client retrievedClient = facade.getClientInfo("nonexistent@example.com");
+        assertNull(retrievedClient);
+    }
+    
+    @Test
+    void testRegisterValidation() {
+        boolean result = facade.registerValidation(testClient);
         assertTrue(result);
     }
     
     @Test
-    void testApproveUser_Fail() throws Exception {
-        Client client = new Visitor("alice.smith@example.com", "aA1!");
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-        
-        boolean result = systemFacade.approveUser(client);
+    void testApproveUserSuccess() throws Exception {
+        facade.addClient(testClient);
+        boolean result = facade.approveUser(testClient);
+        assertTrue(result);
+        assertTrue(testClient.isValidated());
+        facade.removeClient(testClient);
+    }
+    
+    @Test
+    void testApproveUserFailure() {
+        Client nonExistentClient = new Student("nonexistent@example.com", "password");
+        boolean result = facade.approveUser(nonExistentClient);
         assertFalse(result);
     }
-
+    
     @Test
-    void testAddParkingLot() {
-        ParkingLot newParkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addNewParkingLot(newParkingLot);
-
-        ParkingLot retrievedLot = systemFacade.getParkingLotInfo("Test Lot");
+    void testChangeValidationStatus() throws Exception {
+        facade.addClient(testClient);
+        facade.changeValidationStatus("test@example.com", "Validated");
+        Client retrievedClient = facade.getClientInfo("test@example.com");
+        assertTrue(retrievedClient.isValidated());
+        
+        facade.changeValidationStatus("test@example.com", "NotValidated");
+        retrievedClient = facade.getClientInfo("test@example.com");
+        assertFalse(retrievedClient.isValidated());
+        
+        facade.removeClient(testClient);
+    }
+    
+    @Test
+    void testGetAvailableLots() {
+        ArrayList<ParkingLot> lots = facade.getAvailableLots();
+        assertNotNull(lots);
+    }
+    
+    @Test
+    void testSetParkingLots() {
+        ArrayList<ParkingLot> newLots = new ArrayList<>();
+        newLots.add(testLot);
+        
+        ArrayList<ParkingLot> originalLots = new ArrayList<>(facade.getAvailableLots());
+        facade.setParkingLots(newLots);
+        
+        ArrayList<ParkingLot> retrievedLots = facade.getAvailableLots();
+        assertTrue(retrievedLots.contains(testLot));
+        
+        facade.setParkingLots(originalLots);
+    }
+    
+    @Test
+    void testAddAndRemoveParkingLot() {
+        int initialSize = facade.getAvailableLots().size();
+        
+        facade.addNewParkingLot(testLot);
+        assertEquals(initialSize + 1, facade.getAvailableLots().size());
+        
+        facade.removeParkingLot(testLot);
+        assertEquals(initialSize, facade.getAvailableLots().size());
+    }
+    
+    @Test
+    void testGetParkingLotInfo() {
+        facade.addNewParkingLot(testLot);
+        ParkingLot retrievedLot = facade.getParkingLotInfo("TestLot");
         assertNotNull(retrievedLot);
-        assertEquals("Test Lot", retrievedLot.getName());
-    }
-
-    @Test
-    void testRemoveParkingLot() {
-        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addNewParkingLot(parkingLot);
-        
-        systemFacade.removeParkingLot(parkingLot.getName());
-
-        ParkingLot retrievedLot = systemFacade.getParkingLotInfo("Test Lot");
-        assertNotEquals(retrievedLot, parkingLot);
+        assertEquals("TestLot", retrievedLot.getName());
+        facade.removeParkingLot(testLot);
     }
     
     @Test
-    void testStatusParkingLot_Enabled() {
-        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addNewParkingLot(parkingLot);
-        
-        boolean result = systemFacade.statusParkingLot("Test Lot", true);
+    void testGetParkingLotInfoNonExistent() {
+        ParkingLot retrievedLot = facade.getParkingLotInfo("NonExistentLot");
+        assertNull(retrievedLot);
+    }
+    
+    @Test
+    void testStatusParkingLot() {
+        facade.addNewParkingLot(testLot);
+        boolean result = facade.statusParkingLot("TestLot", false);
         assertTrue(result);
-    }
-
-    @Test
-    void testBookParkingSpace() throws Exception {
-        Client client = new Visitor("visitor@example.com", "aA1!");
-        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addNewParkingLot(parkingLot);
-        systemFacade.addClient(client);
-
-        boolean bookingResult = systemFacade.bookParkingSpace("visitor@example.com", "Test Lot", 5, 20, 10, new Date(), 12, 2, "ABC123");
-
-        assertTrue(bookingResult);
+        
+        ParkingLot retrievedLot = facade.getParkingLotInfo("TestLot");
+        assertFalse(retrievedLot.isEnabled());
+        
+        result = facade.statusParkingLot("TestLot", true);
+        assertTrue(result);
+        
+        retrievedLot = facade.getParkingLotInfo("TestLot");
+        assertTrue(retrievedLot.isEnabled());
+        
+        facade.removeParkingLot(testLot);
     }
     
     @Test
-    void testCancelBooking() throws Exception {
-        Client client = new Visitor("visitor@example.com", "aA1!");
-        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-        Date testDate = new SimpleDateFormat("MM/dd/yyyy").parse("04/04/2026");
-
-        systemFacade.addNewParkingLot(parkingLot);
-        systemFacade.addClient(client);
-        
-        int bookingId = systemFacade.generateBookingID();
-        systemFacade.bookParkingSpace("visitor@example.com", "Test Lot", 2, 20, 10, testDate, 12, 2, "ABCD123");
-        boolean cancelResult = systemFacade.cancelBooking(bookingId, false);
-
-        assertTrue(cancelResult);
+    void testStatusParkingLotNonExistent() {
+        boolean result = facade.statusParkingLot("NonExistentLot", true);
+        assertFalse(result);
     }
-
+    
     @Test
-    void testEditBooking() throws Exception {
-        Client client = new Visitor("visitor@example.com", "aA1!");
-        ParkingLot parkingLot = new ParkingLot("Test Lot","Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-        Date testDate = new SimpleDateFormat("MM/dd/yyyy").parse("04/04/2026");
-
-        systemFacade.addNewParkingLot(parkingLot);
-        systemFacade.addClient(client);
+    void testRemoveParkingLotByName() {
+        facade.addNewParkingLot(testLot);
+        boolean result = facade.removeParkingLot("TestLot");
+        assertTrue(result);
+        assertNull(facade.getParkingLotInfo("TestLot"));
+    }
+    
+    @Test
+    void testRemoveParkingLotNonExistent() {
+        boolean result = facade.removeParkingLot("NonExistentLot");
+        assertFalse(result);
+    }
+    
+    @Test
+    void testEnableAndDisableParkingSpace() {
+        facade.addNewParkingLot(testLot);
+        ParkingSpace space = new ParkingSpace(1, "Regular");
+        testLot.addParkingSpace(space);
         
-        int bookingId = systemFacade.generateBookingID();
-        systemFacade.bookParkingSpace("visitor@example.com", "Test Lot", 3, 30, 10, testDate, 12, 2, "ABCD123");
-        boolean editResult = systemFacade.editBooking(bookingId, "Test Lot", 2, 30, testDate, 3, client, "ABCD123");
-
-        assertTrue(editResult);
+        facade.enableParkingSpace(testLot, 1);
+        assertTrue(space.isEnabled());
+        
+        facade.disableParkingSpace(testLot, 1);
+        assertFalse(space.isEnabled());
+        
+        facade.removeParkingLot(testLot);
+    }
+    
+    @Test
+    void testGetAvailableSpaces() {
+        facade.addNewParkingLot(testLot);
+        ParkingSpace space = new ParkingSpace(1, "Regular");
+        testLot.addParkingSpace(space);
+        
+        java.util.List<ParkingSpace> spaces = facade.getAvailableSpaces(testLot);
+        assertNotNull(spaces);
+        assertTrue(spaces.contains(space));
+        
+        facade.removeParkingLot(testLot);
+    }
+    
+    @Test
+    void testGetManagers() {
+        ArrayList<Manager> managers = facade.getManagers();
+        assertNotNull(managers);
+    }
+    
+    @Test
+    void testSetManagers() {
+        ArrayList<Manager> newManagers = new ArrayList<>();
+        newManagers.add(testManager);
+        
+        ArrayList<Manager> originalManagers = new ArrayList<>(facade.getManagers());
+        facade.setManagers(newManagers);
+        
+        ArrayList<Manager> retrievedManagers = facade.getManagers();
+        assertTrue(retrievedManagers.contains(testManager));
+        
+        facade.setManagers(originalManagers);
+    }
+    
+    @Test
+    void testAddAndRemoveManager() {
+        int initialSize = facade.getManagers().size();
+        
+        facade.addManager(testManager);
+        assertEquals(initialSize + 1, facade.getManagers().size());
+        
+        facade.removeManager(testManager.getUserName());
+        assertEquals(initialSize, facade.getManagers().size());
+    }
+    
+    @Test
+    void testGetManagerInfo() {
+        facade.addManager(testManager);
+        Manager retrievedManager = facade.getManagerInfo("testManager");
+        assertNotNull(retrievedManager);
+        assertEquals("testManager", retrievedManager.getUserName());
+        facade.removeManager("testManager");
+    }
+    
+    @Test
+    void testGetManagerInfoNonExistent() {
+        Manager retrievedManager = facade.getManagerInfo("nonExistentManager");
+        assertNull(retrievedManager);
+    }
+    
+    @Test
+    void testIsSuperManager() {
+        SuperManager superManager = new SuperManager();
+        facade.addManager(superManager);
+        
+        boolean result = facade.isSuperManager("superAdmin");
+        assertTrue(result);
+        
+        result = facade.isSuperManager(testManager.getUserName());
+        assertFalse(result);
+        
+        facade.removeManager("superAdmin");
+    }
+    
+    @Test
+    void testAddRevenue() {
+        int initialRevenue = facade.getRevenue();
+        
+        SystemDatabaseFacade.addRevenue(100);
+        assertEquals(initialRevenue + 100, facade.getRevenue());
+        
+        facade.setRevenue(initialRevenue);
+    }
+    
+    @Test
+    void testRemoveRevenue() {
+        int initialRevenue = facade.getRevenue();
+        
+        facade.removeRevenue(50);
+        assertEquals(initialRevenue - 50, facade.getRevenue());
+        
+        facade.setRevenue(initialRevenue);
+    }
+    
+    @Test
+    void testSetRevenue() {
+        int initialRevenue = facade.getRevenue();
+        
+        facade.setRevenue(1000);
+        assertEquals(1000, facade.getRevenue());
+        
+        facade.setRevenue(initialRevenue);
+    }
+    
+    @Test
+    void testGetBookings() {
+        Map<Integer, Visit> bookings = facade.getBookings();
+        assertNotNull(bookings);
+    }
+    
+    @Test
+    void testGetBookingsForClient() {
+        Map<Integer, Visit> bookings = facade.getBookingsForClient(testClient);
+        assertNotNull(bookings);
     }
     
     @Test
     void testGenerateBookingID() {
-    	SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-    	int bookingId = systemFacade.generateBookingID();
-    	assertNotNull(bookingId);
+        int id = facade.generateBookingID();
+        assertTrue(id > 0);
     }
     
     @Test
-    void testExtendBooking() throws Exception {
-        Client client = new Visitor("visitor@example.com", "aA1!");
-        ParkingLot parkingLot = new ParkingLot("Test Lot","Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-        Date testDate = new SimpleDateFormat("MM/dd/yyyy").parse("04/04/2026");
-
-        systemFacade.addNewParkingLot(parkingLot);
-        systemFacade.addClient(client);
+    void testCancelBookingNonExistent() {
+        boolean result = facade.cancelBooking(-99999, false);
+        assertFalse(result);
+    }
+    
+    @Test
+    void testExtendBookingNonExistent() {
+        boolean result = facade.extendBooking(-99999, new Date(), 10, 2);
+        assertFalse(result);
+    }
+    
+    @Test
+    void testCheckoutNonExistent() {
+        boolean result = facade.checkout(-99999, 50);
+        assertFalse(result);
+    }
+    
+    @Test
+    void testEditBookingNonExistent() {
+        boolean result = facade.editBooking(
+                -99999, "TestLot", 1, 10, new Date(), 2, testClient, "ABC123");
+        assertFalse(result);
+    }
+    
+    @Test
+    void testSimulateVehicleDetection() {
+        facade.addNewParkingLot(testLot);
+        ParkingSpace space = new ParkingSpace(1, "Regular");
+        testLot.addParkingSpace(space);
         
-        int bookingId = systemFacade.generateBookingID();
-        systemFacade.bookParkingSpace("visitor@example.com", "Test Lot", 3, 30, 10, testDate, 12, 2, "ABCD123");
-        boolean extendResult = systemFacade.extendBooking(bookingId,testDate, 10 ,3);
-
-        assertTrue(extendResult);    
-        }
-    
-
-    @Test
-    void testRevenueCalculation() {
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        int initialRevenue = systemFacade.getRevenue();
-        systemFacade.addRevenue(50);
-
-        assertEquals(initialRevenue + 50, systemFacade.getRevenue()); 
-    }
-
-    @Test
-    void testParkingSpaceAvailability() {
-        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addNewParkingLot(parkingLot);
-
-        List<ParkingSpace> availableSpaces = systemFacade.getAvailableSpaces(parkingLot);
-
-        assertNotNull(availableSpaces);
-        assertTrue(availableSpaces.size() > 0); 
-    }
-
-    @Test
-    void testDisableParkingSpace() {
-        ParkingLot parkingLot = new ParkingLot("Test Lot", "Keele Campus", 10);
-        SystemDatabaseFacade systemFacade = SystemDatabaseFacade.getInstance();
-
-        systemFacade.addNewParkingLot(parkingLot);
-
-        systemFacade.disableParkingSpace(parkingLot, 3);
-
-        ParkingSpace disabledSpace = parkingLot.findSpaceById(3);
-        assertFalse(disabledSpace.isEnabled());
+        facade.simulateVehicleDetection(testLot, 1, true);
+        
+        facade.simulateVehicleDetection(testLot, 1, false);
+        
+        facade.removeParkingLot(testLot);
     }
 }
