@@ -61,7 +61,8 @@ public class VisitTest {
     @Test
     public void testDurationIncrement() {
         Visit visit = new Visit(4, date, 12, 1, testLot, testSpace, testClient, 5, plate);
-        visit.setDuration(2);
+        visit.getDuration();
+        visit.setDuration();
         assertEquals(2, visit.getDuration());
     }
 
@@ -125,6 +126,65 @@ public class VisitTest {
         
         assertEquals(20, visit.getMoneyPaid());
     }
+    
+    @Test
+    public void testGetParkingLot() {
+        Visit visit = new Visit(12, date, 10, 1, testLot, testSpace, testClient, 10, plate);
+        ParkingLot retrievedLot = visit.getParkingLot();
+        assertEquals(retrievedLot, testLot);
+    }
+    
+    @Test
+    public void testSetParkingLot() {
+        Visit visit = new Visit(13, date, 10, 1, testLot, testSpace, testClient, 10, plate);
+        ParkingLot newLot = new ParkingLot("New Lot", "Keele Campus", 15);
+        visit.setParkingLot(newLot);
+        assertEquals(newLot, visit.getParkingLot());
+    }
+    
+    
+    @Test
+    public void testGetDate() {
+        Visit visit = new Visit(14, date, 10, 1, testLot, testSpace, testClient, 10, plate);
+        assertEquals(visit.getDate(), date);
+    }
+    
+    @Test
+    public void testSetBookingID() {
+        Visit visit = new Visit(15, date, 10, 1, testLot, testSpace, testClient, 10, plate);
+        visit.setBookingID("3311");
+        assertEquals(visit.getBookingID(), "3311");
+    }
+    
+    @Test
+    public void testGetParkingSpace() {
+        Visit visit = new Visit(16, date, 10, 1, testLot, testSpace, testClient, 10, plate);
+        ParkingSpace retrievedSpace = visit.getParkingSpace();
+        assertEquals(retrievedSpace, testSpace);
+    }
+    
+    @Test
+    public void testSetParkingSpace() {
+        Visit visit = new Visit(17, date, 10, 1, testLot, testSpace, testClient, 10, plate);
+        ParkingSpace newSpace = new ParkingSpace(3311, "Regular");
+        visit.setParkingSpace(newSpace);
+        assertEquals(visit.getParkingSpace(), newSpace);
+    }
+    
+    @Test
+    public void testFormattedEndTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(2025, Calendar.APRIL, 11, 10, 0, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date visitDate = calendar.getTime();
+        Visit visit = new Visit(17, visitDate, 10, 2, testLot, testSpace, testClient, 20, plate);
+        visit.getEndTime(); 
+        String formattedEnd = visit.getFormattedEndTime();
+        String expectedFormat = "11/04/2025";
+        assertEquals(expectedFormat, formattedEnd);
+        assertTrue(formattedEnd.matches("\\d{2}/\\d{2}/\\d{4}"));
+    }
+
 
 }
 

@@ -185,7 +185,7 @@ public class Visit {
     }
     
     public void setDuration() {
-    	this.duration =+ 1;
+    	this.duration += 1;
     }
     
     public void setDuration(int time) {
