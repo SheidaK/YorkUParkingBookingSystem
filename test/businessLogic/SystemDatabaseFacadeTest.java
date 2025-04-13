@@ -196,12 +196,10 @@ class SystemDatabaseFacadeTest {
     @Test
     void testGetAvailableSpaces() {
         facade.addNewParkingLot(testLot);
-        ParkingSpace space = new ParkingSpace(1, "Regular");
-        testLot.addParkingSpace(space);
-        
+
         java.util.List<ParkingSpace> spaces = facade.getAvailableSpaces(testLot);
         assertNotNull(spaces);
-        assertTrue(spaces.contains(space));
+        assertTrue(spaces.contains(testLot.findSpaceById(1)));
         
         facade.removeParkingLot(testLot);
     }
@@ -324,8 +322,6 @@ class SystemDatabaseFacadeTest {
     @Test
     void testSimulateVehicleDetection() {
         facade.addNewParkingLot(testLot);
-        ParkingSpace space = new ParkingSpace(1, "Regular");
-        testLot.addParkingSpace(space);
         
         facade.simulateVehicleDetection(testLot, 1, true);
         

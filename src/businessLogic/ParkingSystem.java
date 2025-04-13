@@ -140,6 +140,7 @@ public class ParkingSystem  {
 			if(l.getName().equals(name)) {
 				parkingLot.remove(l);
 				dbParkingLots.remove(name,4);
+				dbParkingSpace.remove(name,7 );
 				removed = true;
 				break;
 			}

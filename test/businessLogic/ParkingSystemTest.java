@@ -1,6 +1,8 @@
 package businessLogic;
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +14,7 @@ import objects.*;
 
 class ParkingSystemTest {
     
-    private ParkingSystem parkingSystem;
+    private static ParkingSystem parkingSystem;
     private ParkingLot testParkingLot;
     
     class TestCar extends Car {
@@ -149,14 +151,24 @@ class ParkingSystemTest {
     @Test
     void testGetParkingLotInfo() {
       
-        ParkingLot newParkingLot = new ParkingLot("Test Lookup", "Test Location", 5);
+        ParkingLot newParkingLot = new ParkingLot("TestLookup", "Test Location", 5);
         parkingSystem.addNewParkingLot(newParkingLot);
         
-        ParkingLot found = parkingSystem.getParkingLotInfo("Test Lookup");
+        ParkingLot found = parkingSystem.getParkingLotInfo("TestLookup");
         assertNotNull(found);
-        assertEquals("Test Lookup", found.getName());
+        assertEquals("TestLookup", found.getName());
 
         ParkingLot notFound = parkingSystem.getParkingLotInfo("Non-existent Lot");
+        assertNull(notFound);
+
+    }
+    @AfterAll
+    static void testRemoveParkingLot() {
+        parkingSystem.removeParkingLot("TestLookup");
+        parkingSystem.removeParkingLot("New Lot");
+        ParkingLot notFound = parkingSystem.getParkingLotInfo("TestLookup");
+        assertNull(notFound);
+        notFound = parkingSystem.getParkingLotInfo("New Lot");
         assertNull(notFound);
     }
 }
