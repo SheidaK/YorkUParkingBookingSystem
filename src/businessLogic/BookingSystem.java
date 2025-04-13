@@ -265,7 +265,7 @@ public class BookingSystem implements ParkingStatusObserver{
         Visit visit = Visit.getVisit(bookingID);
         Date currentTime = new Date();
         if (currentTime.before(visit.getStartTime())) {
-            return false;
+        	return false;
         }
         
         ParkingSpace s = visit.getParkingSpace();

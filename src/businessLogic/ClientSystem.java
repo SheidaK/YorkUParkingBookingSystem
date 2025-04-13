@@ -69,6 +69,11 @@ public class ClientSystem {
 		return null;
 	}
 	public void changeValidationStatus(String email, String status) {
+		if(status.equals("NotValidated")) {
+			getClientInfo(email).setValidated(false);
+		}else {
+			getClientInfo(email).setValidated(true);
+		}
 		dbClient.overWrite(email, 4, 3, status,0 );
 	}
 

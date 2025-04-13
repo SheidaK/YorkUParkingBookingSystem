@@ -5,10 +5,4 @@ public class FacultyMember extends UniversityMember {
 		super(email, password);
 		this.setParkingRate(8);
 	}
-	public String getValidationStatus() {
-    	if(isValidated()) {
-    		return "Validated";
-    	}else {return "NotValidated";}
-    }
-
 }

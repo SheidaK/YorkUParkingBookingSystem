@@ -1,5 +1,1 @@
 id,Date,Time,Duration,ParkingLot,ParkingSpaceID,ClientEmail,ClientLicence,MoneyPaid
-1,04/04/2026,30,3,Test Lot,2,visitor@example.com,ABCD123,15
-2,04/10/2025,12,2,Test Lot,5,visitor@example.com,ABC123,20
-3,04/04/2026,30,3,Test Lot,2,visitor@example.com,ABCD123,15
-4,04/10/2025,12,2,Test Lot,5,visitor@example.com,ABC123,20

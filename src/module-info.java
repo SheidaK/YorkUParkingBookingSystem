@@ -2,11 +2,11 @@ module YorkUParkingBookingSystem {
 	exports presentation;
 	exports database;
 	exports objects;
+	exports Randoop;
 	exports businessLogic;
 
 	requires java.desktop;
 	requires javacsv;
-	requires org.junit.jupiter.api;
 	requires junit;
-	exports Randoop;
+	requires org.junit.jupiter.api;
 }

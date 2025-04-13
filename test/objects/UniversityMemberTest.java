@@ -64,4 +64,15 @@ public class UniversityMemberTest {
 		member.setPassword(testPassword);
 		assertEquals(member.getPassword(),testPassword);
 	}
+	@Test
+	public void testGetValidationStatus() {
+		member.setValidated(true);
+		assertEquals(member.getValidationStatus(),"Validated");
+	}
+	@Test 
+	public void testGetValidationStatus2() {
+		member.setValidated(false);
+		assertEquals(member.getValidationStatus(),"NotValidated");
+	}
+	
 }

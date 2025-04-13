@@ -100,9 +100,6 @@ public class SystemDatabaseFacade {
 	/**
 	 * @param parkingLots
 	 */
-	public void setParkingLots(ArrayList<ParkingLot> parkingLots) {
-		this.parkingLots = parkingLots;
-	}
 	public List<ParkingSpace> getAvailableSpaces(ParkingLot parkingLot) {
         return parkingSystem.getAvailableSpaces(parkingLot);
     }
