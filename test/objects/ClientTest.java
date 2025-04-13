@@ -14,11 +14,13 @@ import objects.Visitor;
 public class ClientTest {
 	String testEmail = "visitor@gmail.com";
 	String testPassword ="aA3!";
-	Client client=new Visitor(testEmail,testPassword);
+	Client client=new FacultyMember(testEmail,testPassword);
 
 	@Test
 	public void testClassType() {
-		assertTrue(client.getClass().getSuperclass().getName().contains("Client"));
+		Client client2=new Visitor(testEmail,testPassword);
+
+		assertTrue(client2.getClass().getSuperclass().getName().contains("Client"));
 	}
 	@Test
 	public void testClassType2() {
@@ -28,7 +30,7 @@ public class ClientTest {
 	@Test
 	public void testClassType3() {
 		Client student = new Student(testEmail,testPassword);
-		assertFalse(client.getClass().getSuperclass().equals(student.getClass().getSuperclass()));
+		assertTrue(client.getClass().getSuperclass().equals(student.getClass().getSuperclass()));
 	}
 	
 	@Test
